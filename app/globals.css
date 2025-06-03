@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Ash grey - Neutral bg */
+    --background: 40 6% 86%;
+    --foreground: 0 0% 10%;
+
+    /* Ash grey - Cards/containers */
+    --card: 40 6% 86%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 40 6% 86%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Warm metallic gold - Primary accent */
+    --primary: 43 22% 51%;
+    --primary-foreground: 0 0% 10%;
+
+    /* Burnt bronze - CTA/highlight */
+    --secondary: 30 21% 40%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 40 6% 80%;
+    --muted-foreground: 0 0% 35%;
+
+    /* Burnt bronze - CTA/highlight */
+    --accent: 30 21% 40%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 43 22% 51%;
+    --input: 43 22% 51%;
+    --ring: 43 22% 51%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Charcoal black - Main background */
+    --background: 0 0% 10%;
+    --foreground: 40 6% 86%;
+
+    --card: 0 0% 13%;
+    --card-foreground: 40 6% 86%;
+
+    --popover: 0 0% 13%;
+    --popover-foreground: 40 6% 86%;
+
+    /* Warm metallic gold - Primary accent */
+    --primary: 43 22% 51%;
+    --primary-foreground: 0 0% 10%;
+
+    /* Burnt bronze - CTA/highlight */
+    --secondary: 30 21% 40%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    /* Burnt bronze - CTA/highlight */
+    --accent: 30 21% 40%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 43 22% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.hero-pattern {
+  background-color: #e0ded9;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239F8C66' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}

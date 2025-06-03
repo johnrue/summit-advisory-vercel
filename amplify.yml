@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - pnpm install # Assuming pnpm is used, change to npm install or yarn install if needed
+    build:
+      commands:
+        - pnpm run build # Assuming 'pnpm run build' executes 'next build && next export' or just 'next build' with output: 'export'
+  artifacts:
+    baseDirectory: out # Default output directory for 'next export'
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/* # Cache Next.js build artifacts
