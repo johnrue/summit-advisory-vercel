@@ -3,10 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pnpm install
+        - npx pnpm install
     build:
       commands:
-        - pnpm run build # This executes 'next build'
+        - npx pnpm run build # This executes 'next build'
   artifacts:
     # For Next.js 13+ with App Router, the build output is in the .next directory.
     # AWS Amplify's Next.js compute provider typically handles SSR/SSG deployments correctly
