@@ -10,6 +10,17 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
+  // Enable bundle analyzer when ANALYZE=true
+  ...(process.env.ANALYZE === 'true' && {
+    experimental: {
+      bundlePagesRouterDependencies: true,
+    },
+  }),
 }
 
-export default nextConfig
+// Wrap with bundle analyzer if enabled
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default withBundleAnalyzer(nextConfig)
