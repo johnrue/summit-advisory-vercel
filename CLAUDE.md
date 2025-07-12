@@ -1,5 +1,46 @@
 # CLAUDE.md - Summit Advisory Security Services
 
+## 🚀 BEFORE STARTING ANY WORK - READ THIS SECTION
+
+### Current Project Status (Updated: 2025-07-12)
+- **Node.js version**: v20.19.0 (⚠️ NEEDS UPDATE to v22.17.0 LTS)
+- **Next.js version**: 15.2.4 (⚠️ NEEDS UPDATE to 15.3.5)
+- **React version**: 19 (✅ Latest)
+- **Last major update**: Initial setup
+- **Known issues**: None currently
+- **Performance benchmarks**: Baseline to be established
+
+### Pre-Work Checklist
+- [ ] Check `node --version` and compare with documented version
+- [ ] Run `git status` to see current branch and changes
+- [ ] Review recent commits with `git log --oneline -5`
+- [ ] Verify package.json versions match this documentation
+- [ ] Check if any builds are failing with `npm run build`
+
+### Active Modernization Plan
+Currently implementing: **Node.js & Next.js modernization with performance optimizations**
+- Phase 1: Core framework updates (Node 22, Next.js 15.3.5)
+- Phase 2: Performance optimizations and bundle analysis
+- Phase 3: AWS Amplify configuration updates
+
+## 🔄 AFTER COMPLETING WORK - UPDATE THIS SECTION
+
+### Post-Work Checklist
+- [ ] Update version numbers above if any packages were changed
+- [ ] Document new commands/scripts added to package.json
+- [ ] Record performance improvements (bundle size, build time, etc.)
+- [ ] Note any issues encountered and their solutions
+- [ ] Update troubleshooting section with new known issues
+- [ ] Commit documentation changes with descriptive message
+- [ ] Update "Last major update" date
+
+### Git Workflow for Updates
+```bash
+# After making changes, always update this file
+git add CLAUDE.md
+git commit -m "docs: update CLAUDE.md with [changes made]"
+```
+
 ## Project Overview
 This is a Next.js 15 application for Summit Advisory, a professional security services company operating in Texas. The application is built with TypeScript, Tailwind CSS, and shadcn/ui components, configured for static export to AWS Amplify.
 
@@ -201,6 +242,130 @@ export default function Component({ className, children }: ComponentProps) {
 - **Manual testing** for UI/UX
 - **Responsive testing** across devices
 - **Accessibility testing** with screen readers
+
+## Git Workflow & Branch Strategy
+
+### Branch Naming Convention
+- `feature/[description]` - New features/optimizations
+- `upgrade/[package-name]` - Version upgrades  
+- `fix/[issue-description]` - Bug fixes
+- `docs/[update-type]` - Documentation updates
+
+### Commit Message Format
+```
+type: brief description
+
+- Detailed change 1
+- Detailed change 2
+
+Updated CLAUDE.md: [what was updated]
+Performance impact: [any measurable changes]
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Common Git Commands
+```bash
+# Check current status
+git status
+git log --oneline -5
+
+# Create and switch to feature branch
+git checkout -b feature/description
+
+# Stage and commit changes
+git add .
+git commit -m "type: description"
+
+# Switch back to main
+git checkout main
+
+# Merge feature branch
+git merge feature/description
+```
+
+## Development Commands Reference
+
+### Build & Development
+```bash
+# Development server
+npm run dev
+
+# Production build
+npm run build
+
+# Start production server
+npm start
+
+# Linting
+npm run lint
+
+# Check package versions
+npm list --depth=0
+```
+
+### Performance Analysis
+```bash
+# Bundle analysis (after adding @next/bundle-analyzer)
+npm run analyze
+
+# Build with verbose output
+npm run build -- --debug
+
+# Check for outdated packages
+npm outdated
+```
+
+## Troubleshooting Guide
+
+### Common Issues & Solutions
+
+**Node Version Mismatch**
+```bash
+# Check current version
+node --version
+
+# Install/switch to correct version (if using nvm)
+nvm install 22.17.0
+nvm use 22.17.0
+```
+
+**Build Failures**
+```bash
+# Clear Next.js cache
+rm -rf .next
+
+# Clear node modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Build with verbose output for debugging
+npm run build -- --debug
+```
+
+**Type Errors**
+```bash
+# Run TypeScript check
+npx tsc --noEmit
+
+# Check for missing type definitions
+npm install @types/package-name
+```
+
+**Amplify Deployment Issues**
+- Ensure `output: 'export'` is in next.config.mjs
+- Check that baseDirectory is set to `.next` in amplify.yml
+- Verify all dependencies are in package.json (not just devDependencies)
+
+### Performance Benchmarks
+*(To be updated as optimizations are implemented)*
+
+- **Initial bundle size**: TBD
+- **Build time**: TBD  
+- **Lighthouse scores**: TBD
+- **Core Web Vitals**: TBD
 
 ## Future Considerations
 - **CMS integration** for content management
