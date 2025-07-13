@@ -72,4 +72,14 @@ export const analytics = {
   // Phone/email clicks
   phoneClick: () => trackEvent('phone_click'),
   emailClick: () => trackEvent('email_click'),
+
+  // QR code tracking events
+  qrCodeScan: (campaign?: string, source?: string) => 
+    trackEvent('qr_code_scan', { campaign: campaign || 'default', source: source || 'unknown' }),
+  qrRedirectSuccess: (campaign?: string) => 
+    trackEvent('qr_redirect_success', { campaign: campaign || 'default' }),
+  qrRedirectError: (error: string, campaign?: string) => 
+    trackEvent('qr_redirect_error', { error, campaign: campaign || 'default' }),
+  qrManualRedirect: (campaign?: string) => 
+    trackEvent('qr_manual_redirect', { campaign: campaign || 'default' }),
 }
