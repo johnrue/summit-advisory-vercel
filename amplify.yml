@@ -3,18 +3,24 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npx pnpm install
+        # Install pnpm and dependencies
+        - npm install -g pnpm@10.13.1
+        - pnpm install
     build:
       commands:
-        - npx pnpm run build # This executes 'next build'
+        # Build the Next.js static export
+        - pnpm run build
   artifacts:
-    # For Next.js 13+ with App Router, the build output is in the .next directory.
-    # AWS Amplify's Next.js compute provider typically handles SSR/SSG deployments correctly
-    # by referencing the .next directory.
-    baseDirectory: .next
+    # For Next.js static export, the output directory is 'out'
+    baseDirectory: out
     files:
       - '**/*'
   cache:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
+      - .pnpm-store/**/*
+  # Specify Node.js version
+  environment:
+    variables:
+      NODE_VERSION: '22.17.0'

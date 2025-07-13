@@ -374,10 +374,39 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## Deployment
 
 ### AWS Amplify Configuration
-- **Build command**: `npm run build`
+- **Build command**: `pnpm run build`
 - **Output directory**: `out/`
-- **Node version**: Latest LTS
-- **Environment**: Static hosting
+- **Node version**: 22.17.0 LTS (specified in amplify.yml)
+- **Package manager**: pnpm (specified in amplify.yml)
+- **Environment**: Static hosting with Supabase backend
+
+### Deployment Best Practices
+
+#### Git Workflow for Production Deployments
+```bash
+# CORRECT: Single-commit deployments to prevent dual builds
+1. Create feature branch
+2. Make changes and test locally
+3. Create pull request
+4. Use "Squash and merge" (creates one clean commit)
+5. Delete feature branch
+6. Monitor single deployment in AWS Amplify
+
+# AVOID: Manual merges after PR (causes dual deployments)
+```
+
+#### Pre-Deployment Checklist
+- [ ] Test build locally: `pnpm run build`
+- [ ] Verify all environment variables are set in Amplify console
+- [ ] Check that Supabase integration works locally
+- [ ] Ensure Node.js version matches amplify.yml (22.17.0)
+- [ ] Confirm package.json includes all required dependencies
+
+#### Deployment Monitoring
+- Monitor AWS Amplify console during deployment
+- Check build logs for any warnings or errors
+- Test form submissions on live site after deployment
+- Verify QR code system works with analytics tracking
 
 ### Performance Considerations
 - **Static generation** for fast loading
@@ -549,8 +578,40 @@ pnpm add -D @types/package-name
 
 **Amplify Deployment Issues**
 - Ensure `output: 'export'` is in next.config.mjs
-- Check that baseDirectory is set to `.next` in amplify.yml
+- Check that baseDirectory is set to `out` in amplify.yml (for static export)
 - Verify all dependencies are in package.json (not just devDependencies)
+- Confirm Node.js version in amplify.yml matches engines in package.json
+
+**Common Build Failures**
+
+*"Module not found: Can't resolve '@supabase/supabase-js'"*
+```bash
+# Fix: Add Supabase to dependencies in package.json
+npm install @supabase/supabase-js
+# or
+pnpm add @supabase/supabase-js
+```
+
+*"Unsupported engine: wanted: {"node":">=22.17.0"}"*
+```bash
+# Fix: Update amplify.yml to specify Node.js version
+environment:
+  variables:
+    NODE_VERSION: '22.17.0'
+```
+
+*"Build failed because of webpack errors"*
+```bash
+# Check that all imports are correct
+# Verify environment variables are set in Amplify console
+# Ensure baseDirectory in amplify.yml is 'out' not '.next'
+```
+
+**Dual Deployment Prevention**
+- Use "Squash and merge" for pull requests (creates single commit)
+- Avoid manual merge commits after PR merges
+- Enable "Auto-cancel redundant builds" in Amplify console
+- Monitor deployment queue before making new commits
 
 **Supabase Connection Issues**
 ```bash
