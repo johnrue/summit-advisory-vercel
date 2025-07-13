@@ -3,9 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
-        # Install pnpm and dependencies
-        - npm install -g pnpm@10.13.1
-        - pnpm install
+        # Use Node.js 20 for better AWS Amplify compatibility
+        - nvm use 20
+        # Enable corepack and install pnpm with memory optimization
+        - corepack enable
+        - corepack prepare pnpm@latest --activate
+        - export NODE_OPTIONS=--max-old-space-size=8192
+        - pnpm install --frozen-lockfile
     build:
       commands:
         # Build the Next.js static export
@@ -20,7 +24,3 @@ frontend:
       - node_modules/**/*
       - .next/cache/**/*
       - .pnpm-store/**/*
-  # Specify Node.js version
-  environment:
-    variables:
-      NODE_VERSION: '22.17.0'

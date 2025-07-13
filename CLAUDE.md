@@ -376,8 +376,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### AWS Amplify Configuration
 - **Build command**: `pnpm run build`
 - **Output directory**: `out/`
-- **Node version**: 22.17.0 LTS (specified in amplify.yml)
-- **Package manager**: pnpm (specified in amplify.yml)
+- **Node version**: 20 LTS (for AWS Amplify compatibility)
+- **Package manager**: pnpm via corepack (better compatibility)
 - **Environment**: Static hosting with Supabase backend
 
 ### Deployment Best Practices
@@ -580,7 +580,9 @@ pnpm add -D @types/package-name
 - Ensure `output: 'export'` is in next.config.mjs
 - Check that baseDirectory is set to `out` in amplify.yml (for static export)
 - Verify all dependencies are in package.json (not just devDependencies)
-- Confirm Node.js version in amplify.yml matches engines in package.json
+- Use Node.js 20 instead of 22 for better AWS Amplify compatibility
+- Ensure corepack is enabled before pnpm installation
+- Add .npmrc with `node-linker=hoisted` for pnpm monorepo support
 
 **Common Build Failures**
 
@@ -592,12 +594,16 @@ npm install @supabase/supabase-js
 pnpm add @supabase/supabase-js
 ```
 
-*"Unsupported engine: wanted: {"node":">=22.17.0"}"*
+*"pnpm install command failed on AWS Amplify"*
 ```bash
-# Fix: Update amplify.yml to specify Node.js version
-environment:
-  variables:
-    NODE_VERSION: '22.17.0'
+# Fix: Use corepack and Node.js 20 for better compatibility
+preBuild:
+  commands:
+    - nvm use 20
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+    - export NODE_OPTIONS=--max-old-space-size=8192
+    - pnpm install --frozen-lockfile
 ```
 
 *"Build failed because of webpack errors"*
