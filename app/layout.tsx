@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { GoogleAnalytics } from '@next/third-parties/google'
+import CookieBanner from "@/components/cookie-banner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -32,7 +34,11 @@ export default function RootLayout({
       <body className={`${inter.className} dark`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
+          <CookieBanner />
         </ThemeProvider>
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        )}
       </body>
     </html>
   )

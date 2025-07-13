@@ -10,11 +10,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { COMPANY_INFO } from "@/lib/company-info"
+import { analytics } from "@/lib/analytics"
+import { submitConsultationRequest } from "@/lib/consultation-service"
+import { ConsultationFormData } from "@/lib/types"
 import { Mail, Phone, MapPin, Clock, CheckCircle } from "lucide-react"
 import AnimatedSection from "@/components/animated-section"
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ConsultationFormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -56,24 +59,24 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    
+    // Track form submission start
+    analytics.contactFormSubmit()
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_CONSULTATION_REQUEST_WEBHOOK_URL!, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
+      // Submit to Supabase
+      const result = await submitConsultationRequest(formData)
 
-      if (!response.ok) {
-        console.error("Webhook submission failed:", response.statusText)
-        // Optionally, set an error state here to inform the user
-        throw new Error(`HTTP error! status: ${response.status}`)
+      if (!result.success) {
+        console.error("Supabase submission failed:", result.error)
+        throw new Error(result.error || 'Failed to submit consultation request')
       }
 
-      console.log("Form submitted successfully to webhook:", formData)
+      console.log("Form submitted successfully to Supabase:", result.data)
       setIsSubmitted(true)
+      
+      // Track successful form submission
+      analytics.contactFormSuccess()
 
       // Reset form after 3 seconds
       setTimeout(() => {
@@ -88,7 +91,9 @@ export default function Contact() {
         })
       }, 3000)
     } catch (error) {
-      console.error("Error submitting form to webhook:", error)
+      console.error("Error submitting form to Supabase:", error)
+      // Track form submission error
+      analytics.contactFormError(error instanceof Error ? error.message : 'Unknown error')
       // Optionally, set an error state here to inform the user
     } finally {
       setIsSubmitting(false)
@@ -128,7 +133,13 @@ export default function Contact() {
                 <Phone className="h-6 w-6 text-primary shrink-0" />
                 <div className="space-y-1">
                   <h3 className="font-medium">Phone</h3>
-                  <p className="text-muted-foreground">{COMPANY_INFO.phone.call}</p>
+                  <a 
+                    href={`tel:${COMPANY_INFO.phone.call}`}
+                    onClick={() => analytics.phoneClick()}
+                    className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {COMPANY_INFO.phone.call}
+                  </a>
                   <p className="text-sm text-muted-foreground">Call or text for immediate assistance</p>
                 </div>
               </div>
@@ -137,7 +148,13 @@ export default function Contact() {
                 <Mail className="h-6 w-6 text-primary shrink-0" />
                 <div className="space-y-1">
                   <h3 className="font-medium">Email</h3>
-                  <p className="text-muted-foreground">{COMPANY_INFO.email.operations}</p>
+                  <a 
+                    href={`mailto:${COMPANY_INFO.email.operations}`}
+                    onClick={() => analytics.emailClick()}
+                    className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {COMPANY_INFO.email.operations}
+                  </a>
                   <p className="text-sm text-muted-foreground">For operations and general inquiries</p>
                 </div>
               </div>
