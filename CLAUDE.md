@@ -583,6 +583,8 @@ pnpm add -D @types/package-name
 - Use Node.js 20 instead of 22 for better AWS Amplify compatibility
 - Ensure corepack is enabled before pnpm installation
 - Add .npmrc with `node-linker=hoisted` for pnpm monorepo support
+- Set NODE_OPTIONS as environment variable in amplify.yml, not as export command
+- Use `--frozen-lockfile` flag for deterministic pnpm installs
 
 **Common Build Failures**
 
@@ -602,8 +604,12 @@ preBuild:
     - nvm use 20
     - corepack enable
     - corepack prepare pnpm@latest --activate
-    - export NODE_OPTIONS=--max-old-space-size=8192
     - pnpm install --frozen-lockfile
+
+# Set NODE_OPTIONS as environment variable (not export command)
+environment:
+  variables:
+    NODE_OPTIONS: '--max-old-space-size=8192'
 ```
 
 *"Build failed because of webpack errors"*

@@ -5,10 +5,9 @@ frontend:
       commands:
         # Use Node.js 20 for better AWS Amplify compatibility
         - nvm use 20
-        # Enable corepack and install pnpm with memory optimization
+        # Enable corepack and install pnpm
         - corepack enable
         - corepack prepare pnpm@latest --activate
-        - export NODE_OPTIONS=--max-old-space-size=8192
         - pnpm install --frozen-lockfile
     build:
       commands:
@@ -24,3 +23,7 @@ frontend:
       - node_modules/**/*
       - .next/cache/**/*
       - .pnpm-store/**/*
+  # Set NODE_OPTIONS as environment variable instead of export command
+  environment:
+    variables:
+      NODE_OPTIONS: '--max-old-space-size=8192'
