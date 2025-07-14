@@ -3,14 +3,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        # Use Node.js 20 for AWS Amplify compatibility
+        # Use Node.js 20 (highest version supported by AWS Amplify)
         - nvm use 20
-        # Use npx to run pnpm without global installation
-        - npx pnpm install
+        # Use npm ci for reliable AWS Amplify builds
+        - npm ci
     build:
       commands:
-        # Build the Next.js static export using npx
-        - npx pnpm run build
+        # Build the Next.js static export using npm
+        - npm run build
   artifacts:
     # For Next.js static export, the output directory is 'out'
     baseDirectory: out
