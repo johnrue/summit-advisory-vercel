@@ -5,8 +5,8 @@ frontend:
       commands:
         # Use Node.js 20 (highest version supported by AWS Amplify)
         - nvm use 20
-        # Use npm ci for reliable AWS Amplify builds
-        - npm ci
+        # Use npm install with legacy peer deps (no package-lock.json exists)
+        - npm install --legacy-peer-deps
     build:
       commands:
         # Build the Next.js static export using npm
