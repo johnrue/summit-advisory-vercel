@@ -13,11 +13,12 @@ frontend:
         - npm run build
     postBuild:
       commands:
-        # Verify static export was created
+        # Debug output directories
+        - ls -la .next/
         - ls -la out/
   artifacts:
-    # For Next.js static export, the output directory is 'out'
-    baseDirectory: out
+    # For Next.js 14+ with output: 'export', AWS Amplify expects .next directory
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
