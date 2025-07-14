@@ -3,12 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        # Use Node.js 20 for better AWS Amplify compatibility
+        # Use Node.js 20 for AWS Amplify compatibility
         - nvm use 20
-        # Enable corepack and install pnpm v9 to match lockfile version 9.0
-        - corepack enable
-        - corepack prepare pnpm@9 --activate
-        - pnpm install --frozen-lockfile
+        # Install pnpm globally using npm (AWS Amplify best practice)
+        - npm install -g pnpm
+        - pnpm install
     build:
       commands:
         # Build the Next.js static export
@@ -22,7 +21,6 @@ frontend:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
-      - .pnpm-store/**/*
   # Set NODE_OPTIONS as environment variable for memory optimization
   environment:
     variables:
