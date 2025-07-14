@@ -11,6 +11,10 @@ frontend:
       commands:
         # Build the Next.js static export using npm
         - npm run build
+    postBuild:
+      commands:
+        # Verify static export was created
+        - ls -la out/
   artifacts:
     # For Next.js static export, the output directory is 'out'
     baseDirectory: out
