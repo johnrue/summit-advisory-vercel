@@ -5,13 +5,12 @@ frontend:
       commands:
         # Use Node.js 20 for AWS Amplify compatibility
         - nvm use 20
-        # Install pnpm globally using npm (AWS Amplify best practice)
-        - npm install -g pnpm
-        - pnpm install
+        # Use npx to run pnpm without global installation
+        - npx pnpm install
     build:
       commands:
-        # Build the Next.js static export
-        - pnpm run build
+        # Build the Next.js static export using npx
+        - npx pnpm run build
   artifacts:
     # For Next.js static export, the output directory is 'out'
     baseDirectory: out
