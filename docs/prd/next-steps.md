@@ -1,0 +1,7 @@
+# Next Steps
+
+## UX Expert Prompt
+"Please review the Summit Advisory Guard Management Platform PRD and design the user experience architecture. Focus on creating **unified manager interfaces that support function-switching** (hiring/scheduling/sales/compliance) rather than specialized role-based applications. Design mobile-first guard portals and desktop-optimized manager dashboards. Prioritize **Kanban-driven workflow management** with calendar integration and ensure **WCAG AA accessibility compliance**. Reference existing Summit Advisory branding and create wireframes for the core screens identified in the PRD."
+
+## Architect Prompt  
+"Please create the technical architecture for the Summit Advisory Guard Management Platform using this PRD. Focus on **extending the existing Next.js 15/Supabase infrastructure** with authentication and role-based security for **Vercel deployment**. Design **comprehensive audit logging architecture** for TOPS compliance, **real-time notification system** architecture, and **secure file upload/storage** system. Integrate **MCP development workflows** (Supabase MCP, Vercel MCP, Reference MCP) for streamlined development processes. Provide detailed **RLS policy templates**, **calendar OAuth integration design**, and **performance optimization strategy** for 200+ concurrent users. Deliver architecture optimized for Vercel's serverless environment and Next.js capabilities."
