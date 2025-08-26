@@ -1,6 +1,6 @@
-# Summit Advisory Amplify
+# Summit Advisory Guard Management Platform
 
-Summit Advisory Amplify is a modern web application built for Summit Advisory. This project leverages Next.js for server-side rendering and static site generation, TypeScript for type safety, and Tailwind CSS for a utility-first styling approach. It utilizes Radix UI components for accessible and unstyled UI primitives.
+The Summit Advisory Guard Management Platform is a comprehensive web application built for Summit Advisory's security services operations. This project combines a modern marketing website with a full-featured guard management system, leveraging Next.js for both static site generation and dynamic authentication-based functionality, TypeScript for type safety, and Tailwind CSS for consistent styling. The platform includes AI-powered resume parsing, TOPS compliance management, and complete operational workflows for hiring, scheduling, and business development.
 
 ## Table of Contents
 
@@ -15,45 +15,73 @@ Summit Advisory Amplify is a modern web application built for Summit Advisory. T
 
 ## Tech Stack
 
--   **Framework**: [Next.js](https://nextjs.org/) (v15.2.4)
+### Frontend
+-   **Framework**: [Next.js](https://nextjs.org/) (v15.3.5) with React 19
 -   **Language**: [TypeScript](https://www.typescriptlang.org/) (v5)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/) (v3.4.17)
--   **UI Components**: [Radix UI](https://www.radix-ui.com/) (various versions)
--   **Form Handling**: [React Hook Form](https://react-hook-form.com/) (v7.54.1) with [Zod](https://zod.dev/) (v3.24.1) for validation
--   **State Management**: React Context API (implied by Next.js and component structure)
--   **Linting**: ESLint (via `next lint`)
--   **Package Manager**: [pnpm](https://pnpm.io/) (inferred from `pnpm-lock.yaml`)
+-   **UI Components**: [shadcn/ui](https://ui.shadcn.com/) built on [Radix UI](https://www.radix-ui.com/)
+-   **Form Handling**: [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) validation
+-   **State Management**: React Context API + Supabase real-time subscriptions
+-   **Package Manager**: [pnpm](https://pnpm.io/)
+
+### Backend & Services
+-   **Database**: [Supabase](https://supabase.com/) (PostgreSQL with Row-Level Security)
+-   **Authentication**: Supabase Auth with role-based access control
+-   **File Storage**: Supabase Storage for document uploads
+-   **AI Integration**: [OpenAI API](https://openai.com/) for resume parsing via Supabase Edge Functions
+-   **Email Service**: Supabase Edge Functions with email provider integration
+-   **Calendar Integration**: OAuth integration with Google Calendar and Outlook APIs
+-   **Real-time Updates**: Supabase real-time subscriptions
+
+### Development & Deployment
+-   **Deployment**: [Vercel](https://vercel.com/) for frontend hosting
+-   **MCP Tools**: Supabase MCP, Vercel MCP, Reference MCP for enhanced development
+-   **Linting**: ESLint with Next.js configuration
+-   **Monitoring**: Vercel Analytics + Supabase monitoring
 
 ## Project Structure
 
-The project follows a standard Next.js `app` directory structure:
+The project combines a marketing website with a comprehensive guard management system:
 
 ```
 /
-├── app/                  # Main application source (pages, layouts, API routes)
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   ├── page.tsx          # Homepage
-│   └── services/         # Service-related pages
-│       └── [slug]/
-│           ├── page.tsx
-│           └── ServicePageClient.tsx
-├── components/           # Reusable UI components
-│   ├── ui/               # Shadcn/ui components (Radix UI based)
-│   └── ...               # Custom components (about.tsx, contact.tsx, etc.)
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions, data definitions, constants
-├── public/               # Static assets (images, fonts, etc.)
-├── styles/               # Additional global styles (if any beyond app/globals.css)
-├── .env.local            # Local environment variables (DO NOT COMMIT)
-├── .gitignore            # Files and directories to ignore by Git
-├── amplify.yml           # AWS Amplify configuration file
-├── next.config.mjs       # Next.js configuration
-├── package.json          # Project metadata and dependencies
-├── pnpm-lock.yaml        # Exact versions of dependencies
-├── postcss.config.mjs    # PostCSS configuration
-├── tailwind.config.ts    # Tailwind CSS configuration
-└── tsconfig.json         # TypeScript configuration
+├── app/                     # Next.js App Router
+│   ├── globals.css         # Global styles and CSS variables
+│   ├── layout.tsx          # Root layout with theme provider
+│   ├── page.tsx            # Homepage (marketing)
+│   ├── (auth)/             # Authentication routes
+│   │   ├── login/          # Login page
+│   │   └── register/       # Registration page
+│   ├── dashboard/          # Role-based dashboards
+│   │   ├── admin/          # Admin dashboard with impersonation
+│   │   ├── manager/        # Manager operational dashboard
+│   │   └── guard/          # Guard mobile-friendly portal
+│   ├── hiring/             # Guard hiring workflow
+│   ├── scheduling/         # Shift management and calendar
+│   ├── compliance/         # TOPS compliance and reporting
+│   ├── leads/              # Lead management and contracts
+│   ├── qr/                 # QR code redirect system
+│   └── services/           # Marketing service pages
+├── components/             # React components
+│   ├── ui/                 # shadcn/ui components
+│   ├── kanban/             # Kanban board components
+│   ├── forms/              # Form components with AI parsing
+│   └── dashboards/         # Dashboard-specific components
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utilities and services
+│   ├── supabase.ts        # Supabase client configuration
+│   ├── openai.ts          # OpenAI API integration
+│   ├── auth.ts            # Authentication utilities
+│   └── types.ts           # TypeScript interfaces
+├── docs/                   # Project documentation
+│   ├── prd/               # Product Requirements (sharded)
+│   └── architecture/      # Technical architecture docs
+├── public/                 # Static assets
+├── .env.local             # Environment variables (DO NOT COMMIT)
+├── next.config.mjs        # Next.js configuration
+├── package.json           # Dependencies and scripts
+├── vercel.json            # Vercel deployment configuration
+└── CLAUDE.md              # Development guidelines and context
 ```
 
 ## Prerequisites
@@ -96,9 +124,27 @@ The `package.json` defines the following scripts:
 
 ## Deployment
 
-This project includes an `amplify.yml` file, suggesting it is configured for deployment with [AWS Amplify](https://aws.amazon.com/amplify/). Refer to the AWS Amplify documentation for deployment steps.
+This project is optimized for deployment on [Vercel](https://vercel.com/), leveraging their native Next.js support and serverless infrastructure:
 
-Alternatively, Next.js applications can be deployed to various platforms like [Vercel](https://vercel.com/) (the creators of Next.js), Netlify, or self-hosted environments.
+### Production Deployment
+1. Connect your repository to Vercel
+2. Configure environment variables in Vercel dashboard:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `OPENAI_API_KEY`
+   - Additional OAuth and integration keys
+3. Vercel automatically builds and deploys on push to main branch
+
+### Environment Setup
+- **Development**: Local development with Supabase local instance
+- **Staging**: Preview deployments for pull requests
+- **Production**: Main branch auto-deployment with Vercel
+
+### Key Features
+- **Static Export**: Marketing pages served as static assets
+- **Serverless Functions**: Authentication and guard management routes
+- **Edge Functions**: AI processing and real-time notifications via Supabase
+- **Real-time Database**: Live updates for scheduling and notifications
 
 ## License
 
