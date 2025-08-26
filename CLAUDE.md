@@ -1,15 +1,15 @@
-# CLAUDE.md - Summit Advisory Security Services
+# CLAUDE.md - Summit Advisory Guard Management Platform
 
 ## 🚀 BEFORE STARTING ANY WORK - READ THIS SECTION
 
-### Current Project Status (Updated: 2025-07-13)
+### Current Project Status (Updated: 2025-01-22)
 - **Node.js version**: v22.17.0 LTS (✅ Latest LTS)
 - **Next.js version**: 15.3.5 (✅ Latest stable)
 - **React version**: 19 (✅ Latest)
 - **Package manager**: pnpm (✅ Switched from npm for 65% faster installs)
-- **Last major update**: Supabase database integration completed
+- **Last major update**: Guard Management Platform PRD completed and sharded
 - **Security assessment**: ✅ Comprehensive code review completed - no vulnerabilities detected
-- **Known issues**: None currently
+- **Current phase**: Architecture design phase - ready to begin technical implementation
 - **Performance benchmarks**: Build time ~4s, Bundle size 102kB shared JS
 
 ### Pre-Work Checklist
@@ -18,17 +18,39 @@
 - [ ] Review recent commits with `git log --oneline -5`
 - [ ] Verify package.json versions match this documentation
 - [ ] Check if any builds are failing with `pnpm run build`
+- [ ] **IMPORTANT**: When unsure about implementation details, architecture decisions, or technical specifications, use **Reference MCP** to search and review existing documentation in `/docs/prd/` and `/docs/architecture/` instead of guessing or making assumptions
 
-### Active Modernization Plan
-✅ **COMPLETED: Core framework modernization**
-- ✅ Phase 1: Node.js 22.17.0 LTS & Next.js 15.3.5 upgrade
-- ✅ Switched to pnpm package manager
-- ✅ Fixed dependency conflicts and ES module issues
-- ✅ **COMPLETED: QR redirect system for marketing campaigns**
-- ✅ **COMPLETED: Security code review and validation**  
-- ✅ **COMPLETED: Supabase database integration for consultation requests** (Working ✅)
-- 🔄 **IN PROGRESS: Performance optimizations and bundle analysis**
-- 🔄 Phase 3: AWS Amplify configuration updates
+### Guard Management Platform Development Plan
+✅ **COMPLETED: Foundation & Planning**
+- ✅ Core framework modernization (Node.js 22.17.0 LTS & Next.js 15.3.5)
+- ✅ Switched to pnpm package manager for better performance
+- ✅ QR redirect system for marketing campaigns
+- ✅ Supabase database integration for consultation requests
+- ✅ **COMPLETED: Comprehensive PRD development and sharding**
+- ✅ **COMPLETED: Requirements analysis with AI resume parsing integration**
+- ✅ **COMPLETED: Role structure design (Guard, Manager, Admin)**
+
+🔄 **CURRENT PHASE: Technical Architecture Design**
+- 🔄 Database schema design with Supabase RLS policies
+- 🔄 Authentication system architecture with role-based access
+- 🔄 AI integration architecture for resume parsing
+- 🔄 Real-time notification system design
+- 🔄 Vercel deployment optimization strategy
+
+📋 **UPCOMING: Development Implementation**
+- Epic 1: Foundation & Authentication Infrastructure
+- Epic 2: Guard Hiring Pipeline & Profile Management
+- Epic 3: Shift Management & Calendar Integration
+- Epic 4: Compliance & Audit System
+- Epic 5: Lead Generation & Contract Management
+
+### 📚 Key Documentation References
+- **Product Requirements**: `/docs/prd/` (sharded PRD with all specifications)
+- **Technical Architecture**: `/docs/architecture/` (comprehensive brownfield enhancement architecture)
+- **Development Guidelines**: This file (CLAUDE.md)
+- **README**: Project overview and setup instructions
+
+**Reference MCP Usage**: Use Reference MCP to search these documentation directories when you need specific details about requirements, architecture decisions, or implementation approaches.
 
 ## 🔄 AFTER COMPLETING WORK - UPDATE THIS SECTION
 
@@ -55,15 +77,15 @@ git commit -m "docs: update CLAUDE.md with [changes made]"
 ```
 
 ## Project Overview
-This is a Next.js 15 application for Summit Advisory, a professional security services company operating in Texas. The application is built with TypeScript, Tailwind CSS, and shadcn/ui components, configured for static export to AWS Amplify.
+The Summit Advisory Guard Management Platform is a comprehensive Next.js 15 application that combines a professional marketing website with a full-featured guard management system. Built for Summit Advisory (TX DPS #C29754001), this platform manages the complete guard lifecycle from recruitment through scheduling, compliance, and business development. The system features AI-powered resume parsing, TOPS compliance management, Kanban-driven workflows, and role-based dashboards deployed on Vercel with Supabase backend services.
 
 ## Technology Stack
 
 ### Core Framework
-- **Next.js 15.2.4** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript 5** - Type-safe JavaScript
-- **Static Export** - Configured for deployment (`output: 'export'`)
+- **Next.js 15.3.5** - React framework with App Router (hybrid static/dynamic routing)
+- **React 19** - UI library with latest features
+- **TypeScript 5** - Type-safe JavaScript throughout
+- **Hybrid Deployment** - Static marketing pages + authenticated guard management routes
 
 ### UI & Styling
 - **Tailwind CSS 3.4.17** - Utility-first CSS framework
@@ -74,13 +96,16 @@ This is a Next.js 15 application for Summit Advisory, a professional security se
 - **tailwind-merge & clsx** - Conditional class name utilities
 
 ### Key Dependencies
-- **React Hook Form** - Form handling with validation
-- **Zod** - Schema validation
-- **@supabase/supabase-js** - Database client for consultation requests
-- **date-fns** - Date manipulation
+- **@supabase/supabase-js** - Database client and authentication
+- **React Hook Form + Zod** - Form handling with validation
+- **OpenAI API** - Resume parsing and AI assistance
+- **date-fns** - Date manipulation for scheduling
 - **next-themes** - Theme management (dark/light mode)
-- **recharts** - Charting library
+- **recharts** - Analytics and reporting charts
 - **sonner** - Toast notifications
+- **@radix-ui/** - Accessible component primitives
+- **tailwindcss** - Utility-first styling
+- **class-variance-authority** - Component variant management
 
 ## Project Structure
 
@@ -88,13 +113,15 @@ This is a Next.js 15 application for Summit Advisory, a professional security se
 ├── app/                     # Next.js App Router
 │   ├── globals.css         # Global styles and CSS variables
 │   ├── layout.tsx          # Root layout with theme provider
-│   ├── page.tsx            # Homepage
+│   ├── page.tsx            # Homepage (marketing)
+│   ├── (auth)/             # Authentication routes
+│   ├── dashboard/          # Role-based dashboards (Admin, Manager, Guard)
+│   ├── hiring/             # Guard hiring pipeline and workflows
+│   ├── scheduling/         # Shift management and calendar integration
+│   ├── compliance/         # TOPS compliance and audit reporting
+│   ├── leads/              # Lead generation and contract management
 │   ├── qr/                 # QR code redirect system
-│   │   ├── page.tsx        # QR redirect page with analytics
-│   │   ├── layout.tsx      # QR page layout
-│   │   ├── loading.tsx     # QR loading state
-│   │   └── error.tsx       # QR error handling
-│   └── services/           # Dynamic service pages
+│   └── services/           # Marketing service pages
 ├── components/             # React components
 │   ├── ui/                 # shadcn/ui components
 │   ├── hero.tsx            # Homepage hero section
@@ -109,13 +136,18 @@ This is a Next.js 15 application for Summit Advisory, a professional security se
 │   ├── use-scroll-animation.tsx
 │   ├── use-mobile.tsx
 │   └── use-toast.ts
-├── lib/                    # Utilities and data
+├── lib/                    # Utilities and services
 │   ├── utils.ts            # Utility functions (cn helper)
 │   ├── company-info.ts     # Company data configuration
-│   ├── services-data.tsx   # Services content
+│   ├── services-data.tsx   # Marketing services content
 │   ├── supabase.ts         # Supabase client configuration
-│   ├── consultation-service.ts # Form submission & database operations
-│   └── types.ts            # TypeScript interfaces
+│   ├── openai.ts           # OpenAI API integration for resume parsing
+│   ├── auth.ts             # Authentication utilities and RLS helpers
+│   ├── consultation-service.ts # Lead management & database operations
+│   ├── guard-service.ts    # Guard management operations
+│   ├── scheduling-service.ts # Shift and calendar management
+│   ├── compliance-service.ts # TOPS compliance and audit operations
+│   └── types.ts            # TypeScript interfaces for all data models
 ├── public/                 # Static assets
 ├── styles/                 # Additional styles
 └── amplify.yml             # AWS Amplify deployment config
@@ -382,31 +414,41 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Deployment Best Practices
 
-#### Git Workflow for Production Deployments
+#### Git Workflow for Vercel Deployments
 ```bash
-# CORRECT: Single-commit deployments to prevent dual builds
-1. Create feature branch
-2. Make changes and test locally
-3. Create pull request
-4. Use "Squash and merge" (creates one clean commit)
+# CORRECT: Efficient Vercel deployment workflow
+1. Create feature branch from main
+2. Develop and test locally with Supabase
+3. Create pull request (triggers preview deployment)
+4. Use "Squash and merge" for clean commit history
 5. Delete feature branch
-6. Monitor single deployment in AWS Amplify
+6. Monitor production deployment on Vercel
 
-# AVOID: Manual merges after PR (causes dual deployments)
+# Vercel automatically handles:
+# - Preview deployments for all PRs
+# - Production deployment on main branch merge
+# - Environment variable management per environment
 ```
 
 #### Pre-Deployment Checklist
 - [ ] Test build locally: `pnpm run build`
-- [ ] Verify all environment variables are set in Amplify console
-- [ ] Check that Supabase integration works locally
-- [ ] Ensure Node.js version matches amplify.yml (22.17.0)
-- [ ] Confirm package.json includes all required dependencies
+- [ ] Verify all environment variables are set in Vercel dashboard
+- [ ] Test Supabase integration (database, auth, storage, edge functions)
+- [ ] Test OpenAI API integration for resume parsing
+- [ ] Ensure Node.js version compatibility (22.17.0)
+- [ ] Confirm all dependencies in package.json
+- [ ] Test authentication flows for all three roles (Guard, Manager, Admin)
+- [ ] Verify MCP tool integrations work correctly
 
 #### Deployment Monitoring
-- Monitor AWS Amplify console during deployment
-- Check build logs for any warnings or errors
-- Test form submissions on live site after deployment
-- Verify QR code system works with analytics tracking
+- Monitor Vercel dashboard during deployment
+- Check build logs and serverless function logs
+- Test authentication flows and role-based access
+- Verify Supabase connectivity and RLS policies
+- Test OpenAI integration and resume parsing
+- Test form submissions and lead capture
+- Verify QR code system with analytics tracking
+- Test real-time notifications and calendar sync
 
 ### Performance Considerations
 - **Static generation** for fast loading
