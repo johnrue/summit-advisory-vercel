@@ -4,7 +4,7 @@
 
 - **Primary Purpose:** Professional security services marketing website with consultation request functionality
 - **Current Tech Stack:** Next.js 15.3.5, React 19, TypeScript 5, Tailwind CSS 3.4.17, shadcn/ui, Supabase 2.50.5
-- **Architecture Style:** JAMstack with static export (`output: 'export'`) for AWS Amplify deployment
+- **Architecture Style:** JAMstack with Vercel deployment supporting both static and serverless functions
 - **Deployment Method:** Static site generation with Supabase backend for dynamic functionality
 
 ## Available Documentation
@@ -16,7 +16,7 @@
 
 ## Identified Constraints
 
-- **Static Export Requirement:** Must maintain `output: 'export'` for AWS Amplify compatibility
+- **Flexible Deployment:** Can use both static export and serverless functions on Vercel
 - **Authentication Disabled:** Current Supabase client has `persistSession: false` for static site optimization
 - **Single Table Database:** Only `consultation_requests` table currently exists
 - **Marketing Site Integrity:** Existing marketing functionality must remain unaffected

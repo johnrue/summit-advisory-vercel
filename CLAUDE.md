@@ -77,7 +77,7 @@ git commit -m "docs: update CLAUDE.md with [changes made]"
 ```
 
 ## Project Overview
-The Summit Advisory Guard Management Platform is a comprehensive Next.js 15 application that combines a professional marketing website with a full-featured guard management system. Built for Summit Advisory (TX DPS #C29754001), this platform manages the complete guard lifecycle from recruitment through scheduling, compliance, and business development. The system features AI-powered resume parsing, TOPS compliance management, Kanban-driven workflows, and role-based dashboards deployed on Vercel with Supabase backend services.
+The Summit Advisory Guard Management Platform is a comprehensive Next.js 15 application that combines a professional marketing website with a full-featured guard management system. Built for Summit Advisory (TX DPS #C29754001), this platform manages the complete guard lifecycle from recruitment through scheduling, compliance, and business development. The system features AI-powered resume parsing, TOPS compliance management, Kanban-driven workflows, and role-based dashboards deployed entirely on Vercel with Supabase backend services.
 
 ## Technology Stack
 
@@ -85,7 +85,7 @@ The Summit Advisory Guard Management Platform is a comprehensive Next.js 15 appl
 - **Next.js 15.3.5** - React framework with App Router (hybrid static/dynamic routing)
 - **React 19** - UI library with latest features
 - **TypeScript 5** - Type-safe JavaScript throughout
-- **Hybrid Deployment** - Static marketing pages + authenticated guard management routes
+- **Vercel Deployment** - Static marketing pages + authenticated guard management routes
 
 ### UI & Styling
 - **Tailwind CSS 3.4.17** - Utility-first CSS framework
@@ -150,7 +150,7 @@ The Summit Advisory Guard Management Platform is a comprehensive Next.js 15 appl
 │   └── types.ts            # TypeScript interfaces for all data models
 ├── public/                 # Static assets
 ├── styles/                 # Additional styles
-└── amplify.yml             # AWS Amplify deployment config
+└── vercel.json             # Vercel deployment config
 ```
 
 ## Code Style & Conventions
@@ -214,7 +214,7 @@ export default function Component({ className, children }: ComponentProps) {
 - **ESLint ignored during builds** - Set in next.config.mjs
 - **TypeScript errors ignored** - For faster builds
 - **Image optimization disabled** - Required for static export
-- **Static export enabled** - Generates static files for Amplify
+- **Static export enabled** - Generates static files for Vercel
 
 ### Component Development
 1. **Use existing UI components** from `components/ui/`
@@ -405,12 +405,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ## Deployment
 
-### AWS Amplify Configuration
-- **Build command**: `pnpm run build`
-- **Output directory**: `out/`
-- **Node version**: 20 LTS (for AWS Amplify compatibility)
-- **Package manager**: pnpm via corepack (better compatibility)
-- **Environment**: Static hosting with Supabase backend
+### Vercel Configuration
+- **Build command**: `pnpm run build` (configured in vercel.json)
+- **Install command**: `pnpm install`
+- **Framework**: Next.js with App Router
+- **Node version**: 22.17.0 LTS
+- **Environment**: Serverless functions with Supabase backend
 
 ### Deployment Best Practices
 
@@ -428,6 +428,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # - Preview deployments for all PRs
 # - Production deployment on main branch merge
 # - Environment variable management per environment
+# - Serverless function deployment
+# - Static asset optimization
 ```
 
 #### Pre-Deployment Checklist
@@ -618,54 +620,33 @@ pnpm run type-check
 pnpm add -D @types/package-name
 ```
 
-**Amplify Deployment Issues**
-- Ensure `output: 'export'` is in next.config.mjs
-- Check that baseDirectory is set to `out` in amplify.yml (for static export)
+**Vercel Deployment Issues**
 - Verify all dependencies are in package.json (not just devDependencies)
-- Use Node.js 20 instead of 22 for better AWS Amplify compatibility
-- Ensure corepack is enabled before pnpm installation
-- Add .npmrc with `node-linker=hoisted` for pnpm monorepo support
-- Set NODE_OPTIONS as environment variable in amplify.yml, not as export command
-- Use `--frozen-lockfile` flag for deterministic pnpm installs
+- Check Node.js version compatibility (using 22.17.0 LTS)
+- Ensure environment variables are set in Vercel dashboard
+- Verify API routes are properly configured for serverless functions
 
 **Common Build Failures**
 
 *"Module not found: Can't resolve '@supabase/supabase-js'"*
 ```bash
 # Fix: Add Supabase to dependencies in package.json
-npm install @supabase/supabase-js
-# or
 pnpm add @supabase/supabase-js
-```
-
-*"pnpm install command failed on AWS Amplify"*
-```bash
-# Fix: Use corepack and Node.js 20 for better compatibility
-preBuild:
-  commands:
-    - nvm use 20
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
-    - pnpm install --frozen-lockfile
-
-# Set NODE_OPTIONS as environment variable (not export command)
-environment:
-  variables:
-    NODE_OPTIONS: '--max-old-space-size=8192'
 ```
 
 *"Build failed because of webpack errors"*
 ```bash
 # Check that all imports are correct
-# Verify environment variables are set in Amplify console
-# Ensure baseDirectory in amplify.yml is 'out' not '.next'
+# Verify environment variables are set in Vercel dashboard
+# Check vercel.json configuration is valid
+# Ensure API routes follow proper serverless patterns
 ```
 
-**Dual Deployment Prevention**
+**Deployment Best Practices**
 - Use "Squash and merge" for pull requests (creates single commit)
 - Avoid manual merge commits after PR merges
-- Enable "Auto-cancel redundant builds" in Amplify console
-- Monitor deployment queue before making new commits
+- Monitor Vercel dashboard for deployment status
+- Use preview deployments for testing before production
 
 **Supabase Connection Issues**
 ```bash

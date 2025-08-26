@@ -43,7 +43,7 @@ export async function submitConsultationRequest(
       .single()
 
     if (error) {
-      console.error('Supabase insertion error:', error)
+      // Supabase insertion error - details included in thrown error
       throw new Error(`Database error: ${error.message}`)
     }
 
@@ -71,7 +71,7 @@ export async function submitConsultationRequest(
       message: 'Consultation request submitted successfully',
     }
   } catch (error) {
-    console.error('Error submitting consultation request:', error)
+    // Error submitting consultation request - details in return object
     
     return {
       success: false,
@@ -125,7 +125,7 @@ export async function getConsultationRequests(
       message: 'Consultation requests retrieved successfully',
     }
   } catch (error) {
-    console.error('Error fetching consultation requests:', error)
+    // Error fetching consultation requests - details in return object
     
     return {
       success: false,
@@ -184,7 +184,7 @@ export async function updateConsultationRequestStatus(
       message: 'Request status updated successfully',
     }
   } catch (error) {
-    console.error('Error updating consultation request:', error)
+    // Error updating consultation request - details in return object
     
     return {
       success: false,

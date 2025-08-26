@@ -27,7 +27,7 @@ Rather than replacing the existing system, this enhancement uses a **unified mon
 
 - **Primary Purpose:** Professional security services marketing website with consultation request functionality
 - **Current Tech Stack:** Next.js 15.3.5, React 19, TypeScript 5, Tailwind CSS 3.4.17, shadcn/ui, Supabase 2.50.5
-- **Architecture Style:** JAMstack with static export (`output: 'export'`) for AWS Amplify deployment
+- **Architecture Style:** JAMstack with Vercel deployment supporting both static and serverless functions
 - **Deployment Method:** Static site generation with Supabase backend for dynamic functionality
 
 ### Available Documentation
@@ -39,7 +39,7 @@ Rather than replacing the existing system, this enhancement uses a **unified mon
 
 ### Identified Constraints
 
-- **Static Export Requirement:** Must maintain `output: 'export'` for AWS Amplify compatibility
+- **Flexible Deployment:** Can use both static export and serverless functions on Vercel
 - **Authentication Disabled:** Current Supabase client has `persistSession: false` for static site optimization
 - **Single Table Database:** Only `consultation_requests` table currently exists
 - **Marketing Site Integrity:** Existing marketing functionality must remain unaffected
@@ -501,17 +501,17 @@ summit-advisory-vercel/
 
 ### Enhancement Deployment Strategy
 
-**Deployment Approach:** **Hybrid Multi-Platform Strategy**  
-- **Marketing Pages:** Continue AWS Amplify static export (no changes)
-- **Guard Management:** Migrate to Vercel for full Next.js capabilities
+**Deployment Approach:** **Unified Vercel Strategy**  
+- **Marketing Pages:** Static export optimized for Vercel deployment
+- **Guard Management:** Full Next.js capabilities with serverless functions on Vercel
 - **Database:** Single Supabase project with expanded schema
 - **Edge Functions:** Supabase Edge Functions for serverless API logic
 
 **Infrastructure Changes:**
-- **New Deployment Target:** Vercel for authenticated guard management routes
-- **DNS Configuration:** Route-based traffic splitting between platforms
-- **Environment Variables:** Unified across both deployment platforms  
-- **CI/CD Pipeline:** GitHub Actions for coordinated multi-platform deployment
+- **Single Deployment Target:** Vercel for entire application (marketing + guard management)
+- **DNS Configuration:** Single domain with route-based functionality
+- **Environment Variables:** Unified Vercel environment configuration
+- **CI/CD Pipeline:** GitHub Actions integrated with Vercel deployment
 
 ### Pipeline Integration
 
@@ -550,22 +550,7 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-  # Marketing site to AWS Amplify (existing)
-  deploy-marketing:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configure Amplify
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Deploy to Amplify
-        run: |
-          # Amplify auto-deploys on git push
-          echo "Marketing deployment triggered"
-
-  # Guard management to Vercel (new)
+  # Full application to Vercel
   deploy-vercel:
     needs: [migrate-database, deploy-edge-functions]
     runs-on: ubuntu-latest

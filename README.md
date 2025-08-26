@@ -95,8 +95,8 @@ Before you begin, ensure you have the following installed:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/johnrue/summit-advisory-amplify.git
-    cd summit-advisory-amplify
+    git clone https://github.com/johnrue/summit-advisory-vercel.git
+    cd summit-advisory-vercel
     ```
 2.  Install dependencies using pnpm:
     ```bash

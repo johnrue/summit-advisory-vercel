@@ -52,7 +52,7 @@ export default function QRRedirectPage() {
       // Use window.location for more reliable redirect
       window.location.href = '/'
     } catch (err) {
-      console.error('Redirect failed:', err)
+      // Redirect failed - show error to user
       setError(true)
     }
   }

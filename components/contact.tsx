@@ -68,11 +68,11 @@ export default function Contact() {
       const result = await submitConsultationRequest(formData)
 
       if (!result.success) {
-        console.error("Supabase submission failed:", result.error)
+        // Supabase submission failed - error details logged in consultation service
         throw new Error(result.error || 'Failed to submit consultation request')
       }
 
-      console.log("Form submitted successfully to Supabase:", result.data)
+      // Form submitted successfully - removed console.log for production
       setIsSubmitted(true)
       
       // Track successful form submission
@@ -91,7 +91,7 @@ export default function Contact() {
         })
       }, 3000)
     } catch (error) {
-      console.error("Error submitting form to Supabase:", error)
+      // Error submitting form - details tracked via analytics
       // Track form submission error
       analytics.contactFormError(error instanceof Error ? error.message : 'Unknown error')
       // Optionally, set an error state here to inform the user

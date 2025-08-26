@@ -2,17 +2,17 @@
 
 ## Enhancement Deployment Strategy
 
-**Deployment Approach:** **Hybrid Multi-Platform Strategy**  
-- **Marketing Pages:** Continue AWS Amplify static export (no changes)
-- **Guard Management:** Migrate to Vercel for full Next.js capabilities
+**Deployment Approach:** **Unified Vercel Strategy**  
+- **Marketing Pages:** Static export optimized for Vercel deployment
+- **Guard Management:** Full Next.js capabilities with serverless functions on Vercel
 - **Database:** Single Supabase project with expanded schema
 - **Edge Functions:** Supabase Edge Functions for serverless API logic
 
 **Infrastructure Changes:**
-- **New Deployment Target:** Vercel for authenticated guard management routes
-- **DNS Configuration:** Route-based traffic splitting between platforms
-- **Environment Variables:** Unified across both deployment platforms  
-- **CI/CD Pipeline:** GitHub Actions for coordinated multi-platform deployment
+- **Single Deployment Target:** Vercel for entire application (marketing + guard management)
+- **DNS Configuration:** Single domain with route-based functionality
+- **Environment Variables:** Unified Vercel environment configuration
+- **CI/CD Pipeline:** GitHub Actions integrated with Vercel deployment
 
 ## Pipeline Integration
 
@@ -51,22 +51,7 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-  # Marketing site to AWS Amplify (existing)
-  deploy-marketing:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configure Amplify
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Deploy to Amplify
-        run: |
-          # Amplify auto-deploys on git push
-          echo "Marketing deployment triggered"
-
-  # Guard management to Vercel (new)
+  # Full application to Vercel
   deploy-vercel:
     needs: [migrate-database, deploy-edge-functions]
     runs-on: ubuntu-latest
@@ -77,6 +62,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+
 ```
 
 ## Rollback Strategy

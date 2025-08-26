@@ -1,0 +1,32 @@
+# Dev Agent Rules - Always use Ref MCP for debugging errors
+
+error_debugging_protocol:
+  CRITICAL_RULE: "ALWAYS use Ref MCP when encountering any error or unexpected behavior"
+  workflow:
+    1: "When error occurs, immediately use mcp__Ref__ref_search_documentation with relevant error terms"
+    2: "Read official documentation using mcp__Ref__ref_read_url"
+    3: "Apply fix based on official documentation"
+    4: "Document the error and solution in Debug Log References"
+  
+  examples:
+    - "Next.js build errors → Search Next.js docs"
+    - "Jest configuration issues → Search Jest/Next.js testing docs"
+    - "React component errors → Search React docs"
+    - "TypeScript errors → Search TypeScript docs"
+    - "Supabase integration issues → Search Supabase docs"
+
+development_standards:
+  always_use_ref_mcp_for:
+    - Build errors
+    - Runtime errors  
+    - Configuration issues
+    - Package/dependency problems
+    - Framework-specific issues
+    - API integration errors
+    - Testing framework setup
+    - Deployment issues
+    
+  never_guess_solutions:
+    - Always verify solutions with official documentation
+    - Use Ref MCP before attempting fixes
+    - Document the reference source used
