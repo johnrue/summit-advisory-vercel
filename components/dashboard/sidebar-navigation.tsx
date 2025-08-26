@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useUserRole } from '@/hooks/use-user-role'
 import { usePermissionGroups } from '@/hooks/use-permissions'
+import { useAdminRoleView } from '@/hooks/use-admin-role-view'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -48,6 +49,11 @@ const navigationItems: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
+    icon: Home
+  },
+  {
+    name: 'Overview',
+    href: '/dashboard/overview',
     icon: Home
   },
   {
@@ -103,6 +109,7 @@ export function SidebarNavigation({ collapsed = false, onToggleCollapse }: Sideb
   const pathname = usePathname()
   const { user, signOut } = useAuth()
   const { role } = useUserRole()
+  const { canSwitchRoleViews, currentViewRole } = useAdminRoleView()
   const {
     canManageUsers,
     canManageGuards,
@@ -134,6 +141,47 @@ export function SidebarNavigation({ collapsed = false, onToggleCollapse }: Sideb
       default:
         return 'secondary'
     }
+  }
+
+  // Use current view role for context switching when admin is switching roles
+  const displayRole = canSwitchRoleViews ? currentViewRole : role
+
+  // Generate role-specific overview link based on current view role
+  const getOverviewLink = () => {
+    switch (displayRole) {
+      case 'admin':
+        return '/dashboard/admin/overview'
+      case 'manager':
+        return '/dashboard/manager/overview'
+      case 'guard':
+        return '/dashboard/guard/overview'
+      default:
+        return '/dashboard'
+    }
+  }
+
+  // Determine which navigation items should be visible based on current view role
+  const getVisibleNavigationItems = () => {
+    // When admin is viewing other roles, filter items based on that role's permissions
+    if (canSwitchRoleViews && displayRole !== role) {
+      // Admin is viewing as manager or guard - filter items accordingly
+      return navigationItems.filter(item => {
+        if (displayRole === 'manager') {
+          // Manager view: show items managers can access
+          return item.roles?.includes('manager') || 
+                 ['guards', 'shifts', 'leads'].some(area => item.href.includes(area))
+        } else if (displayRole === 'guard') {
+          // Guard view: show only items guards can access
+          return item.roles?.includes('guard') || 
+                 item.href.includes('schedule') || 
+                 item.name === 'Dashboard'
+        }
+        return true
+      })
+    }
+    
+    // Normal role-based filtering (existing logic)
+    return navigationItems
   }
 
   return (
@@ -173,19 +221,19 @@ export function SidebarNavigation({ collapsed = false, onToggleCollapse }: Sideb
               {user?.email || 'User'}
             </div>
             <Badge 
-              variant={getRoleBadgeVariant(role || 'guard')} 
+              variant={getRoleBadgeVariant(displayRole || 'guard')} 
               className="text-xs"
             >
-              {role?.toUpperCase() || 'LOADING...'}
+              {displayRole?.toUpperCase() || 'LOADING...'}
             </Badge>
           </div>
         ) : (
           <div className="flex justify-center">
             <Badge 
-              variant={getRoleBadgeVariant(role || 'guard')} 
+              variant={getRoleBadgeVariant(displayRole || 'guard')} 
               className="h-8 w-8 rounded-full p-0 flex items-center justify-center text-xs"
             >
-              {role?.charAt(0).toUpperCase() || 'U'}
+              {displayRole?.charAt(0).toUpperCase() || 'U'}
             </Badge>
           </div>
         )}
@@ -195,12 +243,46 @@ export function SidebarNavigation({ collapsed = false, onToggleCollapse }: Sideb
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-4">
-        {navigationItems.map((item) => {
+        {/* Role-specific Overview Link */}
+        <Link
+          href={getOverviewLink()}
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            "hover:bg-accent hover:text-accent-foreground",
+            pathname === getOverviewLink() ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+            collapsed && "justify-center px-2"
+          )}
+        >
+          <Home className="h-4 w-4 flex-shrink-0" />
+          {!collapsed && <span className="flex-1">Overview</span>}
+        </Link>
+
+        {/* Regular Navigation Items */}
+        {getVisibleNavigationItems().filter(item => item.name !== 'Dashboard' && item.name !== 'Overview').map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
           
           // Check if user has required permissions for this item
+          // When admin is viewing as another role, check permissions for that role
           const hasAccess = !item.permissions || item.permissions.some(permission => {
+            // If admin is switching role views, check permissions based on the view role
+            if (canSwitchRoleViews && displayRole !== role) {
+              switch (displayRole) {
+                case 'manager':
+                  // Manager permissions
+                  return ['guards.view_all', 'shifts.view_all', 'leads.view_all', 'compliance.view_all'].includes(permission)
+                case 'guard':
+                  // Guard permissions (very limited)
+                  return false // Guards generally don't have access to management features
+                case 'admin':
+                  // Admin has all permissions
+                  return true
+                default:
+                  return false
+              }
+            }
+
+            // Normal permission checking
             switch (permission) {
               case 'users.view_all':
                 return canManageUsers
