@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { UserManagementGate } from '@/components/auth/permission-gate'
+// import { ManagerPlusGate } from '@/components/auth/permission-gate'
 import { useAuth } from '@/lib/auth/auth-context'
 import {
   Calendar,
@@ -130,8 +130,7 @@ export default function ManagerOverviewPage() {
   }
 
   return (
-    <UserManagementGate>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
@@ -367,6 +366,5 @@ export default function ManagerOverviewPage() {
           </CardContent>
         </Card>
       </div>
-    </UserManagementGate>
   )
 }

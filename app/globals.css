@@ -4,74 +4,81 @@
 
 @layer base {
   :root {
-    /* Ash grey - Neutral bg */
-    --background: 40 6% 86%;
-    --foreground: 0 0% 10%;
+    /* Enhanced Light Theme - Clean, professional appearance */
+    --background: 0 0% 100%;           /* Pure white background */
+    --foreground: 0 0% 10%;            /* Strong black text for contrast */
+    
+    /* Enhanced cards with better definition */
+    --card: 0 0% 98%;                  /* Slightly off-white cards for subtle definition */
+    --card-foreground: 0 0% 10%;       /* Dark text on light cards */
 
-    /* Ash grey - Cards/containers */
-    --card: 40 6% 86%;
-    --card-foreground: 0 0% 10%;
-
-    --popover: 40 6% 86%;
+    --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Warm metallic gold - Primary accent */
-    --primary: 43 22% 51%;
-    --primary-foreground: 0 0% 10%;
+    /* Brand colors maintained - Warm metallic gold & Burnt bronze */
+    --primary: 43 22% 51%;             /* Warm metallic gold (brand color) */
+    --primary-foreground: 0 0% 98%;    /* Light text on gold */
+    
+    --accent: 30 21% 40%;              /* Burnt bronze (brand color) */
+    --accent-foreground: 0 0% 98%;     /* Light text on bronze */
 
-    /* Burnt bronze - CTA/highlight */
-    --secondary: 30 21% 40%;
-    --secondary-foreground: 0 0% 98%;
+    /* Improved secondary colors */
+    --secondary: 40 6% 95%;            /* Light neutral secondary */
+    --secondary-foreground: 0 0% 10%;  /* Dark text on light secondary */
 
-    --muted: 40 6% 80%;
-    --muted-foreground: 0 0% 35%;
+    /* Improved borders and interactive elements */
+    --border: 43 22% 85%;              /* Subtle gold-tinted borders */
+    --input: 43 22% 85%;               /* Subtle input borders */
+    --ring: 43 22% 51%;                /* Focus ring matches primary */
+    
+    --muted: 40 6% 95%;                /* Light muted background */
+    --muted-foreground: 0 0% 40%;      /* Readable muted text */
 
-    /* Burnt bronze - CTA/highlight */
-    --accent: 30 21% 40%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 84% 60%;
+    /* Enhanced status colors for better visibility */
+    --success: 142 76% 36%;            /* Professional green */
+    --warning: 38 92% 50%;             /* Clear orange */
+    --destructive: 0 72% 51%;          /* Alert red */
     --destructive-foreground: 0 0% 98%;
-
-    --border: 43 22% 51%;
-    --input: 43 22% 51%;
-    --ring: 43 22% 51%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    /* Charcoal black - Main background */
-    --background: 0 0% 10%;
-    --foreground: 40 6% 86%;
-
-    --card: 0 0% 13%;
-    --card-foreground: 40 6% 86%;
+    /* Dark theme - maintaining brand's charcoal/gold aesthetic */
+    --background: 0 0% 10%;            /* Charcoal black (brand color) */
+    --foreground: 40 6% 86%;           /* Ash grey (brand color) */
+    
+    /* Enhanced dark cards with better definition */
+    --card: 0 0% 15%;                  /* Slightly lighter than background for definition */
+    --card-foreground: 40 6% 86%;      /* Ash grey text */
 
     --popover: 0 0% 13%;
     --popover-foreground: 40 6% 86%;
 
-    /* Warm metallic gold - Primary accent */
-    --primary: 43 22% 51%;
-    --primary-foreground: 0 0% 10%;
+    /* Brand colors maintained */
+    --primary: 43 22% 51%;             /* Warm metallic gold (brand color) */
+    --primary-foreground: 0 0% 10%;    /* Dark text on gold */
+    
+    --accent: 30 21% 40%;              /* Burnt bronze (brand color) */
+    --accent-foreground: 0 0% 98%;     /* Light text on bronze */
 
-    /* Burnt bronze - CTA/highlight */
-    --secondary: 30 21% 40%;
-    --secondary-foreground: 0 0% 98%;
+    /* Improved secondary colors for dark mode */
+    --secondary: 0 0% 20%;             /* Darker neutral secondary */
+    --secondary-foreground: 40 6% 86%; /* Light text on dark secondary */
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    /* Improved dark mode elements */
+    --border: 43 22% 25%;              /* Subtle gold-tinted borders */
+    --input: 43 22% 25%;               /* Subtle input borders */
+    --ring: 43 22% 51%;                /* Focus ring matches primary */
+    
+    --muted: 0 0% 20%;                 /* Darker muted background */
+    --muted-foreground: 40 6% 65%;     /* Readable muted text */
 
-    /* Burnt bronze - CTA/highlight */
-    --accent: 30 21% 40%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 84% 60%;
+    /* Enhanced status colors for dark mode */
+    --success: 142 76% 36%;            /* Professional green */
+    --warning: 38 92% 50%;             /* Clear orange */
+    --destructive: 0 72% 51%;          /* Alert red */
     --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 43 22% 51%;
   }
 }
 
@@ -81,6 +88,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Enhanced component styling for better visual hierarchy */
+  
+  /* Status indicators with improved colors */
+  .status-new { @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200; }
+  .status-contacted { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200; }
+  .status-application-received { @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200; }
+  .status-under-review { @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200; }
+  .status-approved { @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200; }
+  .status-rejected { @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200; }
+  
+  /* Enhanced card hover effects */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:border-primary/50;
+  }
+  
+  /* Improved button focus states */
+  .btn-focus {
+    @apply focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+  
+  /* Better form field styling */
+  .form-field {
+    @apply focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:border-primary;
   }
 }
 

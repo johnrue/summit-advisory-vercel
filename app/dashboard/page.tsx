@@ -4,17 +4,18 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUserRole } from '@/hooks/use-user-role'
 import { useAuth } from '@/lib/auth/auth-context'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter()
   const { user } = useAuth()
   const { role, loading } = useUserRole()
 
   useEffect(() => {
     // Redirect users to their role-specific overview pages
-    if (!loading && role) {
+    if (!loading && role && user) {
       switch (role) {
         case 'admin':
           router.replace('/dashboard/admin/overview')
@@ -25,15 +26,12 @@ export default function DashboardPage() {
         case 'guard':
           router.replace('/dashboard/guard/overview')
           break
-        case 'client':
-          // Client role falls back to generic dashboard for now
-          break
         default:
-          // Unknown role, stay on generic dashboard
+          // Stay on generic dashboard for unknown roles
           break
       }
     }
-  }, [role, loading, router])
+  }, [role, loading, router, user])
 
   // Show loading state while determining user role
   if (loading) {
@@ -99,5 +97,13 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute allowedRoles={['admin', 'manager', 'guard']}>
+      <DashboardContent />
+    </ProtectedRoute>
   )
 }

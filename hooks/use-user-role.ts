@@ -13,12 +13,18 @@ interface UseUserRoleReturn {
 }
 
 export function useUserRole(): UseUserRoleReturn {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [role, setRole] = useState<UserRole | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // Wait for auth to finish loading
+    if (authLoading) {
+      setLoading(true)
+      return
+    }
+
     if (!user) {
       setRole(null)
       setLoading(false)
@@ -33,12 +39,20 @@ export function useUserRole(): UseUserRoleReturn {
         // First check user metadata for role (fallback for new users)
         const metadataRole = user.user_metadata?.role as UserRole
         
-        // Try to get role from database
+        // Try to get role from database with proper join
         const supabase = createClient()
+        
         const { data, error } = await supabase
           .from('user_roles')
-          .select('role')
+          .select(`
+            role_id,
+            status,
+            expires_at,
+            roles!inner(name)
+          `)
           .eq('user_id', user.id)
+          .eq('status', 'active')
+          .or('expires_at.is.null,expires_at.gt.now()')
           .single()
 
         if (error && error.code !== 'PGRST116') {
@@ -47,7 +61,7 @@ export function useUserRole(): UseUserRoleReturn {
         }
 
         // Use database role if available, otherwise fallback to metadata, then default to 'guard'
-        const finalRole = data?.role || metadataRole || 'guard'
+        const finalRole = (data?.roles as any)?.name || metadataRole || 'guard'
         setRole(finalRole as UserRole)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user role'
@@ -61,7 +75,7 @@ export function useUserRole(): UseUserRoleReturn {
     }
 
     fetchUserRole()
-  }, [user])
+  }, [user, authLoading])
 
   return { role, loading, error }
 }

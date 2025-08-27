@@ -2,6 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '@/lib/auth/auth-context'
 import { act } from '@testing-library/react'
 
+// Mock Supabase client - must be declared before the mock
+const mockSignIn = jest.fn()
+const mockSignOut = jest.fn()
+const mockGetSession = jest.fn()
+const mockOnAuthStateChange = jest.fn()
+
 // Test component that uses the auth context
 function TestComponent() {
   const { user, loading, signIn, signOut } = useAuth()
@@ -20,12 +26,6 @@ function TestComponent() {
     </div>
   )
 }
-
-// Mock Supabase client
-const mockSignIn = jest.fn()
-const mockSignOut = jest.fn()
-const mockGetSession = jest.fn()
-const mockOnAuthStateChange = jest.fn()
 
 jest.mock('@/lib/auth/supabase', () => ({
   createClient: () => ({
