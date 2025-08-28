@@ -1,0 +1,594 @@
+// Story 3.3: Guard Availability Management Service
+// Core service for managing guard availability, patterns, and time-off requests
+
+import { createClient } from '@/lib/supabase';
+import { 
+  GuardAvailability, 
+  AvailabilityPattern,
+  TimeOffRequest,
+  ServiceResult,
+  AvailabilityInsights,
+  AvailabilityConflict,
+  EmergencyUnavailabilityData,
+  WeeklySchedule,
+  DayOfWeek,
+  TimeSlot,
+  AvailabilityHistory
+} from '@/lib/types/availability-types';
+
+export class GuardAvailabilityService {
+  private static supabase = createClient();
+
+  // Core availability management
+  static async getGuardAvailability(
+    guardId: string, 
+    startDate?: Date, 
+    endDate?: Date
+  ): Promise<ServiceResult<GuardAvailability[]>> {
+    try {
+      let query = this.supabase
+        .from('guard_availability')
+        .select('*')
+        .eq('guard_id', guardId)
+        .eq('availability_status', 'active');
+
+      if (startDate) {
+        query = query.gte('availability_window', `[${startDate.toISOString()},)`);
+      }
+      
+      if (endDate) {
+        query = query.lt('availability_window', `[,${endDate.toISOString()})`);
+      }
+
+      const { data, error } = await query.order('availability_window');
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_AVAILABILITY_ERROR',
+            message: 'Failed to fetch guard availability',
+            details: { error, guardId, startDate, endDate }
+          }
+        };
+      }
+
+      // Transform database records to interface format
+      const availability = data?.map(record => ({
+        id: record.id,
+        guardId: record.guard_id,
+        availabilityWindow: {
+          start: new Date(record.availability_window.split(',')[0].replace('[', '')),
+          end: new Date(record.availability_window.split(',')[1].replace(')', ''))
+        },
+        availabilityType: record.availability_type,
+        availabilityStatus: record.availability_status,
+        notes: record.notes,
+        isRecurring: record.is_recurring || false,
+        patternId: record.pattern_id,
+        overrideReason: record.override_reason,
+        createdAt: new Date(record.created_at),
+        updatedAt: new Date(record.updated_at)
+      })) || [];
+
+      return {
+        success: true,
+        data: availability
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error fetching availability',
+          details: { error, guardId }
+        }
+      };
+    }
+  }
+
+  static async createAvailability(availability: Partial<GuardAvailability>): Promise<ServiceResult<GuardAvailability>> {
+    try {
+      if (!availability.guardId || !availability.availabilityWindow) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_AVAILABILITY_DATA',
+            message: 'Guard ID and availability window are required',
+            details: { availability }
+          }
+        };
+      }
+
+      // Check for conflicts before creating
+      const conflictCheck = await this.checkAvailabilityConflicts(
+        availability.guardId,
+        availability.availabilityWindow.start,
+        availability.availabilityWindow.end
+      );
+
+      if (!conflictCheck.success) {
+        return conflictCheck as ServiceResult<GuardAvailability>;
+      }
+
+      if (conflictCheck.data && conflictCheck.data.length > 0) {
+        return {
+          success: false,
+          error: {
+            code: 'AVAILABILITY_CONFLICTS',
+            message: 'Availability conflicts detected',
+            details: { conflicts: conflictCheck.data }
+          }
+        };
+      }
+
+      const availabilityRecord = {
+        guard_id: availability.guardId,
+        availability_window: `[${availability.availabilityWindow.start.toISOString()},${availability.availabilityWindow.end.toISOString()})`,
+        availability_type: availability.availabilityType || 'available',
+        availability_status: availability.availabilityStatus || 'active',
+        notes: availability.notes,
+        is_recurring: availability.isRecurring || false,
+        pattern_id: availability.patternId,
+        override_reason: availability.overrideReason
+      };
+
+      const { data, error } = await this.supabase
+        .from('guard_availability')
+        .insert(availabilityRecord)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'CREATE_AVAILABILITY_ERROR',
+            message: 'Failed to create availability',
+            details: { error, availabilityRecord }
+          }
+        };
+      }
+
+      // Log the change
+      await this.logAvailabilityChange(
+        availability.guardId,
+        'pattern_created',
+        null,
+        availabilityRecord,
+        'New availability window created'
+      );
+
+      return {
+        success: true,
+        data: {
+          id: data.id,
+          guardId: data.guard_id,
+          availabilityWindow: {
+            start: new Date(data.availability_window.split(',')[0].replace('[', '')),
+            end: new Date(data.availability_window.split(',')[1].replace(')', ''))
+          },
+          availabilityType: data.availability_type,
+          availabilityStatus: data.availability_status,
+          notes: data.notes,
+          isRecurring: data.is_recurring,
+          patternId: data.pattern_id,
+          overrideReason: data.override_reason,
+          createdAt: new Date(data.created_at),
+          updatedAt: new Date(data.updated_at)
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error creating availability',
+          details: { error, availability }
+        }
+      };
+    }
+  }
+
+  static async updateAvailability(
+    availabilityId: string, 
+    updates: Partial<GuardAvailability>
+  ): Promise<ServiceResult<GuardAvailability>> {
+    try {
+      // Get current record for history logging
+      const { data: currentRecord, error: fetchError } = await this.supabase
+        .from('guard_availability')
+        .select('*')
+        .eq('id', availabilityId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_CURRENT_AVAILABILITY_ERROR',
+            message: 'Failed to fetch current availability for update',
+            details: { fetchError, availabilityId }
+          }
+        };
+      }
+
+      const updateRecord: any = {};
+      
+      if (updates.availabilityWindow) {
+        updateRecord.availability_window = `[${updates.availabilityWindow.start.toISOString()},${updates.availabilityWindow.end.toISOString()})`;
+      }
+      if (updates.availabilityType) updateRecord.availability_type = updates.availabilityType;
+      if (updates.availabilityStatus) updateRecord.availability_status = updates.availabilityStatus;
+      if (updates.notes !== undefined) updateRecord.notes = updates.notes;
+      if (updates.overrideReason !== undefined) updateRecord.override_reason = updates.overrideReason;
+
+      const { data, error } = await this.supabase
+        .from('guard_availability')
+        .update(updateRecord)
+        .eq('id', availabilityId)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'UPDATE_AVAILABILITY_ERROR',
+            message: 'Failed to update availability',
+            details: { error, availabilityId, updates }
+          }
+        };
+      }
+
+      // Log the change
+      await this.logAvailabilityChange(
+        data.guard_id,
+        'pattern_modified',
+        currentRecord,
+        data,
+        'Availability window updated'
+      );
+
+      return {
+        success: true,
+        data: {
+          id: data.id,
+          guardId: data.guard_id,
+          availabilityWindow: {
+            start: new Date(data.availability_window.split(',')[0].replace('[', '')),
+            end: new Date(data.availability_window.split(',')[1].replace(')', ''))
+          },
+          availabilityType: data.availability_type,
+          availabilityStatus: data.availability_status,
+          notes: data.notes,
+          isRecurring: data.is_recurring,
+          patternId: data.pattern_id,
+          overrideReason: data.override_reason,
+          createdAt: new Date(data.created_at),
+          updatedAt: new Date(data.updated_at)
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error updating availability',
+          details: { error, availabilityId, updates }
+        }
+      };
+    }
+  }
+
+  static async deleteAvailability(availabilityId: string): Promise<ServiceResult<boolean>> {
+    try {
+      // Get current record for history logging
+      const { data: currentRecord, error: fetchError } = await this.supabase
+        .from('guard_availability')
+        .select('*')
+        .eq('id', availabilityId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_AVAILABILITY_ERROR',
+            message: 'Failed to fetch availability for deletion',
+            details: { fetchError, availabilityId }
+          }
+        };
+      }
+
+      const { error } = await this.supabase
+        .from('guard_availability')
+        .delete()
+        .eq('id', availabilityId);
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'DELETE_AVAILABILITY_ERROR',
+            message: 'Failed to delete availability',
+            details: { error, availabilityId }
+          }
+        };
+      }
+
+      // Log the change
+      await this.logAvailabilityChange(
+        currentRecord.guard_id,
+        'pattern_deleted',
+        currentRecord,
+        null,
+        'Availability window deleted'
+      );
+
+      return {
+        success: true,
+        data: true
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error deleting availability',
+          details: { error, availabilityId }
+        }
+      };
+    }
+  }
+
+  // Emergency unavailability reporting
+  static async reportEmergencyUnavailability(
+    guardId: string,
+    emergencyData: EmergencyUnavailabilityData
+  ): Promise<ServiceResult<{ availabilityId: string; notificationsSent: string[] }>> {
+    try {
+      const endTime = emergencyData.endTime || new Date(Date.now() + 8 * 60 * 60 * 1000); // Default 8 hours
+
+      // Create emergency unavailability record
+      const availabilityResult = await this.createAvailability({
+        guardId,
+        availabilityWindow: {
+          start: emergencyData.startTime,
+          end: endTime
+        },
+        availabilityType: 'emergency_only',
+        availabilityStatus: 'active',
+        notes: `EMERGENCY: ${emergencyData.reason}`,
+        overrideReason: emergencyData.reason
+      });
+
+      if (!availabilityResult.success) {
+        return availabilityResult as ServiceResult<{ availabilityId: string; notificationsSent: string[] }>;
+      }
+
+      // Check for affected shifts if immediate
+      let affectedShifts: string[] = [];
+      if (emergencyData.isImmediate) {
+        const { data: shifts } = await this.supabase
+          .from('shift_assignments')
+          .select('shift_id')
+          .eq('guard_id', guardId)
+          .eq('assignment_status', 'confirmed')
+          .gte('shift_start_time', emergencyData.startTime.toISOString())
+          .lte('shift_start_time', endTime.toISOString());
+
+        affectedShifts = shifts?.map(s => s.shift_id) || [];
+      }
+
+      // Send notifications to managers (placeholder - would integrate with notification service)
+      const notificationsSent: string[] = [];
+      
+      // Log emergency unavailability
+      await this.logAvailabilityChange(
+        guardId,
+        'emergency_unavailable',
+        null,
+        {
+          emergency_data: emergencyData,
+          affected_shifts: affectedShifts
+        },
+        `Emergency unavailability reported: ${emergencyData.reason}`
+      );
+
+      return {
+        success: true,
+        data: {
+          availabilityId: availabilityResult.data!.id,
+          notificationsSent
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'EMERGENCY_UNAVAILABILITY_ERROR',
+          message: 'Failed to report emergency unavailability',
+          details: { error, guardId, emergencyData }
+        }
+      };
+    }
+  }
+
+  // Conflict detection
+  static async checkAvailabilityConflicts(
+    guardId: string,
+    startTime: Date,
+    endTime: Date
+  ): Promise<ServiceResult<AvailabilityConflict[]>> {
+    try {
+      const conflicts: AvailabilityConflict[] = [];
+
+      // Check for overlapping availability windows
+      const { data: existingAvailability, error: availabilityError } = await this.supabase
+        .from('guard_availability')
+        .select('*')
+        .eq('guard_id', guardId)
+        .eq('availability_status', 'active')
+        .overlaps('availability_window', `[${startTime.toISOString()},${endTime.toISOString()})`);
+
+      if (availabilityError) {
+        return {
+          success: false,
+          error: {
+            code: 'AVAILABILITY_CONFLICT_CHECK_ERROR',
+            message: 'Failed to check availability conflicts',
+            details: { availabilityError, guardId }
+          }
+        };
+      }
+
+      if (existingAvailability && existingAvailability.length > 0) {
+        conflicts.push({
+          type: 'shift_overlap',
+          severity: 'medium',
+          message: `Overlaps with ${existingAvailability.length} existing availability window(s)`,
+          conflictingItems: existingAvailability.map(a => a.id),
+          resolutionOptions: [
+            {
+              type: 'modify_availability',
+              description: 'Modify the overlapping availability windows',
+              impact: 'May affect existing shift assignments',
+              recommendationScore: 0.7
+            }
+          ],
+          canAutoResolve: false
+        });
+      }
+
+      // Check for approved time-off requests
+      const { data: timeOffConflicts, error: timeOffError } = await this.supabase
+        .from('time_off_requests')
+        .select('*')
+        .eq('guard_id', guardId)
+        .eq('status', 'approved')
+        .overlaps('date_range', `[${startTime.toISOString()},${endTime.toISOString()})`);
+
+      if (timeOffError) {
+        return {
+          success: false,
+          error: {
+            code: 'TIME_OFF_CONFLICT_CHECK_ERROR',
+            message: 'Failed to check time-off conflicts',
+            details: { timeOffError, guardId }
+          }
+        };
+      }
+
+      if (timeOffConflicts && timeOffConflicts.length > 0) {
+        conflicts.push({
+          type: 'time_off_conflict',
+          severity: 'high',
+          message: `Conflicts with ${timeOffConflicts.length} approved time-off request(s)`,
+          conflictingItems: timeOffConflicts.map(t => t.id),
+          resolutionOptions: [
+            {
+              type: 'cancel_time_off',
+              description: 'Cancel conflicting time-off requests',
+              impact: 'May require guard approval and replanning',
+              recommendationScore: 0.3
+            }
+          ],
+          canAutoResolve: false
+        });
+      }
+
+      return {
+        success: true,
+        data: conflicts
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error checking availability conflicts',
+          details: { error, guardId, startTime, endTime }
+        }
+      };
+    }
+  }
+
+  // History logging
+  private static async logAvailabilityChange(
+    guardId: string,
+    changeType: string,
+    previousValue: any,
+    newValue: any,
+    reason?: string
+  ): Promise<void> {
+    try {
+      await this.supabase
+        .from('availability_history')
+        .insert({
+          guard_id: guardId,
+          change_type: changeType,
+          previous_value: previousValue,
+          new_value: newValue,
+          change_reason: reason
+        });
+    } catch (error) {
+      console.error('Failed to log availability change:', error);
+    }
+  }
+
+  // Get availability history
+  static async getAvailabilityHistory(
+    guardId: string,
+    limit = 50
+  ): Promise<ServiceResult<AvailabilityHistory[]>> {
+    try {
+      const { data, error } = await this.supabase
+        .from('availability_history')
+        .select('*')
+        .eq('guard_id', guardId)
+        .order('changed_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_HISTORY_ERROR',
+            message: 'Failed to fetch availability history',
+            details: { error, guardId }
+          }
+        };
+      }
+
+      const history = data?.map(record => ({
+        id: record.id,
+        guardId: record.guard_id,
+        changeType: record.change_type,
+        previousValue: record.previous_value,
+        newValue: record.new_value,
+        changeReason: record.change_reason,
+        affectedDateRange: record.affected_date_range ? {
+          start: new Date(record.affected_date_range.split(',')[0].replace('[', '')),
+          end: new Date(record.affected_date_range.split(',')[1].replace(')', ''))
+        } : undefined,
+        assignmentImpact: record.assignment_impact || [],
+        changedAt: new Date(record.changed_at)
+      })) || [];
+
+      return {
+        success: true,
+        data: history
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AVAILABILITY_SERVICE_ERROR',
+          message: 'Unexpected error fetching availability history',
+          details: { error, guardId }
+        }
+      };
+    }
+  }
+}
