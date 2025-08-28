@@ -142,13 +142,61 @@ export class NotificationDeliveryService {
   }
 
   /**
-   * Deliver email notification (placeholder for future implementation)
+   * Deliver email notification
    */
   private async deliverEmail(notification: Notification): Promise<ServiceResult<boolean>> {
-    // TODO: Implement email delivery service integration
-    // This will be implemented in Task 3: Email Notification System
-    console.log('Email delivery not yet implemented for notification:', notification.id)
-    return { success: true, data: true } // Temporary success for development
+    try {
+      // Get recipient email - this would come from user profile
+      // For now, using a placeholder
+      const recipientEmail = await this.getRecipientEmail(notification.recipient_id)
+      if (!recipientEmail) {
+        return { 
+          success: false, 
+          error: 'Recipient email not found', 
+          code: 'EMAIL_NOT_FOUND' 
+        }
+      }
+
+      // Import EmailNotificationService dynamically to avoid circular imports
+      const { EmailNotificationService } = await import('./email-notification-service')
+      const emailService = EmailNotificationService.getInstance()
+
+      const result = await emailService.sendEmailNotification(
+        notification,
+        recipientEmail
+      )
+
+      return { success: result.success, data: result.success }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Email delivery error',
+        code: 'EMAIL_DELIVERY_ERROR' 
+      }
+    }
+  }
+
+  /**
+   * Get recipient email address
+   * TODO: Implement proper user profile lookup
+   */
+  private async getRecipientEmail(userId: string): Promise<string | null> {
+    try {
+      // For development, return a placeholder
+      // In production, this would query the user profile
+      return 'user@example.com'
+      
+      // Production implementation would look like:
+      // const { data, error } = await this.supabase
+      //   .from('user_profiles')
+      //   .select('email')
+      //   .eq('user_id', userId)
+      //   .single()
+      // return data?.email || null
+    } catch (error) {
+      console.error('Error fetching recipient email:', error)
+      return null
+    }
   }
 
   /**
