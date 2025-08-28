@@ -114,6 +114,20 @@
   .form-field {
     @apply focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:border-primary;
   }
+  
+  /* Notification animations */
+  @keyframes shrink-width {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+  
+  .animate-shrink-width {
+    animation: shrink-width linear;
+  }
 }
 
 .hero-pattern {
