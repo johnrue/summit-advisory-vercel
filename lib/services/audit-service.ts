@@ -135,6 +135,61 @@ export class AuditService {
     })
   }
 
+  async logComplianceReportGeneration(
+    reportId: string,
+    action: 'generated' | 'downloaded' | 'emailed' | 'scheduled' | 'failed',
+    reportParameters?: any,
+    context?: string,
+    userId?: string
+  ): Promise<ServiceResult<AuditLog>> {
+    const details = createAuditContext(null, reportParameters, context)
+    
+    return this.logAction({
+      action,
+      entity_type: 'compliance_report',
+      entity_id: reportId,
+      details,
+      user_id: userId
+    })
+  }
+
+  async logComplianceReportAccess(
+    reportId: string,
+    action: 'viewed' | 'downloaded' | 'shared',
+    accessDetails?: any,
+    context?: string,
+    userId?: string
+  ): Promise<ServiceResult<AuditLog>> {
+    const details = createAuditContext(null, accessDetails, context)
+    
+    return this.logAction({
+      action,
+      entity_type: 'compliance_report_access',
+      entity_id: reportId,
+      details,
+      user_id: userId
+    })
+  }
+
+  async logReportScheduleChange(
+    scheduleId: string,
+    action: 'created' | 'updated' | 'activated' | 'deactivated' | 'deleted',
+    previousValues?: any,
+    newValues?: any,
+    context?: string,
+    userId?: string
+  ): Promise<ServiceResult<AuditLog>> {
+    const details = createAuditContext(previousValues, newValues, context)
+    
+    return this.logAction({
+      action,
+      entity_type: 'report_schedule',
+      entity_id: scheduleId,
+      details,
+      user_id: userId
+    })
+  }
+
   async getAuditLogs(
     filter: AuditLogFilter = {},
     limit: number = 50,
