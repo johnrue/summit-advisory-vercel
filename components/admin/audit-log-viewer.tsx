@@ -160,13 +160,21 @@ export function AuditLogViewer({ userRole, userId }: AuditLogViewerProps) {
     return parts.join(' | ') || JSON.stringify(details, null, 2)
   }
 
-  // Verify log integrity
+  // Verify log integrity with better UX
   const verifyIntegrity = async (logId: string) => {
-    const result = await auditService.verifyLogIntegrity(logId)
-    if (result.success) {
-      alert(result.data ? 'Log integrity verified ✓' : 'Log integrity compromised ⚠️')
-    } else {
-      alert(`Integrity check failed: ${result.error}`)
+    try {
+      const result = await auditService.verifyLogIntegrity(logId)
+      if (result.success) {
+        const message = result.data 
+          ? 'Log integrity verified ✓ - This audit record is tamper-proof and authentic'
+          : 'Log integrity compromised ⚠️ - This audit record may have been tampered with'
+        alert(message)
+      } else {
+        alert(`Integrity check failed: ${result.error}`)
+      }
+    } catch (error) {
+      alert('Integrity verification failed - please try again')
+      console.error('Integrity verification error:', error)
     }
   }
 

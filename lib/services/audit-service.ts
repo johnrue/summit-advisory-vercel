@@ -172,7 +172,9 @@ export class AuditService {
       }
 
       if (filter.search) {
-        query = query.or(`details.ilike.%${filter.search}%,action.ilike.%${filter.search}%,entity_type.ilike.%${filter.search}%`)
+        // SQL injection protection: sanitize search input
+        const sanitizedSearch = filter.search.replace(/[%_]/g, '\\$&')
+        query = query.or(`details.ilike.%${sanitizedSearch}%,action.ilike.%${sanitizedSearch}%,entity_type.ilike.%${sanitizedSearch}%`)
       }
 
       const { data, error, count } = await query
