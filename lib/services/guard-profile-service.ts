@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { piiEncryption } from '@/lib/encryption/pii-encryption'
+import { AuditService } from '@/lib/services/audit-service'
 import type {
   GuardProfile,
   GuardProfileCreateData,
@@ -17,6 +18,8 @@ import type {
 import { GuardProfileErrorCode } from '@/lib/types/guard-profile'
 
 export class GuardProfileService {
+  private auditService = AuditService.getInstance()
+  
   /**
    * Fields that require PII encryption
    */
@@ -131,7 +134,18 @@ export class GuardProfileService {
         .eq('application_id', profileData.applicationId)
         .eq('is_active', true)
 
-      // Log audit trail
+      // Log audit trail with AuditService
+      const { data: { user } } = await supabase.auth.getUser()
+      await this.auditService.logGuardProfileChange(
+        profile.id,
+        'created',
+        undefined, // No previous values for creation
+        profile,
+        'Guard profile created from approved application',
+        user?.id
+      )
+
+      // Keep legacy compliance audit for backward compatibility
       await this.logComplianceAccess(
         profile.id,
         'profile_access',
@@ -198,7 +212,18 @@ export class GuardProfileService {
         }
       }
 
-      // Log audit trail for changes
+      // Log audit trail for changes with AuditService
+      const { data: { user } } = await supabase.auth.getUser()
+      await this.auditService.logGuardProfileChange(
+        profileId,
+        'updated',
+        currentProfile,
+        updatedProfile,
+        'Guard profile updated',
+        user?.id
+      )
+
+      // Keep legacy compliance audit for backward compatibility
       await this.logComplianceAccess(
         profileId,
         'profile_access',
@@ -593,7 +618,17 @@ export class GuardProfileService {
         }
       }
 
-      // Log approval audit trail
+      // Log approval audit trail with AuditService
+      await this.auditService.logGuardProfileChange(
+        profileId,
+        'approved',
+        undefined, // No previous values needed for approval
+        approvedProfile,
+        `Guard profile approved by manager - compliance score: ${complianceResult.data.score}`,
+        approverId
+      )
+
+      // Keep legacy compliance audit for backward compatibility
       await this.logComplianceAccess(
         profileId,
         'compliance_check',

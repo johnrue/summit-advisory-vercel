@@ -2,6 +2,7 @@
 // Core approval decision operations and business logic
 
 import { createClient } from '@/lib/supabase'
+import { AuditService } from '@/lib/services/audit-service'
 import type { 
   HiringDecision,
   DecisionAuditRecord,
@@ -18,6 +19,7 @@ import type {
 
 export class ApprovalWorkflowService {
   private supabase = createClient()
+  private auditService = AuditService.getInstance()
 
   /**
    * Submit an approval decision for an applicant
@@ -81,6 +83,16 @@ export class ApprovalWorkflowService {
         await this.triggerProfileCreation(data.id)
       }
 
+      // Log audit trail for hiring decision
+      await this.auditService.logHiringDecision(
+        applicationId,
+        'approved',
+        undefined, // No previous values for initial decision
+        data,
+        `Hiring decision: ${decision.decisionType} - ${decision.decisionReason}`,
+        user.id
+      )
+
       return { success: true, data: this.mapDatabaseToHiringDecision(data) }
     } catch (error) {
       return { 
@@ -143,6 +155,16 @@ export class ApprovalWorkflowService {
 
       // Update application stage to rejected
       await this.updateApplicationStage(applicationId, 'rejected', user.id)
+
+      // Log audit trail for hiring rejection
+      await this.auditService.logHiringDecision(
+        applicationId,
+        'rejected',
+        undefined, // No previous values for initial decision
+        data,
+        `Hiring decision: rejected - ${decision.decisionReason}`,
+        user.id
+      )
 
       return { success: true, data: this.mapDatabaseToHiringDecision(data) }
     } catch (error) {

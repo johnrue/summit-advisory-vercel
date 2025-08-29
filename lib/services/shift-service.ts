@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase'
+import { AuditService } from '@/lib/services/audit-service'
 import type {
   Shift,
   ShiftCreateData,
@@ -21,6 +22,7 @@ import { ShiftErrorCodes } from '@/lib/types/shift-types'
 
 export class ShiftManagementService {
   private supabase = createClient()
+  private auditService = AuditService.getInstance()
 
   // Core CRUD Operations
   async createShift(shiftData: ShiftCreateData, managerId: string): Promise<ServiceResult<Shift>> {
@@ -68,6 +70,16 @@ export class ShiftManagementService {
           }
         }
       }
+
+      // Log audit trail for shift creation
+      await this.auditService.logShiftChange(
+        data.id,
+        'created',
+        undefined, // No previous values for creation
+        data,
+        'New shift created',
+        managerId
+      )
 
       return {
         success: true,
@@ -260,7 +272,17 @@ export class ShiftManagementService {
         }
       }
 
-      // Track changes in audit log
+      // Log audit trail for shift update
+      await this.auditService.logShiftChange(
+        shiftId,
+        'updated',
+        currentShift.data,
+        data,
+        updates.changeDescription || 'Shift updated',
+        managerId
+      )
+
+      // Track changes in audit log (keep existing method for backward compatibility)
       await this.trackShiftModification(shiftId, currentShift.data, this.mapDatabaseRowToShift(data), updates.changeReason, updates.changeDescription || '', managerId)
 
       return {
@@ -368,6 +390,16 @@ export class ShiftManagementService {
         }
       }
 
+      // Log audit trail for guard assignment
+      await this.auditService.logShiftChange(
+        shiftId,
+        'assigned',
+        undefined, // No previous assignment values needed
+        { guardId, assignedAt: new Date().toISOString() },
+        `Guard ${guardId} assigned to shift`,
+        managerId
+      )
+
       return {
         success: true,
         data: {
@@ -411,6 +443,16 @@ export class ShiftManagementService {
           }
         }
       }
+
+      // Log audit trail for guard unassignment
+      await this.auditService.logShiftChange(
+        shiftId,
+        'unassigned',
+        undefined, // No previous values needed
+        { unassignedAt: new Date().toISOString() },
+        'Guard unassigned from shift',
+        managerId
+      )
 
       return { success: true }
     } catch (error) {

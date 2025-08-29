@@ -2,5 +2,16 @@
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "functions": {
+    "app/api/v1/**": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/v1/audit-logs/retention?action=run_archival",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }

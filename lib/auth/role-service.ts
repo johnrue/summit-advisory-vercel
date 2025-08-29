@@ -1,4 +1,5 @@
 import { createClient } from './supabase'
+import { AuditService } from '@/lib/services/audit-service'
 import type { User } from '@supabase/supabase-js'
 
 export type UserRole = 'admin' | 'manager' | 'guard' | 'client'
@@ -20,6 +21,7 @@ export interface RoleAssignmentResult {
 
 export class RoleService {
   private supabase = createClient()
+  private auditService = AuditService.getInstance()
 
   async assignRole(userId: string, role: UserRole, permissions?: Record<string, any>): Promise<RoleAssignmentResult> {
     try {
@@ -35,6 +37,9 @@ export class RoleService {
         throw checkError
       }
 
+      const { data: { user: currentUser } } = await this.supabase.auth.getUser()
+      const actorId = currentUser?.id
+
       if (existingRole) {
         // Update existing role
         const { error: updateError } = await this.supabase
@@ -47,6 +52,16 @@ export class RoleService {
           .eq('user_id', userId)
 
         if (updateError) throw updateError
+
+        // Log audit trail for role update
+        await this.auditService.logRoleChange(
+          userId,
+          'updated',
+          { role: existingRole.role, permissions: existingRole.permissions },
+          { role, permissions: permissions || existingRole.permissions },
+          `Role changed from ${existingRole.role} to ${role}`,
+          actorId
+        )
       } else {
         // Create new role record
         const { error: insertError } = await this.supabase
@@ -58,6 +73,16 @@ export class RoleService {
           })
 
         if (insertError) throw insertError
+
+        // Log audit trail for new role assignment
+        await this.auditService.logRoleChange(
+          userId,
+          'created',
+          undefined, // No previous values for new role
+          { role, permissions: permissions || {} },
+          `New role assigned: ${role}`,
+          actorId
+        )
       }
 
       return { success: true, role }
@@ -107,12 +132,32 @@ export class RoleService {
 
   async removeRole(userId: string): Promise<RoleAssignmentResult> {
     try {
+      // Get existing role for audit trail
+      const { data: existingRole } = await this.supabase
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', userId)
+        .single()
+
       const { error } = await this.supabase
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
 
       if (error) throw error
+
+      // Log audit trail for role removal
+      if (existingRole) {
+        const { data: { user: currentUser } } = await this.supabase.auth.getUser()
+        await this.auditService.logRoleChange(
+          userId,
+          'deleted',
+          { role: existingRole.role, permissions: existingRole.permissions },
+          undefined, // No new values for deletion
+          `Role removed: ${existingRole.role}`,
+          currentUser?.id
+        )
+      }
 
       return { success: true }
     } catch (error) {
