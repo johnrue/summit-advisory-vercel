@@ -234,3 +234,154 @@ export interface CertificationDashboardData {
   nonCompliantGuards: number
   pendingRenewals: number
 }
+
+// Notification System Types
+export interface Notification {
+  id: string
+  recipientId: string
+  senderId?: string
+  type: NotificationType
+  priority: NotificationPriority
+  category: NotificationCategory
+  title: string
+  message: string
+  actionData?: Record<string, any>
+  entityType?: string
+  entityId?: string
+  deliveryStatus: NotificationDeliveryStatus
+  deliveryChannels: NotificationChannel[]
+  isRead: boolean
+  readAt?: string
+  acknowledgedAt?: string
+  expiresAt?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface NotificationPreferences {
+  id: string
+  userId: string
+  inAppNotifications: boolean
+  emailNotifications: boolean
+  smsNotifications: boolean
+  scheduleNotifications: boolean
+  availabilityNotifications: boolean
+  assignmentNotifications: boolean
+  systemNotifications: boolean
+  complianceNotifications: boolean
+  emergencyNotifications: boolean
+  notificationFrequency: NotificationFrequency
+  quietHoursStart?: string
+  quietHoursEnd?: string
+  weekendNotifications: boolean
+  emailDigestEnabled: boolean
+  emailDigestFrequency: NotificationFrequency
+  minimumPriority: NotificationPriority
+  createdAt: string
+  updatedAt: string
+}
+
+export interface NotificationTemplate {
+  id: string
+  type: string
+  channel: NotificationChannel
+  subjectTemplate?: string
+  bodyTemplate: string
+  variables: Record<string, string>
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+// Notification Enums
+export type NotificationType = 
+  | 'shift_assignment' 
+  | 'shift_change' 
+  | 'shift_cancellation'
+  | 'certification_expiry'
+  | 'approval_needed'
+  | 'approval_granted'
+  | 'approval_denied'
+  | 'hiring_update'
+  | 'document_required'
+  | 'system_alert'
+  | 'compliance_reminder'
+  | 'emergency_alert'
+
+export type NotificationPriority = 'low' | 'normal' | 'high' | 'critical'
+
+export type NotificationCategory = 
+  | 'scheduling'
+  | 'compliance'
+  | 'hiring'
+  | 'system'
+  | 'emergency'
+
+export type NotificationChannel = 'in_app' | 'email' | 'sms'
+
+export type NotificationDeliveryStatus = 
+  | 'pending'
+  | 'sent'
+  | 'delivered'
+  | 'failed'
+  | 'bounced'
+
+export type NotificationFrequency = 
+  | 'immediate'
+  | 'hourly'
+  | 'daily'
+  | 'weekly'
+  | 'disabled'
+
+// Notification Service Types
+export interface CreateNotificationData {
+  recipientId: string
+  senderId?: string
+  type: NotificationType
+  title: string
+  message: string
+  priority?: NotificationPriority
+  category?: NotificationCategory
+  channels?: NotificationChannel[]
+  actionData?: Record<string, any>
+  entityType?: string
+  entityId?: string
+  expiresAt?: Date
+}
+
+export interface NotificationDigest {
+  id: string
+  recipientId: string
+  notifications: Notification[]
+  period: {
+    startDate: Date
+    endDate: Date
+  }
+  deliverySchedule: NotificationFrequency
+  createdAt: string
+  sentAt?: string
+}
+
+export interface NotificationStats {
+  totalNotifications: number
+  unreadCount: number
+  byPriority: Record<NotificationPriority, number>
+  byCategory: Record<NotificationCategory, number>
+  deliveryStats: Record<NotificationChannel, {
+    sent: number
+    delivered: number
+    failed: number
+  }>
+}
+
+export interface NotificationEscalation {
+  id: string
+  originalNotificationId: string
+  recipientId: string
+  escalationLevel: number
+  escalatedAt: string
+  escalatedTo?: string
+  reason: string
+  resolved: boolean
+  resolvedAt?: string
+}
