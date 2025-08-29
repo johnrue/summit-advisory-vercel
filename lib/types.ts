@@ -162,3 +162,75 @@ export interface ComplianceReport {
   metadata: any
   format: 'pdf' | 'csv'
 }
+
+// Certification Management Types
+export interface GuardCertification {
+  id: string
+  guardId: string
+  certificationType: string // 'TOPS License', 'CPR', 'First Aid', etc.
+  certificateNumber?: string
+  issuedDate?: Date
+  expiryDate: Date
+  issuingAuthority?: string
+  documentUrl?: string
+  status: 'active' | 'expired' | 'pending_renewal'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CertificationHistory {
+  id: string
+  guardCertificationId: string
+  action: 'issued' | 'renewed' | 'expired' | 'revoked'
+  previousExpiryDate?: Date
+  newExpiryDate?: Date
+  documentUrl?: string
+  processedBy?: string
+  notes?: string
+  createdAt: string
+}
+
+export interface CertificationRenewalRequest {
+  id: string
+  guardCertificationId: string
+  guardId: string
+  newDocumentUrl?: string
+  newExpiryDate?: Date
+  requestStatus: 'pending' | 'approved' | 'rejected'
+  submittedAt: string
+  reviewedAt?: string
+  reviewedBy?: string
+  reviewNotes?: string
+}
+
+export interface CertificationAlert {
+  id: string
+  guardCertificationId: string
+  guardId: string
+  alertType: '30_day' | '14_day' | '7_day' | 'expired' | 'escalation'
+  alertDate: Date
+  sentAt?: string
+  emailSent: boolean
+  escalated: boolean
+  createdAt: string
+}
+
+export interface CertificationExpiryCheck {
+  certification: GuardCertification
+  guard: Guard
+  daysUntilExpiry: number
+  alertType: '30_day' | '14_day' | '7_day' | 'expired'
+  shouldAlert: boolean
+  canSchedule: boolean
+}
+
+export interface CertificationDashboardData {
+  expiringIn30Days: CertificationExpiryCheck[]
+  expiringIn14Days: CertificationExpiryCheck[]
+  expiringIn7Days: CertificationExpiryCheck[]
+  expired: CertificationExpiryCheck[]
+  totalGuards: number
+  compliantGuards: number
+  nonCompliantGuards: number
+  pendingRenewals: number
+}
