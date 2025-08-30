@@ -183,6 +183,173 @@ export class EmailService {
   }
 
   /**
+   * Send consultation request confirmation email
+   */
+  static async sendConsultationConfirmation(
+    consultation: {
+      firstName: string
+      lastName: string
+      email: string
+      serviceType: string
+      id: string
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      const subject = 'Consultation Request Received - Summit Advisory'
+
+      const { data, error: emailError } = await resend.emails.send({
+        from: 'Summit Advisory <info@summitadvisoryfirm.com>',
+        to: [consultation.email],
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="background: linear-gradient(135deg, #d4af37, #b8941f); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Summit Advisory</h1>
+              <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Professional Security Services</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <h2 style="color: #d4af37; margin-top: 0;">Consultation Request Received</h2>
+              
+              <p>Dear ${consultation.firstName} ${consultation.lastName},</p>
+              
+              <p>Thank you for your interest in Summit Advisory's professional security services. We have received your consultation request and our team will contact you shortly.</p>
+              
+              <div style="background: #f8f9fa; padding: 20px; border-left: 4px solid #d4af37; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #333;">Request Details:</h3>
+                <p><strong>Reference Number:</strong> #${consultation.id.slice(0, 8).toUpperCase()}</p>
+                <p><strong>Service Type:</strong> ${consultation.serviceType.charAt(0).toUpperCase() + consultation.serviceType.slice(1)} Security</p>
+                <p><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
+              </div>
+              
+              <h3 style="color: #d4af37;">What Happens Next?</h3>
+              <ul style="line-height: 1.6;">
+                <li>A qualified security consultant will review your request</li>
+                <li>We'll contact you within 2 business hours during business hours</li>
+                <li>We'll discuss your security needs and provide a customized solution</li>
+                <li>Receive a detailed proposal within 24 hours</li>
+              </ul>
+              
+              <p><strong>Need immediate assistance?</strong><br>
+              Call us at <a href="tel:8302010414" style="color: #d4af37; text-decoration: none;">(830) 201-0414</a></p>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
+                <p><strong>Summit Advisory</strong><br>
+                License: TX DPS #C29754001<br>
+                Serving Houston, Dallas, Austin, San Antonio</p>
+              </div>
+            </div>
+          </div>
+        `,
+        tags: [
+          { name: 'type', value: 'consultation-confirmation' },
+          { name: 'service', value: consultation.serviceType },
+          { name: 'company', value: 'summit-advisory' }
+        ]
+      })
+
+      if (emailError) {
+        console.error('Error sending consultation confirmation:', emailError)
+        return { success: false, error: emailError.message }
+      }
+
+      return { success: true, messageId: data?.id }
+
+    } catch (error) {
+      console.error('Unexpected error sending consultation confirmation:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      }
+    }
+  }
+
+  /**
+   * Send lead assignment notification to manager
+   */
+  static async sendLeadAssignmentNotification(
+    lead: {
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      serviceType: string
+      sourceType: string
+      id: string
+    },
+    manager: {
+      firstName: string
+      lastName: string
+      email: string
+    }
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    try {
+      const subject = `New Lead Assignment - ${lead.firstName} ${lead.lastName}`
+
+      const { data, error: emailError } = await resend.emails.send({
+        from: 'Summit Advisory System <system@summitadvisoryfirm.com>',
+        to: [manager.email],
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="background: linear-gradient(135deg, #d4af37, #b8941f); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Summit Advisory</h1>
+              <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Lead Management System</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <h2 style="color: #d4af37; margin-top: 0;">New Lead Assigned</h2>
+              
+              <p>Hello ${manager.firstName},</p>
+              
+              <p>A new lead has been assigned to you for follow-up. Please contact the prospect as soon as possible to discuss their security service needs.</p>
+              
+              <div style="background: #f8f9fa; padding: 20px; border-left: 4px solid #d4af37; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #333;">Lead Details:</h3>
+                <p><strong>Name:</strong> ${lead.firstName} ${lead.lastName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${lead.email}" style="color: #d4af37;">${lead.email}</a></p>
+                <p><strong>Phone:</strong> <a href="tel:${lead.phone}" style="color: #d4af37;">${lead.phone}</a></p>
+                <p><strong>Service Type:</strong> ${lead.serviceType.charAt(0).toUpperCase() + lead.serviceType.slice(1)} Security</p>
+                <p><strong>Source:</strong> ${lead.sourceType.charAt(0).toUpperCase() + lead.sourceType.replace('_', ' ').slice(1)}</p>
+                <p><strong>Lead ID:</strong> #${lead.id.slice(0, 8).toUpperCase()}</p>
+              </div>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="https://summitadvisoryfirm.com/dashboard/leads?id=${lead.id}" 
+                   style="background: #d4af37; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                   View Lead Details
+                </a>
+              </div>
+              
+              <p><strong>Action Required:</strong> Please contact this lead within 2 hours during business hours to maintain our service standards.</p>
+            </div>
+          </div>
+        `,
+        tags: [
+          { name: 'type', value: 'lead-assignment' },
+          { name: 'service', value: lead.serviceType },
+          { name: 'source', value: lead.sourceType },
+          { name: 'company', value: 'summit-advisory' }
+        ]
+      })
+
+      if (emailError) {
+        console.error('Error sending lead assignment notification:', emailError)
+        return { success: false, error: emailError.message }
+      }
+
+      return { success: true, messageId: data?.id }
+
+    } catch (error) {
+      console.error('Unexpected error sending lead assignment notification:', error)
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      }
+    }
+  }
+
+  /**
    * Validate email configuration
    */
   static validateConfiguration(): { valid: boolean; error?: string } {

@@ -385,3 +385,95 @@ export interface NotificationEscalation {
   resolved: boolean
   resolvedAt?: string
 }
+
+// Lead Management Types
+export interface Lead {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  sourceType: string
+  sourceDetails: Record<string, any>
+  serviceType: string
+  message?: string
+  estimatedValue?: number
+  status: 'prospect' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+  assignedTo?: string
+  assignedAt?: string
+  qualificationScore: number
+  qualificationNotes?: string
+  lastContactDate?: string
+  nextFollowUpDate?: string
+  contactCount: number
+  convertedToContract: boolean
+  contractSignedDate?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface LeadFormData {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  sourceType: string
+  sourceDetails?: Record<string, any>
+  serviceType: string
+  message?: string
+  estimatedValue?: number
+}
+
+export interface LeadFilters {
+  status?: string[]
+  sourceType?: string[]
+  assignedTo?: string
+  dateRange?: {
+    start: string
+    end: string
+  }
+  search?: string
+}
+
+export interface LeadStats {
+  totalLeads: number
+  byStatus: Record<string, number>
+  bySource: Record<string, number>
+  conversionRate: number
+  averageValue: number
+  averageScore: number
+}
+
+export interface LeadAssignmentRule {
+  id: string
+  name: string
+  priority: number
+  conditions: {
+    serviceTypes?: string[]
+    sources?: string[]
+    geography?: string[]
+    valueRange?: {
+      min?: number
+      max?: number
+    }
+  }
+  assignmentMethod: 'round_robin' | 'lowest_workload' | 'random' | 'manual'
+  eligibleManagers: string[]
+  isActive: boolean
+}
+
+export interface LeadBulkImport {
+  fileName: string
+  totalRows: number
+  processedRows: number
+  successRows: number
+  errorRows: number
+  duplicateRows: number
+  errors: Array<{
+    row: number
+    field: string
+    message: string
+  }>
+  status: 'processing' | 'completed' | 'failed'
+  createdAt: string
+}

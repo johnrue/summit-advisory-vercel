@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { ConsultationFormData, ConsultationRequest, ApiResponse } from '@/lib/types'
+import { EmailService } from '@/lib/utils/email-service'
 
 /**
  * Submit a consultation request to Supabase
@@ -64,6 +65,12 @@ export async function submitConsultationRequest(
       status: data.status,
       updated_at: data.updated_at,
     }
+
+    // Send confirmation email to client
+    await EmailService.sendConsultationConfirmation(consultationRequest)
+
+    // Trigger manager notification for new lead (from automatic conversion)
+    await notifyManagersOfNewLead(consultationRequest)
 
     return {
       success: true,
@@ -191,5 +198,57 @@ export async function updateConsultationRequestStatus(
       error: error instanceof Error ? error.message : 'Unknown error occurred',
       message: 'Failed to update request status',
     }
+  }
+}
+
+/**
+ * Notify available managers of a new lead from consultation request
+ * @param consultation - The consultation request that was converted to a lead
+ */
+async function notifyManagersOfNewLead(consultation: ConsultationRequest): Promise<void> {
+  try {
+    // Get all active managers
+    const { data: managers, error } = await supabase
+      .from('user_roles')
+      .select(`
+        user_id,
+        roles!inner(name)
+      `)
+      .eq('roles.name', 'manager')
+      .eq('status', 'active')
+
+    if (error || !managers) {
+      console.error('Failed to get managers for notification:', error)
+      return
+    }
+
+    // Create notification for each manager
+    const notifications = managers.map(manager => ({
+      recipient_id: manager.user_id,
+      type: 'lead_assignment' as const,
+      priority: 'normal' as const,
+      category: 'system' as const,
+      title: 'New Lead Available',
+      message: `New consultation request from ${consultation.firstName} ${consultation.lastName} (${consultation.serviceType} service)`,
+      action_data: {
+        leadId: consultation.id,
+        serviceType: consultation.serviceType,
+        source: 'website'
+      },
+      entity_type: 'lead',
+      entity_id: consultation.id,
+      delivery_channels: ['in_app', 'email']
+    }))
+
+    // Insert notifications
+    const { error: notificationError } = await supabase
+      .from('notifications')
+      .insert(notifications)
+
+    if (notificationError) {
+      console.error('Failed to create lead notifications:', notificationError)
+    }
+  } catch (error) {
+    console.error('Error notifying managers of new lead:', error)
   }
 }

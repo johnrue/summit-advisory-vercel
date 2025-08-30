@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getGuardLeads } from '@/lib/services/guard-lead-service'
+import { getLeads } from '@/lib/services/lead-management-service'
 
 // Create Supabase client for server-side operations
 const supabase = createClient(
@@ -82,14 +82,16 @@ export async function GET(request: NextRequest) {
     const filters = {
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '25'),
-      source_filter: searchParams.get('source_filter')?.split(',') || undefined,
-      status_filter: searchParams.get('status_filter')?.split(',') || undefined,
-      date_from: searchParams.get('date_from') || undefined,
-      date_to: searchParams.get('date_to') || undefined
+      search: searchParams.get('search') || '',
+      sourceFilter: searchParams.get('source_filter')?.split(',') || [],
+      statusFilter: searchParams.get('status_filter')?.split(',') || [],
+      managerFilter: searchParams.get('manager_filter') || '',
+      sortBy: (searchParams.get('sort_by') as 'created_at' | 'name' | 'status' | 'estimated_value') || 'created_at',
+      sortOrder: (searchParams.get('sort_order') as 'asc' | 'desc') || 'desc'
     }
 
     // Get leads from service layer
-    const result = await getGuardLeads(filters)
+    const result = await getLeads(filters)
 
     if (!result.success) {
       return NextResponse.json(
