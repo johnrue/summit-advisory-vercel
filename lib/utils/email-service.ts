@@ -3,7 +3,8 @@ import { TOPSComplianceEmail } from '@/lib/templates/tops-compliance-email'
 import type { TOPSReportData } from '@/lib/types'
 
 // Initialize Resend with API key from environment
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Use a placeholder key during build time if not available
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder_key')
 
 export interface EmailAttachment {
   filename: string
