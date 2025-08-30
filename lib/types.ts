@@ -1863,3 +1863,294 @@ export interface RecruitingAnalyticsFilters {
   locations?: string[]
   recruiterIds?: string[]
 }
+
+// Internal Project Management Types (Story 5.5)
+export interface InternalProject {
+  id: string
+  title: string
+  description: string
+  category: ProjectCategory
+  priority: ProjectPriority
+  status: ProjectStatus
+  ownerId: string
+  assignedMembers: string[]
+  dueDate?: Date
+  estimatedHours?: number
+  actualHours?: number
+  budget?: number
+  actualCost?: number
+  createdAt: Date
+  updatedAt: Date
+  completedAt?: Date
+  
+  // Collaboration fields
+  comments: ProjectComment[]
+  attachments: ProjectAttachment[]
+  statusUpdates: ProjectStatusUpdate[]
+  
+  // Template and recurring fields
+  templateId?: string
+  isRecurring: boolean
+  recurringSchedule?: RecurringSchedule
+  
+  // Impact tracking
+  impactMetrics: ProjectImpactMetrics
+  outcomeAssessment?: ProjectOutcome
+}
+
+export interface ProjectCategory {
+  id: string
+  name: string
+  color: string
+  description: string
+  defaultPriority: ProjectPriority
+}
+
+export type ProjectPriority = 'low' | 'medium' | 'high' | 'critical'
+
+export type ProjectStatus = 'backlog' | 'in_progress' | 'review' | 'done'
+
+export interface ProjectComment {
+  id: string
+  projectId: string
+  authorId: string
+  authorName: string
+  content: string
+  mentions: string[]
+  parentCommentId?: string
+  createdAt: Date
+  updatedAt?: Date
+}
+
+export interface ProjectAttachment {
+  id: string
+  projectId: string
+  fileName: string
+  fileUrl: string
+  fileSize: number
+  mimeType: string
+  uploadedBy: string
+  uploadedByName: string
+  createdAt: Date
+}
+
+export interface ProjectStatusUpdate {
+  id: string
+  projectId: string
+  authorId: string
+  authorName: string
+  previousStatus: ProjectStatus
+  newStatus: ProjectStatus
+  notes?: string
+  createdAt: Date
+}
+
+export interface ProjectTemplate {
+  id: string
+  name: string
+  description: string
+  category: ProjectCategory
+  defaultDuration: number // hours
+  defaultPriority: ProjectPriority
+  checklistItems: TemplateChecklistItem[]
+  requiredResources: ResourceRequirement[]
+  createdBy: string
+  createdByName: string
+  isPublic: boolean
+  usageCount: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface TemplateChecklistItem {
+  id: string
+  title: string
+  description?: string
+  estimatedHours?: number
+  assigneeRole?: string
+  order: number
+  isRequired: boolean
+}
+
+export interface ResourceRequirement {
+  id: string
+  resourceType: 'person' | 'equipment' | 'software' | 'budget'
+  name: string
+  description?: string
+  estimatedCost?: number
+  isRequired: boolean
+}
+
+export interface RecurringSchedule {
+  frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
+  interval: number // every N frequency units
+  startDate: Date
+  endDate?: Date
+  daysOfWeek?: number[] // for weekly (0-6, Sunday = 0)
+  dayOfMonth?: number // for monthly
+  month?: number // for yearly (1-12)
+  isActive: boolean
+}
+
+export interface ProjectImpactMetrics {
+  efficiencyGain?: number // percentage improvement
+  costSavings?: number // dollar amount
+  timeReduction?: number // hours saved
+  qualityImprovement?: number // percentage
+  customerSatisfaction?: number // 1-10 scale
+  employeeSatisfaction?: number // 1-10 scale
+  customMetrics?: Array<{
+    name: string
+    value: number
+    unit: string
+  }>
+}
+
+export interface ProjectOutcome {
+  id: string
+  projectId: string
+  overallSuccess: 'exceeded' | 'met' | 'partially_met' | 'not_met'
+  goalsAchieved: string[]
+  challengesFaced: string[]
+  lessonsLearned: string[]
+  recommendations: string[]
+  roiCalculation?: {
+    investment: number
+    benefits: number
+    roi: number // percentage
+    paybackPeriod?: number // months
+  }
+  assessedBy: string
+  assessedByName: string
+  assessedAt: Date
+}
+
+// Project form and workflow types
+export interface ProjectFormData {
+  title: string
+  description: string
+  categoryId: string
+  priority: ProjectPriority
+  ownerId: string
+  assignedMembers: string[]
+  dueDate?: string
+  estimatedHours?: number
+  budget?: number
+  templateId?: string
+  isRecurring: boolean
+  recurringSchedule?: Partial<RecurringSchedule>
+}
+
+export interface ProjectFilters {
+  status?: ProjectStatus[]
+  category?: string[]
+  priority?: ProjectPriority[]
+  ownerId?: string
+  assignedMember?: string
+  dateRange?: {
+    start: string
+    end: string
+  }
+  search?: string
+  templateId?: string
+  isRecurring?: boolean
+}
+
+export interface ProjectStats {
+  totalProjects: number
+  byStatus: Record<ProjectStatus, number>
+  byCategory: Record<string, number>
+  byPriority: Record<ProjectPriority, number>
+  completionRate: number
+  averageCompletionTime: number // days
+  onTimeCompletion: number // percentage
+  budgetUtilization: number // percentage
+  totalBudget: number
+  totalSpent: number
+  resourceUtilization: Array<{
+    userId: string
+    userName: string
+    allocatedHours: number
+    actualHours: number
+    utilization: number // percentage
+  }>
+}
+
+export interface ProjectAnalytics {
+  overview: ProjectStats
+  velocityMetrics: Array<{
+    period: string // month/quarter
+    projectsCompleted: number
+    averageVelocity: number
+    velocityTrend: 'up' | 'down' | 'stable'
+  }>
+  categoryPerformance: Array<{
+    categoryId: string
+    categoryName: string
+    totalProjects: number
+    completedProjects: number
+    averageDuration: number
+    successRate: number
+    budgetEfficiency: number
+  }>
+  resourceAnalysis: Array<{
+    userId: string
+    userName: string
+    projectCount: number
+    totalHours: number
+    efficiency: number
+    workloadTrend: 'increasing' | 'decreasing' | 'stable'
+  }>
+  impactSummary: {
+    totalCostSavings: number
+    totalEfficiencyGain: number
+    projectsWithMeasuredImpact: number
+    averageROI: number
+  }
+}
+
+// Project collaboration types
+export interface ProjectCollaborationActivity {
+  id: string
+  projectId: string
+  activityType: 'comment' | 'status_change' | 'assignment' | 'file_upload' | 'due_date_change'
+  authorId: string
+  authorName: string
+  description: string
+  metadata?: Record<string, any>
+  createdAt: Date
+}
+
+export interface ProjectMention {
+  id: string
+  projectId: string
+  commentId?: string
+  mentionedUserId: string
+  mentionedUserName: string
+  mentionedBy: string
+  mentionedByName: string
+  context: string
+  isRead: boolean
+  createdAt: Date
+}
+
+// Project template instantiation
+export interface ProjectInstantiation {
+  templateId: string
+  projectData: Partial<ProjectFormData>
+  customizations: {
+    skipChecklistItems?: string[]
+    additionalChecklistItems?: Array<{
+      title: string
+      description?: string
+      estimatedHours?: number
+    }>
+    adjustedDuration?: number
+    adjustedBudget?: number
+  }
+  schedulingOptions?: {
+    startDate?: Date
+    preferredOwner?: string
+    preferredTeam?: string[]
+  }
+}
