@@ -897,3 +897,969 @@ export interface RenewalAlert {
   acknowledgedAt?: string
   created_at: string
 }
+
+// Enhanced Guard Lead Management Types (Story 5.3)
+export interface GuardLead {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  
+  // Enhanced source tracking
+  sourceType: GuardLeadSource
+  sourceDetails: GuardSourceDetails
+  utmParameters?: UTMParameters
+  referralInfo?: ReferralInfo
+  geographicSource?: GeographicSource
+  
+  // Application and qualification data
+  applicationStatus: GuardApplicationStatus
+  qualificationScore: number
+  qualificationFactors: QualificationFactors
+  applicationCompletionProbability: number
+  
+  // Background and experience
+  hasSecurityExperience: boolean
+  yearsExperience?: number
+  hasLicense: boolean
+  licenseNumber?: string
+  licenseExpiryDate?: string
+  backgroundCheckEligible: boolean
+  certifications: string[]
+  availability: AvailabilityInfo
+  preferredShifts: string[]
+  
+  // Geographic and assignment preferences
+  preferredLocations: string[]
+  transportationAvailable: boolean
+  willingToRelocate: boolean
+  salaryExpectations?: number
+  
+  // Lead management
+  status: GuardLeadStatus
+  assignedRecruiter?: string
+  assignedAt?: string
+  lastContactDate?: string
+  nextFollowUpDate?: string
+  contactCount: number
+  campaignId?: string
+  
+  // Conversion tracking
+  convertedToHire: boolean
+  hireDate?: string
+  guardId?: string
+  rejectionReason?: string
+  dropOffStage?: GuardLeadStage
+  
+  // A/B testing
+  formVariant?: string
+  emailSequenceVariant?: string
+  testGroup?: string
+  
+  created_at: string
+  updated_at: string
+}
+
+export type GuardLeadSource = 
+  | 'direct_website'
+  | 'job_board'
+  | 'social_media'
+  | 'referral'
+  | 'recruiting_agency'
+  | 'career_fair'
+  | 'print_advertisement'
+  | 'radio_advertisement'
+  | 'cold_outreach'
+  | 'partner_referral'
+  | 'other'
+
+export interface GuardSourceDetails {
+  platform?: string // LinkedIn, Indeed, Facebook, etc.
+  campaign?: string
+  adGroup?: string
+  keyword?: string
+  referrerUrl?: string
+  landingPage?: string
+  qrCodeId?: string
+  agencyName?: string
+  eventName?: string
+  partnerName?: string
+  customDetails?: Record<string, any>
+}
+
+export interface UTMParameters {
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+  utm_term?: string
+  utm_content?: string
+  gclid?: string // Google Click ID
+  fbclid?: string // Facebook Click ID
+}
+
+export interface ReferralInfo {
+  referrerGuardId?: string
+  referrerName?: string
+  referralCode?: string
+  referralBonusEligible: boolean
+  bonusAmount?: number
+  bonusStatus?: 'pending' | 'qualified' | 'paid' | 'ineligible'
+  bonusPaymentDate?: string
+}
+
+export interface GeographicSource {
+  city?: string
+  state?: string
+  zipCode?: string
+  latitude?: number
+  longitude?: number
+  marketArea?: string
+  recruitingRegion?: string
+}
+
+export type GuardApplicationStatus = 
+  | 'lead_captured'
+  | 'application_started'
+  | 'application_submitted'
+  | 'under_review'
+  | 'background_check'
+  | 'interview_scheduled'
+  | 'interview_completed'
+  | 'reference_check'
+  | 'offer_extended'
+  | 'offer_accepted'
+  | 'hire_completed'
+  | 'rejected'
+  | 'withdrawn'
+
+export type GuardLeadStatus = 
+  | 'new'
+  | 'contacted'
+  | 'qualified'
+  | 'disqualified'
+  | 'nurturing'
+  | 'application_pending'
+  | 'converted'
+  | 'lost'
+
+export type GuardLeadStage = 
+  | 'initial_contact'
+  | 'qualification'
+  | 'application'
+  | 'background_check'
+  | 'interview'
+  | 'decision'
+  | 'onboarding'
+
+export interface QualificationFactors {
+  experienceScore: number // 0-100
+  locationScore: number // 0-100  
+  availabilityScore: number // 0-100
+  certificationScore: number // 0-100
+  backgroundScore: number // 0-100
+  salaryExpectationScore: number // 0-100
+  transportationScore: number // 0-100
+  motivationScore: number // 0-100
+  totalScore: number // weighted average
+}
+
+export interface AvailabilityInfo {
+  fullTime: boolean
+  partTime: boolean
+  weekdays: boolean
+  weekends: boolean
+  nights: boolean
+  holidays: boolean
+  overtime: boolean
+  startDate?: string
+  hoursPerWeek?: number
+}
+
+// Recruiting Campaign Management Types
+export interface RecruitingCampaign {
+  id: string
+  name: string
+  description: string
+  campaignType: CampaignType
+  status: CampaignStatus
+  
+  // Campaign configuration
+  targetPositions: string[]
+  targetLocations: string[]
+  budgetAllocated: number
+  budgetSpent: number
+  expectedLeads: number
+  expectedHires: number
+  
+  // Landing page and messaging
+  landingPageConfig: LandingPageConfig
+  formVariants: FormVariant[]
+  emailSequences: EmailSequence[]
+  
+  // Tracking and analytics
+  trackingPixelId?: string
+  utmParameters: UTMParameters
+  qrCodes: QRCodeGeneration[]
+  
+  // Performance metrics
+  impressions: number
+  clicks: number
+  leads: number
+  applications: number
+  hires: number
+  costPerLead: number
+  costPerHire: number
+  conversionRate: number
+  
+  // A/B testing
+  activeTests: ABTest[]
+  
+  // Timeline
+  startDate: string
+  endDate?: string
+  pausedAt?: string
+  pausedReason?: string
+  
+  // Assignment
+  createdBy: string
+  managedBy: string[]
+  
+  created_at: string
+  updated_at: string
+}
+
+export type CampaignType = 
+  | 'digital_advertising'
+  | 'social_media'
+  | 'job_board'
+  | 'referral_program'
+  | 'career_fair'
+  | 'content_marketing'
+  | 'email_marketing'
+  | 'print_advertising'
+  | 'radio_advertising'
+  | 'event_marketing'
+  | 'partnership'
+  | 'cold_outreach'
+
+export type CampaignStatus = 
+  | 'draft'
+  | 'scheduled'
+  | 'active'
+  | 'paused'
+  | 'completed'
+  | 'cancelled'
+
+export interface LandingPageConfig {
+  id: string
+  templateId: string
+  headline: string
+  subheadline: string
+  heroImage?: string
+  callToAction: string
+  benefits: string[]
+  testimonials: Array<{
+    name: string
+    role: string
+    quote: string
+    image?: string
+  }>
+  customSections: Array<{
+    title: string
+    content: string
+    position: number
+  }>
+  theme: 'professional' | 'modern' | 'minimal' | 'bold'
+  primaryColor: string
+  secondaryColor: string
+  publishedUrl?: string
+  isPublished: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface FormVariant {
+  id: string
+  campaignId: string
+  name: string
+  description: string
+  
+  // Form configuration
+  fields: FormField[]
+  layout: 'single_column' | 'two_column' | 'progressive'
+  submitButtonText: string
+  submitButtonColor: string
+  
+  // A/B testing
+  trafficPercentage: number
+  isActive: boolean
+  
+  // Performance metrics
+  views: number
+  submissions: number
+  conversionRate: number
+  
+  created_at: string
+}
+
+export interface FormField {
+  id: string
+  name: string
+  label: string
+  type: 'text' | 'email' | 'phone' | 'select' | 'multiselect' | 'textarea' | 'checkbox' | 'radio' | 'file'
+  required: boolean
+  placeholder?: string
+  options?: string[] // for select/radio/checkbox fields
+  validation?: {
+    pattern?: string
+    minLength?: number
+    maxLength?: number
+    min?: number
+    max?: number
+  }
+  order: number
+  helpText?: string
+}
+
+export interface EmailSequence {
+  id: string
+  campaignId: string
+  name: string
+  description: string
+  
+  // Sequence configuration
+  triggerEvent: 'form_submission' | 'application_started' | 'application_abandoned' | 'custom'
+  emails: EmailTemplate[]
+  
+  // A/B testing
+  variants: EmailSequenceVariant[]
+  trafficSplit: Record<string, number> // variant_id -> percentage
+  
+  // Performance
+  totalSent: number
+  totalOpened: number
+  totalClicked: number
+  totalConverted: number
+  openRate: number
+  clickRate: number
+  conversionRate: number
+  
+  isActive: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface EmailTemplate {
+  id: string
+  sequenceId: string
+  position: number
+  
+  // Timing
+  delayAfterTrigger: number // hours
+  sendTime?: string // HH:mm format for optimal send time
+  
+  // Content
+  subject: string
+  preheader?: string
+  htmlContent: string
+  textContent: string
+  
+  // Personalization variables
+  variables: Record<string, string>
+  
+  // Performance tracking
+  sent: number
+  opened: number
+  clicked: number
+  unsubscribed: number
+  bounced: number
+  
+  created_at: string
+  updated_at: string
+}
+
+export interface EmailSequenceVariant {
+  id: string
+  sequenceId: string
+  name: string
+  emails: EmailTemplate[]
+  trafficPercentage: number
+  performance: {
+    sent: number
+    opened: number
+    clicked: number
+    converted: number
+  }
+  isActive: boolean
+}
+
+export interface QRCodeGeneration {
+  id: string
+  campaignId: string
+  name: string
+  description: string
+  
+  // QR code configuration
+  url: string
+  size: number
+  format: 'PNG' | 'SVG' | 'PDF'
+  logoUrl?: string
+  
+  // Styling
+  foregroundColor: string
+  backgroundColor: string
+  errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H'
+  
+  // Usage tracking
+  scans: number
+  uniqueScans: number
+  scanLocations: Array<{
+    lat: number
+    lng: number
+    count: number
+  }>
+  
+  // Distribution
+  printMaterials: string[]
+  distributionDate?: string
+  distributionNotes?: string
+  
+  created_at: string
+  updated_at: string
+}
+
+// A/B Testing Framework Types
+export interface ABTest {
+  id: string
+  name: string
+  description: string
+  campaignId?: string
+  
+  // Test configuration
+  testType: ABTestType
+  hypothesis: string
+  successMetric: string
+  variants: ABTestVariant[]
+  trafficSplit: Record<string, number> // variant_id -> percentage
+  
+  // Statistical configuration
+  confidenceLevel: number // 95, 99, etc.
+  minimumSampleSize: number
+  minimumEffectSize: number // percentage improvement to detect
+  
+  // Test lifecycle
+  status: ABTestStatus
+  startDate: string
+  endDate?: string
+  actualEndDate?: string
+  
+  // Results
+  results?: ABTestResults
+  winner?: string // variant_id
+  significance?: number
+  
+  // Analysis
+  analysisNotes?: string
+  recommendations?: string[]
+  implementationPlan?: string
+  
+  created_at: string
+  updated_at: string
+}
+
+export type ABTestType = 
+  | 'landing_page'
+  | 'form_variant'
+  | 'email_subject'
+  | 'email_content'
+  | 'call_to_action'
+  | 'headline'
+  | 'pricing'
+  | 'application_flow'
+
+export type ABTestStatus = 
+  | 'draft'
+  | 'ready_to_launch'
+  | 'running'
+  | 'paused'
+  | 'completed'
+  | 'stopped'
+  | 'inconclusive'
+
+export interface ABTestVariant {
+  id: string
+  testId: string
+  name: string
+  description: string
+  config: Record<string, any> // variant-specific configuration
+  
+  // Performance metrics
+  visitors: number
+  conversions: number
+  conversionRate: number
+  
+  // Statistical data
+  confidenceInterval?: {
+    lower: number
+    upper: number
+  }
+  
+  isControl: boolean
+  isWinner?: boolean
+}
+
+export interface ABTestResults {
+  testId: string
+  totalVisitors: number
+  totalConversions: number
+  
+  // Statistical significance
+  pValue: number
+  isSignificant: boolean
+  confidenceLevel: number
+  
+  // Variant performance
+  variantResults: Array<{
+    variantId: string
+    visitors: number
+    conversions: number
+    conversionRate: number
+    lift?: number // percentage improvement over control
+    confidenceInterval: {
+      lower: number
+      upper: number
+    }
+  }>
+  
+  // Recommendations
+  recommendedAction: 'implement_winner' | 'continue_testing' | 'redesign' | 'inconclusive'
+  expectedImpact?: number
+  
+  calculatedAt: string
+}
+
+// Lead Scoring and Qualification Types
+export interface LeadScoringConfig {
+  id: string
+  name: string
+  description: string
+  version: number
+  
+  // Scoring factors and weights
+  factors: ScoringFactor[]
+  
+  // Qualification thresholds
+  qualificationThreshold: number // minimum score to be qualified
+  highPriorityThreshold: number // score for high priority leads
+  
+  // Historical performance
+  accuracy: number // percentage of leads that converted as predicted
+  lastCalibrated: string
+  
+  isActive: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface ScoringFactor {
+  id: string
+  name: string
+  description: string
+  category: ScoringCategory
+  weight: number // 0-1, relative importance
+  
+  // Scoring logic
+  scoringRules: ScoringRule[]
+  
+  isActive: boolean
+}
+
+export type ScoringCategory = 
+  | 'experience'
+  | 'location'
+  | 'availability'
+  | 'certifications'
+  | 'background'
+  | 'salary_expectations'
+  | 'transportation'
+  | 'motivation'
+  | 'source_quality'
+
+export interface ScoringRule {
+  id: string
+  condition: string // JSON logic condition
+  points: number
+  description: string
+}
+
+export interface LeadScoreCalculation {
+  leadId: string
+  totalScore: number
+  maxPossibleScore: number
+  normalizedScore: number // 0-100
+  
+  // Factor breakdown
+  factorScores: Array<{
+    factorId: string
+    factorName: string
+    score: number
+    maxScore: number
+    appliedRules: Array<{
+      ruleId: string
+      points: number
+      reason: string
+    }>
+  }>
+  
+  // Qualification result
+  isQualified: boolean
+  priority: 'low' | 'medium' | 'high'
+  
+  // Predictions
+  applicationProbability: number // 0-1
+  hireProbability: number // 0-1
+  
+  calculatedAt: string
+  configVersion: number
+}
+
+// Recruiting Analytics Types
+export interface RecruitingFunnelData {
+  totalLeads: number
+  
+  // Funnel stages
+  stages: Array<{
+    stage: GuardLeadStage
+    count: number
+    conversionRate: number
+    averageDuration: number // days in stage
+    dropOffRate: number
+  }>
+  
+  // Source performance
+  sourcePerformance: Array<{
+    source: GuardLeadSource
+    leads: number
+    applications: number
+    hires: number
+    conversionRate: number
+    costPerLead: number
+    costPerHire: number
+    averageScore: number
+  }>
+  
+  // Campaign performance
+  campaignPerformance: Array<{
+    campaignId: string
+    campaignName: string
+    leads: number
+    applications: number
+    hires: number
+    spent: number
+    roi: number
+    conversionRate: number
+  }>
+  
+  // Geographic analysis
+  geographicData: Array<{
+    location: string
+    leads: number
+    hires: number
+    averageScore: number
+    competitionLevel: 'low' | 'medium' | 'high'
+  }>
+  
+  // Time-based trends
+  timeSeriesData: Array<{
+    date: string
+    leads: number
+    applications: number
+    hires: number
+    costPerLead: number
+    averageScore: number
+  }>
+}
+
+export interface RecruitingOptimizationRecommendations {
+  // Source optimization
+  topPerformingSources: Array<{
+    source: GuardLeadSource
+    recommendation: string
+    expectedImpact: string
+    priority: 'high' | 'medium' | 'low'
+  }>
+  
+  // Campaign optimization
+  campaignRecommendations: Array<{
+    campaignId: string
+    type: 'budget_increase' | 'budget_decrease' | 'pause' | 'optimize_targeting' | 'test_creative'
+    description: string
+    expectedImpact: string
+  }>
+  
+  // Funnel optimization
+  bottleneckAnalysis: Array<{
+    stage: GuardLeadStage
+    issue: string
+    solution: string
+    priority: 'high' | 'medium' | 'low'
+  }>
+  
+  // Scoring optimization
+  scoringRecommendations: Array<{
+    factor: ScoringCategory
+    currentWeight: number
+    recommendedWeight: number
+    reason: string
+  }>
+  
+  generatedAt: string
+}
+
+// Referral Program Types
+export interface GuardReferralProgram {
+  id: string
+  name: string
+  description: string
+  
+  // Program configuration
+  isActive: boolean
+  startDate: string
+  endDate?: string
+  
+  // Eligibility criteria
+  referrerEligibility: {
+    minimumTenure: number // months
+    goodStanding: boolean
+    minimumPerformanceRating: number
+    excludedRoles?: string[]
+  }
+  
+  // Bonus structure
+  bonusStructure: BonusStructure
+  
+  // Tracking and limits
+  maxReferralsPerPerson?: number
+  maxBonusPerPerson?: number
+  trackingPeriod: number // days to track attribution
+  
+  // Performance metrics
+  totalReferrals: number
+  successfulHires: number
+  totalBonusPaid: number
+  averageCostPerHire: number
+  
+  created_at: string
+  updated_at: string
+}
+
+export interface BonusStructure {
+  type: 'flat' | 'tiered' | 'milestone'
+  
+  // Flat bonus
+  flatAmount?: number
+  
+  // Tiered bonus (based on number of successful referrals)
+  tiers?: Array<{
+    minReferrals: number
+    maxReferrals?: number
+    bonusAmount: number
+  }>
+  
+  // Milestone-based bonus
+  milestones?: Array<{
+    milestone: 'application_submitted' | '30_days' | '60_days' | '90_days' | '6_months' | '1_year'
+    percentage: number
+    amount?: number
+    description: string
+  }>
+  
+  // Additional bonuses
+  qualityBonus?: {
+    scoreThreshold: number
+    bonusAmount: number
+  }
+  
+  urgentHireBonus?: {
+    timeToFill: number // days
+    bonusAmount: number
+  }
+}
+
+export interface GuardReferral {
+  id: string
+  programId: string
+  
+  // Referrer information
+  referrerGuardId: string
+  referrerName: string
+  referralCode: string
+  
+  // Referred candidate information
+  referredLeadId: string
+  referredName: string
+  referredEmail: string
+  
+  // Tracking
+  referralDate: string
+  attributionConfirmed: boolean
+  attributionMethod: 'referral_code' | 'email_match' | 'manual' | 'survey'
+  
+  // Status tracking
+  status: ReferralStatus
+  currentStage: GuardLeadStage
+  
+  // Bonus tracking
+  bonusCalculation: ReferralBonusCalculation
+  
+  // Performance
+  leadQualityScore: number
+  timeToApplication?: number // days
+  timeToHire?: number // days
+  
+  // Notes and feedback
+  referrerNotes?: string
+  recruiterNotes?: string
+  
+  created_at: string
+  updated_at: string
+}
+
+export type ReferralStatus = 
+  | 'referred'
+  | 'contacted'
+  | 'qualified'
+  | 'disqualified'
+  | 'hired'
+  | 'rejected'
+  | 'withdrawn'
+
+export interface ReferralBonusCalculation {
+  totalEarned: number
+  totalPaid: number
+  totalPending: number
+  
+  // Milestone tracking
+  milestoneStatus: Array<{
+    milestone: string
+    achieved: boolean
+    achievedDate?: string
+    bonusAmount: number
+    paidDate?: string
+  }>
+  
+  // Payment history
+  payments: Array<{
+    id: string
+    amount: number
+    reason: string
+    paidDate: string
+    paymentMethod: 'payroll' | 'bonus_check' | 'direct_deposit'
+    transactionId?: string
+  }>
+  
+  // Clawback tracking
+  clawbacks?: Array<{
+    id: string
+    amount: number
+    reason: string
+    date: string
+  }>
+}
+
+export interface ReferralLeaderboard {
+  period: {
+    startDate: string
+    endDate: string
+  }
+  
+  rankings: Array<{
+    rank: number
+    referrerGuardId: string
+    referrerName: string
+    totalReferrals: number
+    successfulHires: number
+    totalBonusEarned: number
+    successRate: number
+    averageLeadScore: number
+  }>
+  
+  // Recognition tiers
+  recognitionTiers: Array<{
+    tier: string
+    requirement: string
+    guards: string[]
+    reward?: string
+  }>
+  
+  generatedAt: string
+}
+
+// Enhanced Guard Lead Form Data
+export interface GuardLeadFormData {
+  // Basic information
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  
+  // Work preferences
+  positionType: 'armed' | 'unarmed' | 'both'
+  preferredShifts: string[]
+  preferredLocations: string[]
+  availabilityType: 'full_time' | 'part_time' | 'both'
+  
+  // Experience and qualifications
+  hasSecurityExperience: boolean
+  yearsExperience?: number
+  hasLicense: boolean
+  licenseNumber?: string
+  licenseExpiryDate?: string
+  hasTransportation: boolean
+  willingToRelocate: boolean
+  
+  // Source tracking (hidden fields)
+  sourceType?: GuardLeadSource
+  sourceDetails?: GuardSourceDetails
+  utmParameters?: UTMParameters
+  referralCode?: string
+  campaignId?: string
+  formVariant?: string
+  
+  // Additional information
+  salaryExpectations?: number
+  additionalInfo?: string
+  resumeFile?: File
+}
+
+export interface GuardLeadFilters {
+  status?: GuardLeadStatus[]
+  applicationStatus?: GuardApplicationStatus[]
+  sourceType?: GuardLeadSource[]
+  assignedRecruiter?: string
+  campaignId?: string
+  scoreRange?: {
+    min: number
+    max: number
+  }
+  dateRange?: {
+    start: string
+    end: string
+  }
+  location?: string[]
+  hasExperience?: boolean
+  hasLicense?: boolean
+  search?: string
+}
+
+export interface RecruitingAnalyticsFilters {
+  dateRange?: {
+    start: string
+    end: string
+  }
+  campaignIds?: string[]
+  sources?: GuardLeadSource[]
+  locations?: string[]
+  recruiterIds?: string[]
+}
