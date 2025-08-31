@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// Import custom test types
+import '../types/test-types'
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter: () => ({

@@ -244,10 +244,11 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
     clientStatuses.forEach(status => {
       const count = clientLeads.filter(l => l.status === status).length
       funnelData.push({
-        stage: status.charAt(0).toUpperCase() + status.slice(1),
-        pipeline: 'client',
-        count,
-        percentage: clientLeads.length > 0 ? (count / clientLeads.length) * 100 : 0
+        stageName: status.charAt(0).toUpperCase() + status.slice(1),
+        stageCount: count,
+        conversionRate: clientLeads.length > 0 ? (count / clientLeads.length) * 100 : 0,
+        averageTimeInStage: 24, // TODO: Calculate actual time
+        dropOffReasons: []
       })
     })
 
@@ -255,10 +256,11 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
     guardStatuses.forEach(status => {
       const count = guardLeads.filter(l => l.status === status).length
       funnelData.push({
-        stage: status.charAt(0).toUpperCase() + status.slice(1),
-        pipeline: 'guard',
-        count,
-        percentage: guardLeads.length > 0 ? (count / guardLeads.length) * 100 : 0
+        stageName: status.charAt(0).toUpperCase() + status.slice(1),
+        stageCount: count,
+        conversionRate: guardLeads.length > 0 ? (count / guardLeads.length) * 100 : 0,
+        averageTimeInStage: 24, // TODO: Calculate actual time
+        dropOffReasons: []
       })
     })
 
@@ -488,12 +490,15 @@ export async function getSourceROIAnalysis(filters: FilterCriteria): Promise<Api
     const sourceROI = analytics.data.sourceComparison.map(source => ({
       source: source.source,
       totalLeads: source.clientLeads + source.guardLeads,
-      conversions: source.clientConversions + source.guardConversions,
+      clientLeads: source.clientLeads,
+      guardLeads: source.guardLeads,
       conversionRate: source.efficiency,
-      roi: source.totalROI,
-      efficiency: source.efficiency,
+      averageValue: source.totalROI > 0 ? source.totalROI / Math.max(1, source.clientConversions + source.guardConversions) : 0,
+      averageScore: source.efficiency,
       costPerLead: 0, // Would need cost data
-      valuePerConversion: source.totalROI > 0 ? source.totalROI / Math.max(1, source.clientConversions + source.guardConversions) : 0
+      roi: source.totalROI,
+      trend: 'stable' as const, // TODO: Calculate actual trend
+      percentChange: 0 // TODO: Calculate actual percentage change
     }))
 
     return {

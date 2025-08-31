@@ -199,7 +199,7 @@ describe('ShiftKanbanCard', () => {
       </DndContext>
     );
 
-    expect(container.firstChild).toHaveClass('ring-2', 'ring-primary');
+    expect(container.firstChild).toHaveClass('ring-2 ring-primary');
   });
 
   it('applies drag overlay styling', () => {
@@ -214,7 +214,7 @@ describe('ShiftKanbanCard', () => {
       </DndContext>
     );
 
-    expect(container.firstChild).toHaveClass('rotate-6', 'scale-105');
+    expect(container.firstChild).toHaveClass('rotate-6 scale-105');
   });
 
   it('displays special instructions when provided', () => {

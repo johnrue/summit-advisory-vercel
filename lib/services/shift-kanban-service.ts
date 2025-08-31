@@ -116,13 +116,21 @@ export class ShiftKanbanService {
       const activeAlerts = alertsResult.success ? alertsResult.data || [] : [];
 
       // Get manager presence (placeholder)
-      const activePresence = []; // Would implement real-time presence tracking
+      const activePresence: import('@/lib/types/kanban-types').ManagerPresence[] = []; // Would implement real-time presence tracking
 
       // Calculate metrics
       const metricsResult = await this.calculateKanbanMetrics(shifts);
-      const metrics = metricsResult.success ? metricsResult.data : {
+      const metrics: import('@/lib/types/kanban-types').KanbanMetrics = metricsResult.success && metricsResult.data ? metricsResult.data : {
         totalShifts: 0,
-        shiftsByStatus: {},
+        shiftsByStatus: {
+          unassigned: 0,
+          assigned: 0,
+          confirmed: 0,
+          in_progress: 0,
+          completed: 0,
+          issue_logged: 0,
+          archived: 0
+        },
         avgTimeToAssignment: 0,
         avgTimeToConfirmation: 0,
         completionRate: 0,
@@ -138,7 +146,7 @@ export class ShiftKanbanService {
         columns: columnsResult.data || [],
         filters: filters || {},
         activePresence,
-        metrics: metrics || {} as KanbanMetrics,
+        metrics,
         recentActivity: recentActivity.success ? recentActivity.data || [] : []
       };
 
@@ -303,7 +311,7 @@ export class ShiftKanbanService {
             shiftId,
             success: result.success,
             newValue: result.data,
-            error: result.success ? undefined : result.error?.message
+            error: result.success ? undefined : (typeof result.error === 'string' ? result.error : result.error?.message)
           });
 
         } catch (error) {

@@ -60,7 +60,15 @@ const mockBoardData: KanbanBoardData = {
   activePresence: [],
   metrics: {
     totalShifts: 2,
-    shiftsByStatus: { unassigned: 1, assigned: 1 },
+    shiftsByStatus: { 
+      unassigned: 1, 
+      assigned: 1,
+      confirmed: 0,
+      in_progress: 0,
+      completed: 0,
+      issue_logged: 0,
+      archived: 0
+    },
     avgTimeToAssignment: 2.5,
     avgTimeToConfirmation: 1.2,
     completionRate: 85,

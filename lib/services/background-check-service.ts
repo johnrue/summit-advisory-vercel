@@ -189,7 +189,7 @@ export class BackgroundCheckService {
           currentStatus: record.background_check_status as BackgroundCheckStatus,
           expiryDate,
           daysUntilExpiry,
-          assignedManager: record.users ? `${record.users.first_name} ${record.users.last_name}` : undefined
+          assignedManager: record.users ? `${(record.users as any).first_name} ${(record.users as any).last_name}` : undefined
         }
       })
 
@@ -230,7 +230,7 @@ export class BackgroundCheckService {
         vendorConfirmationNumber: data.vendor_confirmation_number,
         expiryDate: data.background_check_expiry_date ? new Date(data.background_check_expiry_date) : undefined,
         notes: data.background_check_notes,
-        approvedBy: data.users ? `${data.users.first_name} ${data.users.last_name}` : undefined,
+        approvedBy: data.users ? `${(data.users as any).first_name} ${(data.users as any).last_name}` : undefined,
         auditTrail: auditResult.success ? auditResult.data : []
       }
 

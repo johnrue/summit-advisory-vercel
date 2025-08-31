@@ -230,7 +230,7 @@ export class CrossPipelineAnalyticsService {
 
         return {
           managerId: manager.user_id,
-          managerName: `${manager.users.first_name} ${manager.users.last_name}`,
+          managerName: `${(manager.users as any).first_name} ${(manager.users as any).last_name}`,
           totalAssigned: clientMetrics.totalAssigned + guardMetrics.totalAssigned,
           clientLeads: clientMetrics.totalAssigned,
           guardLeads: guardMetrics.totalAssigned,

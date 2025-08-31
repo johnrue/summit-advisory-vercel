@@ -314,10 +314,11 @@ function groupLeadsBy(leads: any[], groupBy: string): any[] {
   // Flatten grouped data with group headers
   const flattenedData: any[] = []
   
-  Object.entries(grouped).forEach(([groupName, groupLeads]: [string, any[]]) => {
+  Object.entries(grouped).forEach(([groupName, groupLeads]) => {
+    const leads = groupLeads as any[]
     // Add group header row
     flattenedData.push({
-      id: `GROUP: ${groupName} (${groupLeads.length} records)`,
+      id: `GROUP: ${groupName} (${leads.length} records)`,
       pipeline_type: '',
       first_name: '',
       last_name: '',
@@ -338,7 +339,7 @@ function groupLeadsBy(leads: any[], groupBy: string): any[] {
     })
     
     // Add group data
-    flattenedData.push(...groupLeads)
+    flattenedData.push(...leads)
     
     // Add separator row
     flattenedData.push({

@@ -22,7 +22,6 @@ export class TOPSComplianceService {
         return {
           success: false,
           error: 'Invalid TOPS profile URL format',
-          code: GuardProfileErrorCode.INVALID_TOPS_URL
         }
       }
 
@@ -38,7 +37,6 @@ export class TOPSComplianceService {
       return {
         success: false,
         error: `TOPS validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: GuardProfileErrorCode.INVALID_TOPS_URL
       }
     }
   }
@@ -69,7 +67,6 @@ export class TOPSComplianceService {
         return {
           success: false,
           error: 'Profile not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
         }
       }
 
@@ -95,7 +92,6 @@ export class TOPSComplianceService {
       return {
         success: false,
         error: `Compliance check error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: GuardProfileErrorCode.COMPLIANCE_CHECK_FAILED
       }
     }
   }
@@ -360,6 +356,10 @@ export class TOPSComplianceService {
       const alerts = alertsResult.data
       let sent = 0
       let failed = 0
+
+      if (!alerts) {
+        return { success: true, data: { sent: 0, failed: 0 } }
+      }
 
       for (const alert of alerts) {
         try {

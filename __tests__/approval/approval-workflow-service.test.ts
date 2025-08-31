@@ -319,7 +319,9 @@ describe('ApprovalWorkflowService', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Database connection failed')
-      expect(result.code).toBe('DATABASE_ERROR')
+      expect(
+        typeof result.error === 'object' && result.error?.code
+      ).toBe('DATABASE_ERROR')
     })
   })
 

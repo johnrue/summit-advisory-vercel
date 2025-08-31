@@ -70,24 +70,28 @@ describe('AuditTrailService', () => {
   describe('createAuditRecord', () => {
     it('should successfully create an audit record', async () => {
       const auditRequest: CreateAuditRecordRequest = {
-        hiringDecisionId: 'decision-123',
-        auditEventType: 'decision_created',
-        changeReason: 'Initial hiring decision created',
-        newState: { 
-          decisionType: 'approved',
-          decisionReason: 'qualifications_met'
-        },
-        isSystemGenerated: false,
-        complianceFlag: true
+        action: 'decision_created',
+        entityId: 'decision-123',
+        entityType: 'hiring_decision',
+        userId: 'user-123',
+        details: {
+          changeReason: 'Initial hiring decision created',
+          newState: { 
+            decisionType: 'approved',
+            decisionReason: 'qualifications_met'
+          },
+          isSystemGenerated: false,
+          complianceFlag: true
+        }
       }
 
       const mockAuditRecord = {
         id: 'audit-123',
-        hiring_decision_id: auditRequest.hiringDecisionId,
-        audit_event_type: auditRequest.auditEventType,
+        hiring_decision_id: auditRequest.entityId,
+        audit_event_type: auditRequest.action,
         actor_id: mockUser.id,
-        new_state: auditRequest.newState,
-        change_reason: auditRequest.changeReason,
+        new_state: auditRequest.details.newState,
+        change_reason: auditRequest.details.changeReason,
         digital_signature: 'mock-signature',
         created_at: new Date().toISOString(),
         is_system_generated: false,
@@ -121,16 +125,20 @@ describe('AuditTrailService', () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toBeDefined()
-      expect(result.data?.hiringDecisionId).toBe(auditRequest.hiringDecisionId)
-      expect(result.data?.auditEventType).toBe(auditRequest.auditEventType)
+      expect(result.data?.hiringDecisionId).toBe(auditRequest.entityId)
+      expect(result.data?.auditEventType).toBe(auditRequest.action)
       expect(result.data?.complianceFlag).toBe(true)
     })
 
     it('should fail when user is not authenticated', async () => {
       const auditRequest: CreateAuditRecordRequest = {
-        hiringDecisionId: 'decision-123',
-        auditEventType: 'decision_created',
-        changeReason: 'Test audit record'
+        action: 'decision_created',
+        entityId: 'decision-123',
+        entityType: 'hiring_decision',
+        userId: 'user-123',
+        details: {
+          changeReason: 'Test audit record'
+        }
       }
 
       // Mock failed authentication
@@ -147,9 +155,13 @@ describe('AuditTrailService', () => {
 
     it('should handle database errors gracefully', async () => {
       const auditRequest: CreateAuditRecordRequest = {
-        hiringDecisionId: 'decision-123',
-        auditEventType: 'decision_created',
-        changeReason: 'Test audit record'
+        action: 'decision_created',
+        entityId: 'decision-123',
+        entityType: 'hiring_decision',
+        userId: 'user-123',
+        details: {
+          changeReason: 'Test audit record'
+        }
       }
 
       // Mock successful authentication

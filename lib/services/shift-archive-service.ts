@@ -578,7 +578,7 @@ export class ShiftArchiveService {
         if (archiveResult.success) {
           results.archivedCount++;
         } else {
-          results.errors.push(`Failed to archive shift ${shift.id}: ${archiveResult.error?.message}`);
+          results.errors.push(`Failed to archive shift ${shift.id}: ${typeof archiveResult.error === 'string' ? archiveResult.error : archiveResult.error?.message}`);
         }
       }
 

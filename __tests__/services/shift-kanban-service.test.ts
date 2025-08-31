@@ -70,8 +70,22 @@ const mockShifts = [
 ];
 
 const mockColumns = [
-  { id: 'unassigned', title: 'Unassigned', color: 'slate', allowedTransitions: ['assigned'] },
-  { id: 'assigned', title: 'Assigned', color: 'blue', allowedTransitions: ['confirmed'] }
+  { 
+    id: 'unassigned' as const, 
+    title: 'Unassigned', 
+    description: 'Shifts awaiting assignment', 
+    color: 'slate', 
+    allowedTransitions: ['assigned'] as const[], 
+    requiresValidation: false 
+  },
+  { 
+    id: 'assigned' as const, 
+    title: 'Assigned', 
+    description: 'Shifts assigned to guards', 
+    color: 'blue', 
+    allowedTransitions: ['confirmed'] as const[], 
+    requiresValidation: false 
+  }
 ];
 
 describe('ShiftKanbanService', () => {
@@ -230,8 +244,16 @@ describe('ShiftKanbanService', () => {
       const result = await ShiftKanbanService.getKanbanBoardData('manager-123');
 
       expect(result.success).toBe(false);
-      expect(result.error?.code).toBe('BOARD_DATA_ERROR');
-      expect(result.error?.message).toBe('Failed to retrieve Kanban board data');
+      expect(
+        typeof result.error === 'string' 
+          ? result.error 
+          : result.error?.code
+      ).toBe('BOARD_DATA_ERROR');
+      expect(
+        typeof result.error === 'string' 
+          ? result.error 
+          : result.error?.message
+      ).toBe('Failed to retrieve Kanban board data');
     });
 
     it('handles workflow config service failures', async () => {
@@ -258,7 +280,11 @@ describe('ShiftKanbanService', () => {
       const result = await ShiftKanbanService.getKanbanBoardData('manager-123');
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toBe('Failed to get workflow configuration');
+      expect(
+        typeof result.error === 'string' 
+          ? result.error 
+          : result.error?.message
+      ).toBe('Failed to get workflow configuration');
     });
   });
 

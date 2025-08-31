@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   table: {
-    display: 'table',
+    display: 'table' as any,
     width: 'auto',
     borderStyle: 'solid',
     borderWidth: 1,

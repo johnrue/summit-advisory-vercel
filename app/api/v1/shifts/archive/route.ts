@@ -235,7 +235,9 @@ export async function POST(request: NextRequest) {
           results.push({
             shiftId,
             success: false,
-            error: archiveResult.error?.message
+            error: typeof archiveResult.error === 'string' 
+              ? archiveResult.error 
+              : archiveResult.error?.message
           });
         }
       } catch (error) {

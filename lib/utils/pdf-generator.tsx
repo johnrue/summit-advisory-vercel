@@ -22,8 +22,24 @@ export class PDFGenerator {
       const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
       const pdfStream = await pdfDocument.toBuffer()
 
-      // Convert stream to buffer for Vercel Blob
-      const buffer = Buffer.from(await new Response(pdfStream).arrayBuffer())
+      // Handle ReadableStream from @react-pdf/renderer
+      let buffer: Buffer
+      if (pdfStream instanceof ReadableStream) {
+        const reader = pdfStream.getReader()
+        const chunks: Uint8Array[] = []
+        let done = false
+        
+        while (!done) {
+          const { value, done: streamDone } = await reader.read()
+          done = streamDone
+          if (value) chunks.push(value)
+        }
+        
+        buffer = Buffer.concat(chunks)
+      } else {
+        // If it's already a Buffer
+        buffer = Buffer.from(pdfStream as unknown as ArrayBuffer)
+      }
 
       // Upload to Vercel Blob storage
       const blob = await put(fileName, buffer, {
@@ -49,7 +65,24 @@ export class PDFGenerator {
     try {
       const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
       const pdfStream = await pdfDocument.toBuffer()
-      return Buffer.from(await new Response(pdfStream).arrayBuffer())
+      
+      // Handle ReadableStream properly
+      if (pdfStream instanceof ReadableStream) {
+        const reader = pdfStream.getReader()
+        const chunks: Uint8Array[] = []
+        let done = false
+        
+        while (!done) {
+          const { value, done: streamDone } = await reader.read()
+          done = streamDone
+          if (value) chunks.push(value)
+        }
+        
+        return Buffer.concat(chunks)
+      } else {
+        // If it's already a Buffer or ArrayBuffer
+        return Buffer.from(pdfStream as unknown as ArrayBuffer)
+      }
     } catch (error) {
       console.error('Error generating PDF buffer:', error)
       throw new Error('Failed to generate PDF buffer')
