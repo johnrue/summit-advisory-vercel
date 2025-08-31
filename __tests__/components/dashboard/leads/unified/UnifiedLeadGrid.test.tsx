@@ -15,10 +15,6 @@ describe('UnifiedLeadGrid', () => {
     {
       id: 'client-1',
       type: 'client',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      phone: '555-0001',
       status: 'new',
       source: 'website',
       priority: 'high',
@@ -26,30 +22,59 @@ describe('UnifiedLeadGrid', () => {
       updatedAt: new Date('2024-01-01'),
       estimatedValue: 50000,
       clientInfo: {
-        company: 'Test Corp',
-        industry: 'Technology',
-        employeeCount: 100,
-        securityNeeds: ['patrol']
-      }
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '555-0001',
+        companyName: 'Test Corp',
+        serviceType: 'patrol'
+      },
+      sourceAttribution: {
+        originalSource: 'website',
+        sourceDetails: {}
+      },
+      conversionMetrics: {
+        contactCount: 0
+      },
+      engagementScore: 50,
+      responseTime: 24
     },
     {
       id: 'guard-1',
       type: 'guard',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane@example.com',
-      phone: '555-0002',
       status: 'contacted',
       source: 'referral',
       priority: 'medium',
       createdAt: new Date('2024-01-02'),
       updatedAt: new Date('2024-01-02'),
       guardInfo: {
-        experience: 'senior',
-        certifications: ['TOPS'],
-        availability: 'full-time',
-        preferredShifts: ['day']
-      }
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        phone: '555-0002',
+        hasSecurityExperience: true,
+        hasLicense: true,
+        preferredShifts: ['day'],
+        preferredLocations: ['downtown'],
+        availability: {
+          fullTime: true,
+          partTime: false,
+          weekdays: true,
+          weekends: false,
+          nights: false,
+          holidays: false
+        },
+        transportationAvailable: true
+      },
+      sourceAttribution: {
+        originalSource: 'referral',
+        sourceDetails: {}
+      },
+      conversionMetrics: {
+        contactCount: 0
+      },
+      engagementScore: 70,
+      responseTime: 12
     }
   ]
 

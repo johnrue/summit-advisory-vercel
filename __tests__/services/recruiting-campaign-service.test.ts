@@ -2,11 +2,11 @@ import {
   createRecruitingCampaign,
   updateCampaignStatus,
   generateCampaignQRCode,
-  trackCampaignVisit,
+  trackQRCodeScan,
   getCampaignPerformance,
-  getActiveCampaigns,
-  createLandingPage,
-  updateLandingPageContent
+  getCampaigns,
+  createLandingPageVariant,
+  addFormVariant
 } from '@/lib/services/recruiting-campaign-service'
 import { createClient } from '@supabase/supabase-js'
 

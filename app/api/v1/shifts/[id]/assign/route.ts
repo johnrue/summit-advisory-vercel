@@ -22,7 +22,7 @@ export async function POST(
       return NextResponse.json({
         success: false,
         error: {
-          code: AssignmentErrorCodes.INVALID_REQUEST,
+          code: AssignmentErrorCodes.GUARD_NOT_FOUND,
           message: 'Guard ID is required'
         }
       }, { status: 400 });

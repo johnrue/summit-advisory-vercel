@@ -365,7 +365,10 @@ export class DocumentManagementService {
       // Get document info
       const docResult = await this.getDocument(documentId)
       if (!docResult.success) {
-        return docResult
+        return { 
+          success: false, 
+          error: docResult.error 
+        }
       }
 
       // Generate signature data (simplified implementation)

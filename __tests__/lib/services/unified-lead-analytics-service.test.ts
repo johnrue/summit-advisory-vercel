@@ -18,10 +18,6 @@ describe('Unified Lead Analytics Service', () => {
         {
           id: 'client-1',
           type: 'client',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          phone: '555-0001',
           status: 'won',
           source: 'website',
           priority: 'high',
@@ -30,19 +26,26 @@ describe('Unified Lead Analytics Service', () => {
           estimatedValue: 50000,
           assignedManager: 'manager-1',
           clientInfo: {
-            company: 'Test Corp',
-            industry: 'Technology',
-            employeeCount: 100,
-            securityNeeds: ['patrol']
-          }
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            phone: '555-0001',
+            serviceType: 'patrol',
+            companyName: 'Test Corp'
+          },
+          sourceAttribution: {
+            originalSource: 'website',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 50,
+          responseTime: 24
         },
         {
           id: 'guard-1',
           type: 'guard',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane@example.com',
-          phone: '555-0002',
           status: 'hired',
           source: 'referral',
           priority: 'medium',
@@ -50,30 +53,59 @@ describe('Unified Lead Analytics Service', () => {
           updatedAt: new Date('2024-01-10'),
           assignedManager: 'manager-1',
           guardInfo: {
-            experience: 'senior',
-            certifications: ['TOPS'],
-            availability: 'full-time',
-            preferredShifts: ['day']
-          }
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
+            phone: '555-0002',
+            hasSecurityExperience: true,
+            hasLicense: true,
+            preferredShifts: ['day'],
+            preferredLocations: ['downtown'],
+            availability: {
+              fullTime: true,
+              partTime: false,
+              weekdays: true,
+              weekends: false,
+              nights: false,
+              holidays: false
+            },
+            transportationAvailable: true
+          },
+          sourceAttribution: {
+            originalSource: 'referral',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 70,
+          responseTime: 12
         },
         {
           id: 'client-2',
           type: 'client',
-          firstName: 'Bob',
-          lastName: 'Johnson',
-          email: 'bob@example.com',
-          phone: '555-0003',
           status: 'new',
           source: 'referral',
           priority: 'low',
           createdAt: new Date('2024-01-03'),
           updatedAt: new Date('2024-01-03'),
           clientInfo: {
-            company: 'Another Corp',
-            industry: 'Healthcare',
-            employeeCount: 50,
-            securityNeeds: ['monitoring']
-          }
+            firstName: 'Bob',
+            lastName: 'Johnson',
+            email: 'bob@example.com',
+            phone: '555-0003',
+            serviceType: 'monitoring',
+            companyName: 'Another Corp'
+          },
+          sourceAttribution: {
+            originalSource: 'referral',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 30,
+          responseTime: 48
         }
       ]
 
@@ -138,10 +170,6 @@ describe('Unified Lead Analytics Service', () => {
         {
           id: 'client-1',
           type: 'client',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          phone: '555-0001',
           status: 'won',
           source: 'website',
           priority: 'high',
@@ -149,11 +177,22 @@ describe('Unified Lead Analytics Service', () => {
           updatedAt: new Date('2024-01-15'),
           estimatedValue: 50000,
           clientInfo: {
-            company: 'Test Corp',
-            industry: 'Technology',
-            employeeCount: 100,
-            securityNeeds: ['patrol']
-          }
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            phone: '555-0001',
+            serviceType: 'patrol',
+            companyName: 'Test Corp'
+          },
+          sourceAttribution: {
+            originalSource: 'website',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 50,
+          responseTime: 24
         }
       ]
 
@@ -181,40 +220,65 @@ describe('Unified Lead Analytics Service', () => {
         {
           id: 'lead-1',
           type: 'client',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          phone: '555-0001',
           status: 'new',
           source: 'website',
           priority: 'medium',
           createdAt: new Date('2024-01-01'),
           updatedAt: new Date('2024-01-01'),
           clientInfo: {
-            company: 'Test Corp',
-            industry: 'Technology',
-            employeeCount: 100,
-            securityNeeds: ['patrol']
-          }
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            phone: '555-0001',
+            serviceType: 'patrol',
+            companyName: 'Test Corp'
+          },
+          sourceAttribution: {
+            originalSource: 'website',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 50,
+          responseTime: 24
         },
         {
           id: 'lead-2',
           type: 'guard',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane@example.com',
-          phone: '555-0002',
           status: 'hired',
           source: 'referral',
           priority: 'high',
           createdAt: new Date('2024-01-15'),
           updatedAt: new Date('2024-01-20'),
           guardInfo: {
-            experience: 'senior',
-            certifications: ['TOPS'],
-            availability: 'full-time',
-            preferredShifts: ['day']
-          }
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
+            phone: '555-0002',
+            hasSecurityExperience: true,
+            hasLicense: true,
+            preferredShifts: ['day'],
+            preferredLocations: ['downtown'],
+            availability: {
+              fullTime: true,
+              partTime: false,
+              weekdays: true,
+              weekends: false,
+              nights: false,
+              holidays: false
+            },
+            transportationAvailable: true
+          },
+          sourceAttribution: {
+            originalSource: 'referral',
+            sourceDetails: {}
+          },
+          conversionMetrics: {
+            contactCount: 0
+          },
+          engagementScore: 70,
+          responseTime: 12
         }
       ]
 

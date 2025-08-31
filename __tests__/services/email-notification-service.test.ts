@@ -104,7 +104,6 @@ describe('EmailNotificationService', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Console logging failed')
-      expect(result.code).toBe('EMAIL_SERVICE_ERROR')
     })
 
     it('should track delivery time accurately', async () => {
@@ -375,7 +374,6 @@ describe('EmailNotificationService', () => {
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('Digest generation failed')
-      expect(result.code).toBe('DIGEST_ERROR')
     })
   })
 

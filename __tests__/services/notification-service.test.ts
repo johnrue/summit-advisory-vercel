@@ -339,7 +339,7 @@ describe('NotificationService', () => {
       expect(mockSupabase.select).toHaveBeenCalledWith('category, priority, is_read')
       expect(result.success).toBe(true)
       
-      const stats = result.data as NotificationStats
+      const stats = result.data as unknown as NotificationStats
       expect(stats.total_count).toBe(4)
       expect(stats.unread_count).toBe(3)
       expect(stats.urgent_count).toBe(1)

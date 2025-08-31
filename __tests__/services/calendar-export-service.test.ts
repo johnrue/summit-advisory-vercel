@@ -21,7 +21,7 @@ const mockSupabase = {
   in: vi.fn(() => mockSupabase),
   gte: vi.fn(() => mockSupabase),
   lte: vi.fn(() => mockSupabase),
-  single: vi.fn(() => mockSupabase)
+  single: vi.fn(() => Promise.resolve({ data: null, error: null }))
 }
 
 vi.mocked(createClient).mockReturnValue(mockSupabase as any)

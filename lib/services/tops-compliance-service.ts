@@ -350,7 +350,10 @@ export class TOPSComplianceService {
     try {
       const alertsResult = await this.checkExpiryRequirements()
       if (!alertsResult.success) {
-        return alertsResult
+        return { 
+          success: false, 
+          error: alertsResult.error 
+        }
       }
 
       const alerts = alertsResult.data

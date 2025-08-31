@@ -45,7 +45,10 @@ export class TimeOffRequestService {
       );
 
       if (!conflictCheck.success) {
-        return conflictCheck as ServiceResult<TimeOffRequest>;
+        return { 
+          success: false, 
+          error: conflictCheck.error 
+        };
       }
 
       const hasConflicts = conflictCheck.data && conflictCheck.data.length > 0;

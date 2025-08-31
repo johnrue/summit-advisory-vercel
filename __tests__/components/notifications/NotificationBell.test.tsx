@@ -391,7 +391,7 @@ describe('NotificationBell', () => {
       })
 
       let subscriptionCallback: (notification: Notification) => void = () => {}
-      mockNotificationService.subscribeToNotifications.mockImplementation((userId, callback) => {
+      mockNotificationService.subscribeToNotifications.mockImplementation((userId: string, callback: (notification: any) => void) => {
         subscriptionCallback = callback
         return mockSubscription
       })
@@ -424,7 +424,7 @@ describe('NotificationBell', () => {
       })
 
       let subscriptionCallback: (notification: Notification) => void = () => {}
-      mockNotificationService.subscribeToNotifications.mockImplementation((userId, callback) => {
+      mockNotificationService.subscribeToNotifications.mockImplementation((userId: string, callback: (notification: any) => void) => {
         subscriptionCallback = callback
         return mockSubscription
       })

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { UnifiedLead, FilterCriteria } from '@/lib/types/unified-leads'
+import { LeadStatus } from '@/lib/types'
 import { RealtimeChannel } from '@supabase/supabase-js'
 
 export interface RealtimeSubscriptionConfig {
@@ -468,8 +469,8 @@ export class RealtimeSubscriptionService {
   /**
    * Helper methods for data transformation
    */
-  private static mapClientStatus(status: string): string {
-    const statusMappings: Record<string, string> = {
+  private static mapClientStatus(status: string): LeadStatus {
+    const statusMappings: Record<string, LeadStatus> = {
       'new': 'new',
       'contacted': 'contacted',
       'scheduled': 'qualified',
@@ -477,11 +478,11 @@ export class RealtimeSubscriptionService {
       'cancelled': 'lost'
     }
     
-    return statusMappings[status] || status
+    return statusMappings[status] || status as LeadStatus
   }
 
-  private static mapGuardStatus(status: string): string {
-    const statusMappings: Record<string, string> = {
+  private static mapGuardStatus(status: string): LeadStatus {
+    const statusMappings: Record<string, LeadStatus> = {
       'new': 'new',
       'contacted': 'contacted',
       'application-sent': 'qualified',
@@ -489,7 +490,7 @@ export class RealtimeSubscriptionService {
       'rejected': 'lost'
     }
     
-    return statusMappings[status] || status
+    return statusMappings[status] || status as LeadStatus
   }
 
   private static calculatePriority(createdAt: string): 'low' | 'medium' | 'high' | 'critical' {

@@ -43,7 +43,10 @@ describe('A/B Testing Service', () => {
           headline: 'Join Our Security Team',
           trafficPercentage: 50
         },
-        isControl: true
+        isControl: true,
+        visitors: 100,
+        conversions: 15,
+        conversionRate: 0.15
       },
       {
         name: 'Action-Oriented',
@@ -52,7 +55,10 @@ describe('A/B Testing Service', () => {
           headline: 'Start Your Security Career Today',
           trafficPercentage: 50
         },
-        isControl: false
+        isControl: false,
+        visitors: 100,
+        conversions: 22,
+        conversionRate: 0.22
       }
     ],
     confidenceLevel: 95,
@@ -296,13 +302,8 @@ describe('A/B Testing Service', () => {
           }
         }
         if (table === 'test_visitor_assignments') {
-          if (arguments.length > 1) { // insert call
-            return {
-              insert: jest.fn().mockResolvedValue({ error: null })
-            }
-          }
-          // select call - no existing assignment
           return {
+            insert: jest.fn().mockResolvedValue({ error: null }),
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
@@ -400,13 +401,8 @@ describe('A/B Testing Service', () => {
           }
         }
         if (table === 'test_conversions') {
-          if (arguments.length > 1) { // insert call
-            return {
-              insert: jest.fn().mockResolvedValue({ error: null })
-            }
-          }
-          // select call - no existing conversion
           return {
+            insert: jest.fn().mockResolvedValue({ error: null }),
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 eq: jest.fn().mockReturnValue({
@@ -523,15 +519,10 @@ describe('A/B Testing Service', () => {
 
       supabase.from.mockImplementation((table: string) => {
         if (table === 'ab_tests') {
-          if (arguments.length > 1) { // update call
-            return {
-              update: jest.fn().mockReturnValue({
-                eq: jest.fn().mockResolvedValue({ error: null })
-              })
-            }
-          }
-          // select call
           return {
+            update: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ error: null })
+            }),
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 single: jest.fn().mockResolvedValue({
@@ -619,15 +610,10 @@ describe('A/B Testing Service', () => {
 
       supabase.from.mockImplementation((table: string) => {
         if (table === 'ab_tests') {
-          if (arguments.length > 1) { // update call
-            return {
-              update: jest.fn().mockReturnValue({
-                eq: jest.fn().mockResolvedValue({ error: null })
-              })
-            }
-          }
-          // select calls
           return {
+            update: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ error: null })
+            }),
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockReturnValue({
                 single: jest.fn().mockResolvedValue({

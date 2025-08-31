@@ -191,14 +191,6 @@ import type { ServiceResult } from '@/lib/types'
 export type { ServiceResult }
 
 // Audit record creation request
-export interface CreateAuditRecordRequest {
-  action: string
-  details: Record<string, any>
-  entityId: string
-  entityType: string
-  userId: string
-  timestamp?: Date
-}
 
 // Audit integrity report
 export interface AuditIntegrityReport {

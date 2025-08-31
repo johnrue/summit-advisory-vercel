@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUnifiedAnalytics } from '@/lib/services/unified-lead-analytics-service'
 import { FilterCriteria } from '@/lib/types/unified-leads'
+import { LeadStatus } from '@/lib/types'
 
 /**
  * GET /api/unified-leads/analytics
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
         end: new Date(endDate)
       },
       sources: searchParams.get('sources')?.split(',').filter(Boolean),
-      statuses: searchParams.get('statuses')?.split(',').filter(Boolean),
+      statuses: searchParams.get('statuses')?.split(',').filter(Boolean) as LeadStatus[] | undefined,
       assignedManagers: searchParams.get('managers')?.split(',').filter(Boolean),
       searchTerm: searchParams.get('search') || undefined
     }

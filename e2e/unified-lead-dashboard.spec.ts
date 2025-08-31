@@ -84,7 +84,7 @@ test.describe('Unified Lead Dashboard Integration', () => {
       const url = new URL(route.request().url())
       const leadType = url.searchParams.get('leadType')
       
-      let mockData = []
+      let mockData: any[] = []
       if (!leadType || leadType === 'client,guard') {
         mockData = [
           { id: 'client-1', type: 'client', firstName: 'John', lastName: 'Doe' },

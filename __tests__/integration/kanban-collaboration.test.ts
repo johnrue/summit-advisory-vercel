@@ -167,7 +167,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('tracks manager joining Kanban board', async () => {
       const presenceUpdates: any[] = [];
       
-      realTimeHandler.on('presence', (data) => {
+      realTimeHandler.on('presence', (data: any) => {
         presenceUpdates.push(data);
       });
 
@@ -213,7 +213,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('tracks manager leaving board', async () => {
       const presenceUpdates: any[] = [];
       
-      realTimeHandler.on('presence', (data) => {
+      realTimeHandler.on('presence', (data: any) => {
         presenceUpdates.push(data);
       });
 
@@ -264,7 +264,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('broadcasts shift movement activity', async () => {
       const activities: KanbanActivity[] = [];
       
-      realTimeHandler.on('activity', (activity) => {
+      realTimeHandler.on('activity', (activity: any) => {
         activities.push(activity);
       });
 
@@ -291,7 +291,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('broadcasts bulk operation activity', async () => {
       const activities: KanbanActivity[] = [];
       
-      realTimeHandler.on('activity', (activity) => {
+      realTimeHandler.on('activity', (activity: any) => {
         activities.push(activity);
       });
 
@@ -500,7 +500,9 @@ describe('Kanban Real-time Collaboration', () => {
 
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(false);
-      expect(result2.error?.code).toBe('CONFLICT');
+      expect(
+        typeof result2.error === 'object' && result2.error?.code
+      ).toBe('CONFLICT');
     });
   });
 
@@ -609,7 +611,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('handles multiple rapid updates efficiently', async () => {
       const activities: KanbanActivity[] = [];
       
-      realTimeHandler.on('activity', (activity) => {
+      realTimeHandler.on('activity', (activity: any) => {
         activities.push(activity);
       });
 

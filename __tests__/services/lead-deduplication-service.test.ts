@@ -1,4 +1,4 @@
-import { checkForDuplicates, getLevenshteinDistance } from '@/lib/services/lead-deduplication-service'
+import { checkForDuplicates } from '@/lib/services/lead-deduplication-service'
 
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => ({

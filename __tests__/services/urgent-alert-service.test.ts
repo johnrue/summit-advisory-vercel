@@ -4,9 +4,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { UrgentAlertService } from '@/lib/services/urgent-alert-service';
 import type { 
-  UrgentAlert, 
-  AlertEscalationRequest,
-  UrgencyCalculation 
+  UrgentShiftAlert, 
+  EscalationRule,
+  ShiftUrgencyCalculation 
 } from '@/lib/types/urgency-types';
 
 // Mock dependencies
