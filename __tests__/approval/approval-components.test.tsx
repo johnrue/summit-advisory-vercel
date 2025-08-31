@@ -4,6 +4,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from '@jest/globals'
+import '@testing-library/jest-dom'
 import { ApprovalDecisionManager } from '@/components/approval/ApprovalDecisionManager'
 import { ApprovalDecisionForm } from '@/components/approval/ApprovalDecisionForm'
 import { RejectionWorkflow } from '@/components/approval/RejectionWorkflow'

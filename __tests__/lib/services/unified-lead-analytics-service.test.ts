@@ -84,7 +84,7 @@ describe('Unified Lead Analytics Service', () => {
       })
 
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01T00:00:00.000Z', end: '2024-01-31T23:59:59.999Z' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -164,7 +164,7 @@ describe('Unified Lead Analytics Service', () => {
       })
 
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') },
+        dateRange: { start: '2024-01-01T00:00:00.000Z', end: '2024-01-31T23:59:59.999Z' },
         leadType: ['client']
       }
 
@@ -225,7 +225,7 @@ describe('Unified Lead Analytics Service', () => {
       })
 
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01T00:00:00.000Z', end: '2024-01-31T23:59:59.999Z' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -243,7 +243,7 @@ describe('Unified Lead Analytics Service', () => {
       })
 
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01T00:00:00.000Z', end: '2024-01-31T23:59:59.999Z' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -268,7 +268,7 @@ describe('Unified Lead Analytics Service', () => {
       })
 
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01T00:00:00.000Z', end: '2024-01-31T23:59:59.999Z' }
       }
 
       const result = await getUnifiedAnalytics(filters)

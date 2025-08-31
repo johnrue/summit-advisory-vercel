@@ -1,7 +1,8 @@
 import type { Database } from './database'
 import type { LeadSource, LeadStatus } from '../types'
 
-// LeadSource and LeadStatus are now imported from main types file
+// Re-export for consumers
+export type { LeadSource, LeadStatus }
 
 export interface GuardLead {
   id: string

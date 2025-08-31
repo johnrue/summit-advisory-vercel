@@ -249,10 +249,11 @@ export interface TopsComplianceAudit {
   createdAt: string
 }
 
-// Service result type for consistent error handling
-export type ServiceResult<T> = 
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string }
+// Use the main ServiceResult from lib/types
+import type { ServiceResult } from '@/lib/types'
+
+// Re-export for consumers
+export type { ServiceResult }
 
 // Completion suggestion structure
 export interface CompletionSuggestion {

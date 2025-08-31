@@ -20,17 +20,20 @@ export class PDFGenerator {
     try {
       // Generate PDF using React PDF renderer
       const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
-      const pdfBuffer = await pdfDocument.toBuffer()
+      const pdfStream = await pdfDocument.toBuffer()
+
+      // Convert stream to buffer for Vercel Blob
+      const buffer = Buffer.from(await new Response(pdfStream).arrayBuffer())
 
       // Upload to Vercel Blob storage
-      const blob = await put(fileName, pdfBuffer, {
+      const blob = await put(fileName, buffer, {
         access: 'public',
         contentType: 'application/pdf',
       })
 
       return {
         url: blob.url,
-        size: pdfBuffer.length
+        size: buffer.length
       }
 
     } catch (error) {
@@ -45,7 +48,8 @@ export class PDFGenerator {
   static async generateTOPSReportBuffer(reportData: TOPSReportData): Promise<Buffer> {
     try {
       const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
-      return await pdfDocument.toBuffer()
+      const pdfStream = await pdfDocument.toBuffer()
+      return Buffer.from(await new Response(pdfStream).arrayBuffer())
     } catch (error) {
       console.error('Error generating PDF buffer:', error)
       throw new Error('Failed to generate PDF buffer')

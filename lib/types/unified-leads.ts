@@ -1,6 +1,9 @@
 import type { Database } from './database'
 import type { LeadSource, LeadStatus } from '../types'
 
+// Re-export commonly used types for convenience
+export type { LeadSource, LeadStatus }
+
 // Base unified lead interface extending existing schemas
 export interface UnifiedLead {
   id: string
@@ -302,4 +305,53 @@ export interface UnifiedLeadListResponse {
   }
   analytics: LeadAnalytics
   filters: FilterCriteria
+}
+
+// Time series data for analytics and reporting
+export interface TimeSeriesData {
+  period: string
+  date?: string
+  totalLeads: number
+  clientLeads?: number
+  guardLeads?: number
+  conversions: number
+  conversionRate: number
+  value?: number
+}
+
+// Manager performance data for analytics
+export interface ManagerPerformanceData {
+  managerId: string
+  managerName: string
+  totalAssigned: number
+  clientLeads: number
+  guardLeads: number
+  totalConverted: number
+  conversionRate: number
+  averageResponseTime: number
+  totalValue: number
+  currentWorkload: number
+}
+
+// Additional analytics interfaces
+export interface ConversionFunnelData {
+  stageName: string
+  stageCount: number
+  conversionRate: number
+  averageTimeInStage: number
+  dropOffReasons?: string[]
+}
+
+export interface SourcePerformanceData {
+  source: LeadSource
+  totalLeads: number
+  clientLeads: number
+  guardLeads: number
+  conversionRate: number
+  averageValue: number
+  averageScore: number
+  costPerLead?: number
+  roi?: number
+  trend: 'up' | 'down' | 'stable'
+  percentChange: number
 }

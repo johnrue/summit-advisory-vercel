@@ -20,7 +20,9 @@ const mockSupabase = {
   from: vi.fn(() => mockSupabase),
   select: vi.fn(() => mockSupabase),
   eq: vi.fn(() => mockSupabase),
-  single: vi.fn(() => mockSupabase)
+  single: vi.fn(),
+  data: null,
+  error: null
 }
 
 vi.mocked(createClient).mockReturnValue(mockSupabase as any)
@@ -33,6 +35,7 @@ vi.mocked(oauthService).initiateOAuth = mockOAuthService.initiateOAuth
 describe('/api/v1/calendar/oauth/connect', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockSupabase.single.mockResolvedValue({ data: null, error: null })
   })
 
   const createMockRequest = (body: any): NextRequest => {
@@ -106,7 +109,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
       // Mock no existing integration
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
-        error: { message: 'No rows returned' }
+        error: null
       })
 
       // Mock successful OAuth initiation
@@ -144,7 +147,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
     it('should accept valid Microsoft Outlook provider', async () => {
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
-        error: { message: 'No rows returned' }
+        error: null
       })
 
       mockOAuthService.initiateOAuth.mockResolvedValueOnce({
@@ -176,7 +179,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
     it('should accept valid Microsoft Exchange provider', async () => {
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
-        error: { message: 'No rows returned' }
+        error: null
       })
 
       mockOAuthService.initiateOAuth.mockResolvedValueOnce({
@@ -316,7 +319,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
       // Mock no existing integration
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
-        error: { message: 'No rows returned' }
+        error: null
       })
 
       mockOAuthService.initiateOAuth.mockResolvedValueOnce({
@@ -340,7 +343,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
     it('should verify correct database query for existing integration', async () => {
       mockSupabase.single.mockResolvedValueOnce({
         data: null,
-        error: { message: 'No rows returned' }
+        error: null
       })
 
       mockOAuthService.initiateOAuth.mockResolvedValueOnce({

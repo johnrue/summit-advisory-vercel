@@ -5,6 +5,9 @@ import type {
 } from '@/lib/types/notification-types'
 import type { ServiceResult } from '@/lib/types'
 
+// Re-export types for consumers
+export type { Notification, NotificationTemplate, NotificationPriority }
+
 export interface EmailTemplate {
   subject: string
   html: string

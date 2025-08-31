@@ -96,7 +96,7 @@ export async function getContractAnalytics(
 /**
  * Calculate overview statistics
  */
-function calculateOverviewStats(contracts: any[]): ContractStats {
+export function calculateOverviewStats(contracts: any[]): ContractStats {
   const totalContracts = contracts.length
 
   const byStatus = contracts.reduce((acc, contract) => {
@@ -160,7 +160,7 @@ function calculateOverviewStats(contracts: any[]): ContractStats {
 /**
  * Calculate pipeline velocity metrics
  */
-function calculatePipelineVelocity(contracts: any[], stageHistory: any[]) {
+export function calculatePipelineVelocity(contracts: any[], stageHistory: any[]) {
   const stages = ['prospect', 'proposal', 'negotiation', 'signed', 'active', 'renewal', 'closed', 'lost']
   
   return stages.map(stage => {
@@ -209,7 +209,7 @@ function calculatePipelineVelocity(contracts: any[], stageHistory: any[]) {
 /**
  * Calculate revenue forecasting
  */
-function calculateRevenueForecasting(contracts: any[]) {
+export function calculateRevenueForecasting(contracts: any[]) {
   const months = 6 // Forecast 6 months ahead
   const forecasting = []
 

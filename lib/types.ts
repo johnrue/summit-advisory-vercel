@@ -4,14 +4,22 @@
 export interface ServiceResult<T> {
   success: boolean
   data?: T
-  error?: string
+  error?: string | {
+    code: string
+    message: string
+    details?: any
+  }
   message?: string
 }
 
 export interface ApiResponse<T> {
   success: boolean
   data?: T
-  error?: string
+  error?: string | {
+    code: string
+    message: string
+    details?: any
+  }
   message?: string
 }
 
@@ -139,13 +147,7 @@ export type ServiceType =
   | 'consulting'
   | 'other'
 
-// Response types for API operations
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  error?: string
-  message?: string
-}
+// (ApiResponse already defined above - removing duplicate)
 
 // Analytics event parameters
 export interface AnalyticsEventParams {

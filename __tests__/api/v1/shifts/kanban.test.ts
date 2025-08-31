@@ -20,13 +20,26 @@ const mockBoardData = {
     }
   ],
   columns: [
-    { id: 'unassigned', title: 'Unassigned', color: 'slate', allowedTransitions: ['assigned'] }
+    { 
+      id: 'unassigned' as 'unassigned', 
+      title: 'Unassigned', 
+      color: 'slate', 
+      allowedTransitions: ['assigned'] as ('assigned')[]
+    }
   ],
   filters: {},
   activePresence: [],
   metrics: {
     totalShifts: 1,
-    shiftsByStatus: { unassigned: 1 },
+    shiftsByStatus: { 
+      unassigned: 1,
+      assigned: 0,
+      confirmed: 0,
+      in_progress: 0,
+      completed: 0,
+      issue_logged: 0,
+      archived: 0
+    },
     avgTimeToAssignment: 2.5,
     avgTimeToConfirmation: 1.2,
     completionRate: 85,

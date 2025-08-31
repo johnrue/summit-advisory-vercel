@@ -13,6 +13,38 @@ import type { ApiResponse } from '@/lib/types'
 import { getLeadAnalytics } from '@/lib/services/lead-analytics-service'
 
 export interface UnifiedAnalytics extends LeadAnalytics {
+  overview: {
+    totalLeads: number
+    thisMonth: number
+    lastMonth: number
+    growthRate: number
+    conversionRate: number
+    averageValue: number
+  }
+  statusDistribution: {
+    status: string
+    count: number
+    percentage: number
+  }[]
+  managerPerformance: {
+    managerId: string
+    managerName: string
+    totalAssigned: number
+    clientLeads: number
+    guardLeads: number
+    totalConverted: number
+    conversionRate: number
+    averageResponseTime: number
+    totalValue: number
+    currentWorkload: number
+  }[]
+  timeSeriesData: {
+    period: string
+    totalLeads: number
+    convertedLeads: number
+    conversionRate: number
+  }[]
+  topPerformingCampaigns: any[]
   crossPipelineMetrics: {
     totalLeads: number
     clientLeads: number
@@ -60,15 +92,15 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       `)
     
     if (filters.dateRange) {
-      clientQuery.gte('created_at', filters.dateRange.start.toISOString())
-        .lte('created_at', filters.dateRange.end.toISOString())
+      clientQuery.gte('created_at', filters.dateRange.start)
+        .lte('created_at', filters.dateRange.end)
     }
 
     if (filters.sources?.length) {
       clientQuery.in('source_type', filters.sources)
     }
-    if (filters.assignedManagers?.length) {
-      clientQuery.in('assigned_to', filters.assignedManagers)
+    if (filters.assignedUsers?.length) {
+      clientQuery.in('assigned_to', filters.assignedUsers)
     }
     if (filters.statuses?.length) {
       clientQuery.in('status', filters.statuses)
@@ -83,15 +115,15 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       `)
     
     if (filters.dateRange) {
-      guardQuery.gte('created_at', filters.dateRange.start.toISOString())
-        .lte('created_at', filters.dateRange.end.toISOString())
+      guardQuery.gte('created_at', filters.dateRange.start)
+        .lte('created_at', filters.dateRange.end)
     }
 
     if (filters.sources?.length) {
       guardQuery.in('source_type', filters.sources)
     }
-    if (filters.assignedManagers?.length) {
-      guardQuery.in('assigned_to', filters.assignedManagers)
+    if (filters.assignedUsers?.length) {
+      guardQuery.in('assigned_to', filters.assignedUsers)
     }
     if (filters.statuses?.length) {
       guardQuery.in('status', filters.statuses)
@@ -147,7 +179,10 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
 
     // Calculate lead velocity (leads per day in the date range)
     const daysDiff = filters.dateRange 
-      ? Math.ceil((filters.dateRange.end.getTime() - filters.dateRange.start.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.ceil((
+          (typeof filters.dateRange.end === 'string' ? new Date(filters.dateRange.end) : filters.dateRange.end).getTime() - 
+          (typeof filters.dateRange.start === 'string' ? new Date(filters.dateRange.start) : filters.dateRange.start).getTime()
+        ) / (1000 * 60 * 60 * 24))
       : 1
     const leadVelocity = daysDiff > 0 ? totalLeads / daysDiff : 0
 
@@ -326,15 +361,12 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
     }
 
     const analytics: UnifiedAnalytics = {
-      // Base analytics from existing service structure
-      overview: {
-        totalLeads,
-        thisMonth: totalLeads, // Simplified for current period
-        lastMonth: 0, // Would need previous period calculation
-        growthRate: 0, // Would need previous period calculation
-        conversionRate: overallConversionRate,
-        averageValue: 0 // Would need value calculation
-      },
+      // Base LeadAnalytics properties
+      totalLeads,
+      clientLeads: clientLeads.length,
+      guardLeads: guardLeads.length,
+      conversionRate: overallConversionRate,
+      averageResponseTime: Math.round(averageResponseTime * 10) / 10,
       sourcePerformance: sourceComparison.map(s => ({
         source: s.source,
         totalLeads: s.clientLeads + s.guardLeads,
@@ -342,10 +374,15 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
         guardLeads: s.guardLeads,
         conversionRate: s.efficiency,
         averageValue: s.totalROI,
-        averageScore: 0, // Would need score calculation
+        averageScore: 0, // Added missing property
         roi: s.totalROI
       })),
-      statusDistribution: [], // Would need detailed status breakdown
+      pipelineVelocity: {
+        averageStageTransition: {},
+        bottleneckStages: [],
+        averageConversionTime: averageResponseTime,
+        stageConversionRates: {}
+      },
       managerPerformance: managerWorkloadDistribution.map(m => ({
         managerId: m.managerId,
         managerName: m.managerName,
@@ -358,6 +395,17 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
         totalValue: 0, // Would need value calculation
         currentWorkload: m.totalWorkload
       })),
+      
+      // Extended UnifiedAnalytics properties
+      overview: {
+        totalLeads,
+        thisMonth: totalLeads, // Simplified for current period
+        lastMonth: 0, // Would need previous period calculation
+        growthRate: 0, // Would need previous period calculation
+        conversionRate: overallConversionRate,
+        averageValue: 0 // Would need value calculation
+      },
+      statusDistribution: [], // Would need detailed status breakdown
       timeSeriesData: trendAnalysis.map(t => ({
         period: t.period,
         totalLeads: t.totalLeads,

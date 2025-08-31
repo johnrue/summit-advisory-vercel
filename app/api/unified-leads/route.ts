@@ -121,3 +121,17 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+/**
+ * PUT /api/unified-leads
+ * Update unified leads
+ */
+export async function PUT(request: NextRequest) {
+  try {
+    // Placeholder implementation for security testing
+    return NextResponse.json({ message: 'PUT method not implemented' }, { status: 501 })
+  } catch (error) {
+    console.error('Error in PUT /api/unified-leads:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

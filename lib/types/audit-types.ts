@@ -1,6 +1,7 @@
 import type { AuditAction, AuditEntityType } from '../types'
 
-// AuditAction and AuditEntityType are now imported from main types file
+// Re-export for consumers
+export type { AuditAction, AuditEntityType }
 
 export interface AuditLog {
   id: string

@@ -189,7 +189,6 @@ export interface GuardApplication extends Omit<GuardLead, 'status'> {
   application_reference?: string
   confidence_scores?: AIConfidenceScores
   application_submitted_at?: string
-  status: ApplicationStatus
 }
 
 // API Request/Response Types

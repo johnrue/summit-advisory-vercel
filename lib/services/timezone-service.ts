@@ -3,8 +3,8 @@
  * Handles timezone detection, conversion, and display for calendar events
  */
 
-import { format, parseISO, zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
-import { addDays, subDays, isAfter, isBefore } from 'date-fns'
+import { format, zonedTimeToUtc, toZonedTime } from 'date-fns-tz'
+import { addDays, subDays, isAfter, isBefore, parseISO } from 'date-fns'
 
 export interface TimezoneInfo {
   timezone: string
@@ -74,7 +74,7 @@ class TimezoneService {
 
       // Calculate offset
       const utcDate = new Date(date.toISOString())
-      const zonedDate = utcToZonedTime(utcDate, timezone)
+      const zonedDate = toZonedTime(utcDate, timezone)
       const offsetMs = zonedDate.getTime() - utcDate.getTime()
       const offsetHours = offsetMs / (1000 * 60 * 60)
 
@@ -127,7 +127,7 @@ class TimezoneService {
       const utcDate = fromTimezone === 'UTC' ? date : zonedTimeToUtc(date, fromTimezone)
       
       // Convert to target timezone
-      const localDate = toTimezone === 'UTC' ? utcDate : utcToZonedTime(utcDate, toTimezone)
+      const localDate = toTimezone === 'UTC' ? utcDate : toZonedTime(utcDate, toTimezone)
       
       // Format the time
       const formatted = this.formatTime(localDate, toTimezone)
@@ -330,7 +330,7 @@ class TimezoneService {
   private getTimezoneOffset(timezone: string, date: Date): number {
     try {
       const utcDate = new Date(date.toISOString())
-      const zonedDate = utcToZonedTime(utcDate, timezone)
+      const zonedDate = toZonedTime(utcDate, timezone)
       return (zonedDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60)
     } catch {
       return 0

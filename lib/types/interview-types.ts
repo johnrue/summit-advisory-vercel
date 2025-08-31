@@ -168,10 +168,8 @@ export interface InterviewHistoryProps {
   className?: string
 }
 
-// Service result types
-export type ServiceResult<T> = 
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string }
+// Use the main ServiceResult from lib/types
+import type { ServiceResult } from '@/lib/types'
 
 // Interview scheduling availability
 export interface TimeSlot {

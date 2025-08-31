@@ -165,7 +165,7 @@ export async function generateProposal(
 /**
  * Calculate proposal value based on pricing structure
  */
-function calculateProposalValue(
+export function calculateProposalValue(
   pricingStructure: PricingStructure, 
   variables: Record<string, any>
 ): number {

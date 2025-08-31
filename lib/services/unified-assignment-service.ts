@@ -160,7 +160,7 @@ export async function getWorkloadDistribution(): Promise<ApiResponse<WorkloadDis
 
       return {
         managerId: manager.user_id,
-        managerName: `${manager.users.first_name} ${manager.users.last_name}`,
+        managerName: `${(manager.users as any).first_name} ${(manager.users as any).last_name}`,
         currentWorkload: totalLeads,
         maxWorkload,
         utilizationRate: Math.round(utilizationRate * 10) / 10,
@@ -521,7 +521,9 @@ export async function autoAssignLeads(
       } else {
         skipped.push({
           leadId: recommendation.leadId,
-          reason: assignmentResult.error || 'Assignment failed'
+          reason: typeof assignmentResult.error === 'string' 
+            ? assignmentResult.error 
+            : assignmentResult.error?.message || 'Assignment failed'
         })
       }
     }

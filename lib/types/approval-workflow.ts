@@ -184,10 +184,40 @@ export interface AuditTrailViewerProps {
   className?: string
 }
 
-// Service result types
-export type ServiceResult<T> = 
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string }
+// Service result types - use the main ServiceResult from lib/types
+import type { ServiceResult } from '@/lib/types'
+
+// Re-export for consumers
+export type { ServiceResult }
+
+// Audit record creation request
+export interface CreateAuditRecordRequest {
+  action: string
+  details: Record<string, any>
+  entityId: string
+  entityType: string
+  userId: string
+  timestamp?: Date
+}
+
+// Audit integrity report
+export interface AuditIntegrityReport {
+  totalRecords: number
+  verifiedRecords: number
+  integrityScore: number
+  anomalies: string[]
+  lastValidated: Date
+}
+
+// Audit export filters
+export interface AuditExportFilters {
+  startDate?: Date
+  endDate?: Date
+  actions?: string[]
+  entityTypes?: string[]
+  userIds?: string[]
+  format?: 'csv' | 'json' | 'xlsx'
+}
 
 // Approval workflow filters and query options
 export interface ApprovalFilters {

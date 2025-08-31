@@ -65,14 +65,14 @@ export async function exportUnifiedLeads(
           assigned_manager:users!assigned_to(first_name, last_name, email),
           created_by_user:users!created_by(first_name, last_name)
         `)
-        .gte('created_at', filters.dateRange.start.toISOString())
-        .lte('created_at', filters.dateRange.end.toISOString())
+        .gte('created_at', filters.dateRange?.start || new Date(0).toISOString())
+        .lte('created_at', filters.dateRange?.end || new Date().toISOString())
 
       if (filters.sources?.length) {
         clientQuery = clientQuery.in('source_type', filters.sources)
       }
-      if (filters.assignedManagers?.length) {
-        clientQuery = clientQuery.in('assigned_to', filters.assignedManagers)
+      if (filters.assignedUsers?.length) {
+        clientQuery = clientQuery.in('assigned_to', filters.assignedUsers)
       }
       if (filters.statuses?.length) {
         clientQuery = clientQuery.in('status', filters.statuses)
@@ -99,14 +99,14 @@ export async function exportUnifiedLeads(
           assigned_manager:users!assigned_to(first_name, last_name, email),
           created_by_user:users!created_by(first_name, last_name)
         `)
-        .gte('created_at', filters.dateRange.start.toISOString())
-        .lte('created_at', filters.dateRange.end.toISOString())
+        .gte('created_at', filters.dateRange?.start || new Date(0).toISOString())
+        .lte('created_at', filters.dateRange?.end || new Date().toISOString())
 
       if (filters.sources?.length) {
         guardQuery = guardQuery.in('source_type', filters.sources)
       }
-      if (filters.assignedManagers?.length) {
-        guardQuery = guardQuery.in('assigned_to', filters.assignedManagers)
+      if (filters.assignedUsers?.length) {
+        guardQuery = guardQuery.in('assigned_to', filters.assignedUsers)
       }
       if (filters.statuses?.length) {
         guardQuery = guardQuery.in('status', filters.statuses)
@@ -314,7 +314,7 @@ function groupLeadsBy(leads: any[], groupBy: string): any[] {
   // Flatten grouped data with group headers
   const flattenedData: any[] = []
   
-  Object.entries(grouped).forEach(([groupName, groupLeads]) => {
+  Object.entries(grouped).forEach(([groupName, groupLeads]: [string, any[]]) => {
     // Add group header row
     flattenedData.push({
       id: `GROUP: ${groupName} (${groupLeads.length} records)`,

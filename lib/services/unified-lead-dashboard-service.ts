@@ -9,7 +9,9 @@ import {
   PipelineVelocity,
   ManagerPerformance,
   ConversionMetrics,
-  SourceAttribution
+  SourceAttribution,
+  LeadSource,
+  LeadStatus
 } from '@/lib/types/unified-leads'
 import { ApiResponse } from '@/lib/types'
 
@@ -270,8 +272,8 @@ export class UnifiedLeadDashboardService {
       const unifiedLead: UnifiedLead = {
         id: rawLead.id,
         type: isClientLead ? 'client' : 'guard',
-        source: this.determineLeadSource(rawLead),
-        status: this.normalizeStatus(rawLead.status, isClientLead),
+        source: this.determineLeadSource(rawLead) as LeadSource,
+        status: this.normalizeStatus(rawLead.status, isClientLead) as LeadStatus,
         priority: this.calculatePriority(rawLead),
         assignedManager: rawLead.assigned_manager_id,
         createdAt: new Date(rawLead.created_at),
@@ -393,7 +395,7 @@ export class UnifiedLeadDashboardService {
     }
     
     const mappings = isClientLead ? statusMappings.client : statusMappings.guard
-    return mappings[status] || status
+    return (mappings as Record<string, string>)[status] || status
   }
 
   private static calculatePriority(rawLead: any): 'low' | 'medium' | 'high' | 'critical' {
@@ -409,7 +411,7 @@ export class UnifiedLeadDashboardService {
 
   private static buildSourceAttribution(rawLead: any): SourceAttribution {
     return {
-      originalSource: this.determineLeadSource(rawLead),
+      originalSource: this.determineLeadSource(rawLead) as LeadSource,
       sourceDetails: rawLead.source_details ? JSON.parse(rawLead.source_details) : {},
       utmParameters: rawLead.utm_parameters ? JSON.parse(rawLead.utm_parameters) : undefined,
       campaignId: rawLead.campaign_id,
