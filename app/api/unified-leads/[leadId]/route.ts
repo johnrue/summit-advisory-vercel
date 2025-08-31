@@ -7,10 +7,10 @@ import { supabase } from '@/lib/supabase'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
-    const { leadId } = params
+    const { leadId } = await params
 
     if (!leadId) {
       return NextResponse.json(
@@ -84,10 +84,10 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
-    const { leadId } = params
+    const { leadId } = await params
     const body = await request.json()
 
     if (!leadId) {
@@ -158,10 +158,10 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
-    const { leadId } = params
+    const { leadId } = await params
     const searchParams = request.nextUrl.searchParams
     const leadType = searchParams.get('type')
 

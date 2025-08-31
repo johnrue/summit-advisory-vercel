@@ -4,7 +4,7 @@ import { validateRequestAuth } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate authentication and role
@@ -13,7 +13,8 @@ export async function GET(
       return NextResponse.json({ error: authResult.error }, { status: authResult.status })
     }
 
-    const result = await ProjectManagementService.getProjectById(params.id)
+    const { id } = await params
+    const result = await ProjectManagementService.getProjectById(id)
     
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 404 })
@@ -47,7 +48,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate authentication and role
@@ -58,7 +59,8 @@ export async function PUT(
 
     const body = await request.json()
 
-    const result = await ProjectManagementService.updateProject(params.id, body, authResult.userId!)
+    const { id } = await params
+    const result = await ProjectManagementService.updateProject(id, body, authResult.userId!)
     
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 400 })
@@ -81,7 +83,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate authentication and role
@@ -90,7 +92,8 @@ export async function DELETE(
       return NextResponse.json({ error: authResult.error }, { status: authResult.status })
     }
 
-    const result = await ProjectManagementService.deleteProject(params.id, authResult.userId!)
+    const { id } = await params
+    const result = await ProjectManagementService.deleteProject(id, authResult.userId!)
     
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 400 })

@@ -10,14 +10,15 @@ const supabase = createClient(
 )
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
+  const { id } = await params
   const auditId = await AIAuditService.logProcessingStart(
-    params.id,
+    id,
     'data_validation',
     'resume_data_validator_v1',
     'system',
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   )
 
   try {
-    const { id } = params
+    // id is already extracted above before the try block
 
     // Get application data
     const { data: application, error } = await supabase

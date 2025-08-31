@@ -43,6 +43,7 @@ export interface UnifiedAnalytics extends LeadAnalytics {
     conversionRate: number
   }[]
   trendAnalysis: TimeSeriesData[]
+  trendData: TimeSeriesData[]
 }
 
 /**
@@ -57,8 +58,11 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
         *,
         users!assigned_to(first_name, last_name)
       `)
-      .gte('created_at', filters.dateRange.start.toISOString())
-      .lte('created_at', filters.dateRange.end.toISOString())
+    
+    if (filters.dateRange) {
+      clientQuery.gte('created_at', filters.dateRange.start.toISOString())
+        .lte('created_at', filters.dateRange.end.toISOString())
+    }
 
     if (filters.sources?.length) {
       clientQuery.in('source_type', filters.sources)
@@ -77,8 +81,11 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
         *,
         users!assigned_to(first_name, last_name)
       `)
-      .gte('created_at', filters.dateRange.start.toISOString())
-      .lte('created_at', filters.dateRange.end.toISOString())
+    
+    if (filters.dateRange) {
+      guardQuery.gte('created_at', filters.dateRange.start.toISOString())
+        .lte('created_at', filters.dateRange.end.toISOString())
+    }
 
     if (filters.sources?.length) {
       guardQuery.in('source_type', filters.sources)
@@ -139,7 +146,9 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       : 0
 
     // Calculate lead velocity (leads per day in the date range)
-    const daysDiff = Math.ceil((filters.dateRange.end.getTime() - filters.dateRange.start.getTime()) / (1000 * 60 * 60 * 24))
+    const daysDiff = filters.dateRange 
+      ? Math.ceil((filters.dateRange.end.getTime() - filters.dateRange.start.getTime()) / (1000 * 60 * 60 * 24))
+      : 1
     const leadVelocity = daysDiff > 0 ? totalLeads / daysDiff : 0
 
     const crossPipelineMetrics = {
@@ -274,10 +283,12 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
 
     // Generate time series data (weekly buckets)
     const trendAnalysis: TimeSeriesData[] = []
-    const currentDate = new Date(filters.dateRange.start)
-    const endDate = new Date(filters.dateRange.end)
+    
+    if (filters.dateRange) {
+      const currentDate = new Date(filters.dateRange.start)
+      const endDate = new Date(filters.dateRange.end)
 
-    while (currentDate <= endDate) {
+      while (currentDate <= endDate) {
       const weekStart = new Date(currentDate)
       const weekEnd = new Date(currentDate)
       weekEnd.setDate(weekEnd.getDate() + 6)
@@ -311,6 +322,7 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       })
 
       currentDate.setDate(currentDate.getDate() + 7)
+      }
     }
 
     const analytics: UnifiedAnalytics = {
@@ -326,20 +338,25 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       sourcePerformance: sourceComparison.map(s => ({
         source: s.source,
         totalLeads: s.clientLeads + s.guardLeads,
-        convertedLeads: s.clientConversions + s.guardConversions,
+        clientLeads: s.clientLeads,
+        guardLeads: s.guardLeads,
         conversionRate: s.efficiency,
         averageValue: s.totalROI,
+        averageScore: 0, // Would need score calculation
         roi: s.totalROI
       })),
       statusDistribution: [], // Would need detailed status breakdown
       managerPerformance: managerWorkloadDistribution.map(m => ({
         managerId: m.managerId,
         managerName: m.managerName,
-        assignedLeads: m.totalWorkload,
-        contactedLeads: 0, // Would need contact tracking
-        convertedLeads: 0, // Would need conversion tracking
+        totalAssigned: m.totalWorkload,
+        clientLeads: m.clientLeads,
+        guardLeads: m.guardLeads,
+        totalConverted: 0, // Would need conversion tracking
+        conversionRate: m.conversionRate,
         averageResponseTime: m.responseTime,
-        conversionRate: m.conversionRate
+        totalValue: 0, // Would need value calculation
+        currentWorkload: m.totalWorkload
       })),
       timeSeriesData: trendAnalysis.map(t => ({
         period: t.period,
@@ -354,7 +371,8 @@ export async function getUnifiedAnalytics(filters: FilterCriteria): Promise<ApiR
       sourceComparison,
       conversionFunnel: funnelData,
       managerWorkloadDistribution,
-      trendAnalysis
+      trendAnalysis,
+      trendData: trendAnalysis
     }
 
     return {

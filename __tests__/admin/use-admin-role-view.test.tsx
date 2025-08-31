@@ -2,7 +2,7 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { useAdminRoleView } from '@/hooks/use-admin-role-view'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useUserRole } from '@/hooks/use-user-role'
-import { adminRoleViewService } from '@/lib/admin/role-view-service'
+import { adminRoleViewService, type RoleViewSwitchResponse } from '@/lib/admin/role-view-service'
 
 // Mock dependencies
 jest.mock('@/lib/auth/auth-context')
@@ -29,7 +29,7 @@ describe('useAdminRoleView', () => {
       user: mockUser,
       signOut: jest.fn(),
       signIn: jest.fn(),
-      isLoading: false,
+      loading: false,
       error: null
     } as any)
 
@@ -42,7 +42,7 @@ describe('useAdminRoleView', () => {
 
   describe('admin user', () => {
     beforeEach(() => {
-      mockUseUserRole.mockReturnValue({ role: 'admin', isLoading: false, error: null })
+      mockUseUserRole.mockReturnValue({ role: 'admin', loading: false, error: null })
       
       mockAdminRoleViewService.getCurrentViewRole.mockReturnValue('admin')
       mockAdminRoleViewService.getAvailableViewRoles.mockReturnValue(['admin', 'manager', 'guard'])
@@ -197,7 +197,7 @@ describe('useAdminRoleView', () => {
 
   describe('non-admin user', () => {
     beforeEach(() => {
-      mockUseUserRole.mockReturnValue({ role: 'manager', isLoading: false, error: null })
+      mockUseUserRole.mockReturnValue({ role: 'manager', loading: false, error: null })
       
       mockAdminRoleViewService.getCurrentViewRole.mockReturnValue('manager')
       mockAdminRoleViewService.getAvailableViewRoles.mockReturnValue(['admin', 'manager', 'guard'])
@@ -240,7 +240,7 @@ describe('useAdminRoleView', () => {
 
   describe('loading states', () => {
     beforeEach(() => {
-      mockUseUserRole.mockReturnValue({ role: 'admin', isLoading: false, error: null })
+      mockUseUserRole.mockReturnValue({ role: 'admin', loading: false, error: null })
       
       mockAdminRoleViewService.getCurrentViewRole.mockReturnValue('admin')
       mockAdminRoleViewService.getAvailableViewRoles.mockReturnValue(['admin', 'manager', 'guard'])
@@ -253,11 +253,11 @@ describe('useAdminRoleView', () => {
 
     it('should show loading state during role switch', async () => {
       // Delay the service response to test loading state
-      let resolvePromise: (value: any) => void
+      let resolvePromise: (value: RoleViewSwitchResponse) => void
       mockAdminRoleViewService.switchRoleView.mockImplementation(() => {
         return new Promise(resolve => {
           resolvePromise = resolve
-        })
+        }) as any
       })
 
       const { result } = renderHook(() => useAdminRoleView())

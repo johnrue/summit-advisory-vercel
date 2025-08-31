@@ -1,5 +1,116 @@
 // TypeScript interfaces for the Summit Advisory application
 
+// CORE TYPES - Service Response Pattern
+export interface ServiceResult<T> {
+  success: boolean
+  data?: T
+  error?: string
+  message?: string
+}
+
+export interface ApiResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+  message?: string
+}
+
+// CORE ENUM DEFINITIONS - Single source of truth
+// These enums are the authoritative definitions used across all modules
+
+// Unified Lead Status - Used by both Client and Guard leads
+export type LeadStatus = 
+  | 'new'
+  | 'contacted'
+  | 'qualified'
+  | 'disqualified'
+  | 'application-sent'
+  | 'application-started'
+  | 'application-received'
+  | 'documents-pending'
+  | 'under-review'
+  | 'background-check'
+  | 'interview-scheduled'
+  | 'proposal'
+  | 'negotiation'
+  | 'approved'
+  | 'hired'
+  | 'converted'
+  | 'rejected'
+  | 'lost'
+  | 'nurturing'
+  | 'unresponsive'
+
+// Application Status - Specific to Guard applications
+export type ApplicationStatus = 
+  | 'new'
+  | 'link_sent'
+  | 'application_started'
+  | 'application_received'
+  | 'documents_pending'
+  | 'under_review'
+  | 'background_check'
+  | 'interview_scheduled'
+  | 'approved'
+  | 'rejected'
+  | 'hired'
+
+// Guard-specific lead statuses that extend base LeadStatus
+export type GuardLeadStatus = Extract<LeadStatus, 
+  | 'new'
+  | 'contacted'
+  | 'qualified'
+  | 'disqualified'
+  | 'nurturing'
+  | 'application-sent'
+  | 'converted'
+  | 'lost'
+>
+
+// Guard application sub-statuses that map to ApplicationStatus
+export type GuardApplicationStatus = ApplicationStatus
+
+// Audit Actions - Used for compliance tracking
+export type AuditAction = 
+  | 'created' 
+  | 'updated' 
+  | 'deleted' 
+  | 'approved' 
+  | 'rejected'
+  | 'assigned'
+  | 'unassigned'
+  | 'activated'
+  | 'deactivated'
+  | 'archived'
+  | 'generated'
+  | 'emailed'
+  | 'scheduled'
+  | 'failed'
+
+// Audit Entity Types
+export type AuditEntityType = 
+  | 'guard' 
+  | 'shift' 
+  | 'application'
+  | 'schedule'
+  | 'user_profile'
+  | 'hiring_decision'
+  | 'role_assignment'
+  | 'compliance_record'
+  | 'compliance_report'
+
+// Lead Sources - Unified across all lead types
+export type LeadSource = 
+  | 'website'
+  | 'qr-code' 
+  | 'social-media'
+  | 'referral'
+  | 'job-board'
+  | 'direct-contact'
+  | 'networking'
+  | 'partner'
+  | 'cold-outreach'
+
 // Consultation request form data
 export interface ConsultationFormData {
   firstName: string
@@ -1018,30 +1129,6 @@ export interface GeographicSource {
   recruitingRegion?: string
 }
 
-export type GuardApplicationStatus = 
-  | 'lead_captured'
-  | 'application_started'
-  | 'application_submitted'
-  | 'under_review'
-  | 'background_check'
-  | 'interview_scheduled'
-  | 'interview_completed'
-  | 'reference_check'
-  | 'offer_extended'
-  | 'offer_accepted'
-  | 'hire_completed'
-  | 'rejected'
-  | 'withdrawn'
-
-export type GuardLeadStatus = 
-  | 'new'
-  | 'contacted'
-  | 'qualified'
-  | 'disqualified'
-  | 'nurturing'
-  | 'application_pending'
-  | 'converted'
-  | 'lost'
 
 export type GuardLeadStage = 
   | 'initial_contact'

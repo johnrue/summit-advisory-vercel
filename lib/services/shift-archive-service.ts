@@ -11,7 +11,7 @@ import type {
   ArchiveSearchQuery,
   ArchiveSearchResult 
 } from '@/lib/types/archive-types';
-import type { ServiceResult } from '@/lib/types/service-types';
+import type { ServiceResult } from '@/lib/types';
 
 export class ShiftArchiveService {
   private static supabase = createClient();

@@ -2,6 +2,7 @@
 // Extending the guard-leads system with comprehensive application data models
 
 import type { GuardLead } from './guard-leads'
+import type { ApplicationStatus } from '../types'
 
 // Personal Information
 export interface PersonalInfo {
@@ -177,22 +178,11 @@ export interface DocumentReference {
   ai_processed: boolean
 }
 
-// Application Status Tracking
-export type ApplicationStatus = 
-  | 'new' // Initial lead status
-  | 'link_sent' // Application link sent to applicant
-  | 'application_started' // Applicant began filling out form
-  | 'application_received' // Complete application submitted
-  | 'documents_pending' // Waiting for required documents
-  | 'under_review' // Manager reviewing application
-  | 'background_check' // Background verification in progress
-  | 'interview_scheduled' // Interview scheduled
-  | 'approved' // Application approved
-  | 'rejected' // Application rejected
-  | 'hired' // Applicant hired
+// Application Status Tracking - now imported from main types file
 
 // Extended Guard Lead with Application Data
-export interface GuardApplication extends GuardLead {
+export interface GuardApplication extends Omit<GuardLead, 'status'> {
+  status: ApplicationStatus
   application_data?: ApplicationData
   ai_parsed_data?: AIParsedData
   documents?: DocumentReferences

@@ -1,6 +1,9 @@
 import { createClient } from './supabase'
 import type { UserRole } from './role-service'
 
+// Re-export UserRole for external use
+export type { UserRole }
+
 // Comprehensive permission matrix interface
 export interface PermissionMatrix {
   users: {

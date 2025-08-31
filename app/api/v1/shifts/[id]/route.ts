@@ -4,10 +4,10 @@ import type { ShiftUpdateData } from '@/lib/types/shift-types'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const shiftId = params.id
+    const { id: shiftId } = await params
     
     if (!shiftId) {
       return NextResponse.json({
@@ -35,7 +35,7 @@ export async function GET(
       }, { status })
     }
   } catch (error) {
-    console.error(`GET /api/v1/shifts/${params.id} error:`, error)
+    console.error(`GET /api/v1/shifts/[id] error:`, error)
     return NextResponse.json({
       success: false,
       error: {
@@ -49,10 +49,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const shiftId = params.id
+    const { id: shiftId } = await params
     const body = await request.json()
     
     if (!shiftId) {
@@ -102,7 +102,7 @@ export async function PUT(
       }, { status })
     }
   } catch (error) {
-    console.error(`PUT /api/v1/shifts/${params.id} error:`, error)
+    console.error(`PUT /api/v1/shifts/[id] error:`, error)
     return NextResponse.json({
       success: false,
       error: {
@@ -116,10 +116,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const shiftId = params.id
+    const { id: shiftId } = await params
     const { searchParams } = new URL(request.url)
     const reason = searchParams.get('reason') || 'Shift cancelled by manager'
     
@@ -152,7 +152,7 @@ export async function DELETE(
       }, { status })
     }
   } catch (error) {
-    console.error(`DELETE /api/v1/shifts/${params.id} error:`, error)
+    console.error(`DELETE /api/v1/shifts/[id] error:`, error)
     return NextResponse.json({
       success: false,
       error: {

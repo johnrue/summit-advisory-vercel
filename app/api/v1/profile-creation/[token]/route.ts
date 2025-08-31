@@ -7,10 +7,10 @@ import type { GuardProfileData } from '@/lib/services/profile-creation-trigger-s
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
-    const token = params.token
+    const { token } = await params
 
     // Validate the profile creation token
     const result = await profileCreationTriggerService.validateCreationToken(token)
@@ -48,10 +48,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
-    const token = params.token
+    const { token } = await params
     const body = await request.json()
 
     // Validate the token first

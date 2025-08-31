@@ -7,11 +7,12 @@ const __dirname = dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // TypeScript and ESLint validation re-enabled for proper type safety
   typescript: {
-    ignoreBuildErrors: true,
+    // Removed ignoreBuildErrors to enforce type safety standards
+  },
+  eslint: {
+    // Removed ignoreDuringBuilds to enforce code quality standards
   },
   images: {
     unoptimized: true,

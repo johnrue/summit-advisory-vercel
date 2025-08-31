@@ -8,7 +8,7 @@ import type {
   StatusTransition, 
   WorkflowTransition 
 } from '@/lib/types/kanban-types';
-import type { ServiceResult } from '@/lib/types/service-types';
+import type { ServiceResult } from '@/lib/types';
 
 export class ShiftWorkflowService {
   private static supabase = createClient();

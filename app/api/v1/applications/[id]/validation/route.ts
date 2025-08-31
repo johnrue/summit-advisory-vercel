@@ -9,14 +9,14 @@ const supabase = createClient(
 )
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Get application data
     const { data: application, error } = await supabase

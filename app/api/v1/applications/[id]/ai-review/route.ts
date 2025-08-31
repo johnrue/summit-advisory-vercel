@@ -7,14 +7,14 @@ const supabase = createClient(
 )
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { action, field, value, confidence_threshold } = body
 

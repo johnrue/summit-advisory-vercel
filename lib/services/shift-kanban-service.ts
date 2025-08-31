@@ -13,7 +13,7 @@ import type {
   KanbanMetrics,
   KanbanActivity 
 } from '@/lib/types/kanban-types';
-import type { ServiceResult } from '@/lib/types/service-types';
+import type { ServiceResult } from '@/lib/types';
 
 export class ShiftKanbanService {
   private static supabase = createClient();

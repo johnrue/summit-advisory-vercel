@@ -5,15 +5,27 @@ import { UnifiedLead, FilterCriteria } from '@/lib/types/unified-leads'
 const createMockLead = (overrides: Partial<UnifiedLead> = {}): UnifiedLead => ({
   id: 'test-lead',
   type: 'client',
-  firstName: 'Test',
-  lastName: 'Lead',
-  email: 'test@example.com',
-  phone: '555-0000',
   status: 'new',
   source: 'website',
   priority: 'medium',
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
+  clientInfo: {
+    firstName: 'Test',
+    lastName: 'Lead',
+    email: 'test@example.com',
+    phone: '555-0000',
+    serviceType: 'armed'
+  },
+  sourceAttribution: {
+    originalSource: 'website',
+    sourceDetails: {}
+  },
+  conversionMetrics: {
+    contactCount: 0
+  },
+  engagementScore: 50,
+  responseTime: 24,
   ...overrides
 })
 
@@ -27,9 +39,9 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const mockLeads: UnifiedLead[] = [
         createMockLead({ id: 'client-1', type: 'client', status: 'new' }),
         createMockLead({ id: 'client-2', type: 'client', status: 'contacted' }),
-        createMockLead({ id: 'client-3', type: 'client', status: 'won' }),
-        createMockLead({ id: 'client-4', type: 'client', status: 'won' }),
-        createMockLead({ id: 'client-5', type: 'client', status: 'closed' }),
+        createMockLead({ id: 'client-3', type: 'client', status: 'converted' }),
+        createMockLead({ id: 'client-4', type: 'client', status: 'converted' }),
+        createMockLead({ id: 'client-5', type: 'client', status: 'lost' }),
       ]
 
       // Mock the service to return our test data
@@ -44,7 +56,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') },
+        dateRange: { start: '2024-01-01', end: '2024-01-31' },
         leadType: ['client']
       }
 
@@ -78,7 +90,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') },
+        dateRange: { start: '2024-01-01', end: '2024-01-31' },
         leadType: ['guard']
       }
 
@@ -97,7 +109,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
         // Client leads: 3 total, 1 converted
         createMockLead({ id: 'client-1', type: 'client', status: 'new' }),
         createMockLead({ id: 'client-2', type: 'client', status: 'contacted' }),
-        createMockLead({ id: 'client-3', type: 'client', status: 'won' }),
+        createMockLead({ id: 'client-3', type: 'client', status: 'converted' }),
         
         // Guard leads: 4 total, 2 converted
         createMockLead({ id: 'guard-1', type: 'guard', status: 'new' }),
@@ -117,7 +129,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -137,18 +149,18 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const mockLeads: UnifiedLead[] = [
         // Website: 4 leads, 2 conversions = 50%
         createMockLead({ id: 'web-1', source: 'website', status: 'new' }),
-        createMockLead({ id: 'web-2', source: 'website', status: 'won' }),
+        createMockLead({ id: 'web-2', source: 'website', status: 'converted' }),
         createMockLead({ id: 'web-3', source: 'website', status: 'hired', type: 'guard' }),
         createMockLead({ id: 'web-4', source: 'website', status: 'contacted' }),
         
         // Referral: 3 leads, 1 conversion = 33.33%
         createMockLead({ id: 'ref-1', source: 'referral', status: 'new' }),
-        createMockLead({ id: 'ref-2', source: 'referral', status: 'won' }),
+        createMockLead({ id: 'ref-2', source: 'referral', status: 'converted' }),
         createMockLead({ id: 'ref-3', source: 'referral', status: 'contacted' }),
         
         // LinkedIn: 2 leads, 0 conversions = 0%
-        createMockLead({ id: 'li-1', source: 'linkedin', status: 'new' }),
-        createMockLead({ id: 'li-2', source: 'linkedin', status: 'qualified' }),
+        createMockLead({ id: 'li-1', source: 'social-media', status: 'new' }),
+        createMockLead({ id: 'li-2', source: 'social-media', status: 'qualified' }),
       ]
 
       jest.doMock('@/lib/services/unified-lead-dashboard-service', () => ({
@@ -162,7 +174,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -186,9 +198,9 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
         conversionRate: 33.33
       })
 
-      const linkedinPerf = result.data?.sourcePerformance?.find(s => s.source === 'linkedin')
-      expect(linkedinPerf).toMatchObject({
-        source: 'linkedin',
+      const socialMediaPerf = result.data?.sourcePerformance?.find(s => s.source === 'social-media')
+      expect(socialMediaPerf).toMatchObject({
+        source: 'social-media',
         totalLeads: 2,
         conversions: 0,
         conversionRate: 0
@@ -227,7 +239,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -252,7 +264,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
         createMockLead({ 
           id: 'mgr1-2', 
           assignedManager: 'mgr-1', 
-          status: 'won',
+          status: 'converted',
           createdAt: new Date('2024-01-01T09:00:00Z'),
           updatedAt: new Date('2024-01-01T15:00:00Z')
         }),
@@ -300,7 +312,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -333,11 +345,11 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const mockLeads: UnifiedLead[] = [
         // Day 1: 2 client, 1 guard, 1 conversion
         createMockLead({ id: 'day1-1', type: 'client', status: 'new', createdAt: new Date('2024-01-01') }),
-        createMockLead({ id: 'day1-2', type: 'client', status: 'won', createdAt: new Date('2024-01-01') }),
+        createMockLead({ id: 'day1-2', type: 'client', status: 'converted', createdAt: new Date('2024-01-01') }),
         createMockLead({ id: 'day1-3', type: 'guard', status: 'new', createdAt: new Date('2024-01-01') }),
         
         // Day 2: 1 client, 2 guard, 2 conversions
-        createMockLead({ id: 'day2-1', type: 'client', status: 'won', createdAt: new Date('2024-01-02') }),
+        createMockLead({ id: 'day2-1', type: 'client', status: 'converted', createdAt: new Date('2024-01-02') }),
         createMockLead({ id: 'day2-2', type: 'guard', status: 'hired', createdAt: new Date('2024-01-02') }),
         createMockLead({ id: 'day2-3', type: 'guard', status: 'contacted', createdAt: new Date('2024-01-02') }),
       ]
@@ -353,7 +365,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-02') }
+        dateRange: { start: '2024-01-01', end: '2024-01-02' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -392,7 +404,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)
@@ -431,7 +443,7 @@ describe('Analytics Accuracy Tests - Conversion Tracking', () => {
       const { getUnifiedAnalytics } = await import('@/lib/services/unified-lead-analytics-service')
       
       const filters: FilterCriteria = {
-        dateRange: { start: new Date('2024-01-01'), end: new Date('2024-01-31') }
+        dateRange: { start: '2024-01-01', end: '2024-01-31' }
       }
 
       const result = await getUnifiedAnalytics(filters)

@@ -50,10 +50,14 @@ describe('Unified Assignment Service', () => {
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     clientInfo: {
-      company: 'Test Corp',
-      industry: 'Technology',
-      employeeCount: 100,
-      securityNeeds: ['patrol']
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@testcorp.com',
+      phone: '555-0123',
+      companyName: 'Test Corp',
+      serviceType: 'armed',
+      industryType: 'Technology',
+      companySize: '100-500'
     }
   }
 

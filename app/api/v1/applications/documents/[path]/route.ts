@@ -6,18 +6,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDocumentSignedUrl } from '@/lib/services/document-service'
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     path: string[]
-  }
+  }>
 }
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
     // Reconstruct the full storage path from URL segments
-    const storagePath = params.path.join('/')
+    const { path } = await params
+    const storagePath = path.join('/')
 
     if (!storagePath) {
       return NextResponse.json(

@@ -5,14 +5,14 @@ import { userSupportService } from '@/lib/admin/user-support-service'
 import type { UserRole } from '@/lib/auth/role-service'
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     userId: string
-  }
+  }>
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { userId } = params
+    const { userId } = await params
     const supabase = createClient()
     
     // Get the current session

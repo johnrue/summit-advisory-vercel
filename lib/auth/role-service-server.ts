@@ -1,6 +1,9 @@
 import { createClient } from './supabase-server'
 import type { UserRole } from './role-service'
 
+// Re-export UserRole for external use
+export type { UserRole }
+
 // Server-side role service for middleware and API routes
 export class ServerRoleService {
   async getUserRole(userId: string): Promise<{ role: UserRole | null; error?: string }> {

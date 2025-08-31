@@ -1,27 +1,7 @@
 import type { Database } from './database'
+import type { LeadSource, LeadStatus } from '../types'
 
-export type LeadSource = 
-  | 'website'
-  | 'qr-code' 
-  | 'social-media'
-  | 'referral'
-  | 'job-board'
-  | 'direct-contact'
-
-export type LeadStatus = 
-  | 'new'
-  | 'contacted'
-  | 'application-sent'
-  | 'application-started'
-  | 'application-received'
-  | 'documents-pending'
-  | 'under-review'
-  | 'background-check'
-  | 'interview-scheduled'
-  | 'approved'
-  | 'hired'
-  | 'rejected'
-  | 'unresponsive'
+// LeadSource and LeadStatus are now imported from main types file
 
 export interface GuardLead {
   id: string

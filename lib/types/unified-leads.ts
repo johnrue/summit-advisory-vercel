@@ -1,4 +1,5 @@
 import type { Database } from './database'
+import type { LeadSource, LeadStatus } from '../types'
 
 // Base unified lead interface extending existing schemas
 export interface UnifiedLead {
@@ -32,26 +33,7 @@ export interface UnifiedLead {
   responseTime: number
 }
 
-export type LeadSource = 
-  | 'website'
-  | 'qr-code' 
-  | 'social-media'
-  | 'referral'
-  | 'job-board'
-  | 'direct-contact'
-  | 'networking'
-  | 'partner'
-  | 'cold-outreach'
-
-export type LeadStatus = 
-  | 'new'
-  | 'contacted'
-  | 'qualified'
-  | 'proposal'
-  | 'negotiation'
-  | 'converted'
-  | 'lost'
-  | 'nurturing'
+// LeadSource and LeadStatus are now imported from main types file
 
 export type LeadPriority = 'low' | 'medium' | 'high' | 'critical'
 

@@ -9,11 +9,12 @@ const calendarService = new CalendarBroadcastService()
 // GET /api/v1/calendar/feed/[token].ics - Serve ICS calendar feed
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ): Promise<NextResponse> {
   try {
     // Extract token from filename (remove .ics extension)
-    const accessToken = params.token.replace('.ics', '')
+    const { token } = await params
+    const accessToken = token.replace('.ics', '')
     
     if (!accessToken) {
       return new NextResponse('Missing access token', { 

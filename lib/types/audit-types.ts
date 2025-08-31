@@ -1,24 +1,6 @@
-export type AuditAction = 
-  | 'created' 
-  | 'updated' 
-  | 'deleted' 
-  | 'approved' 
-  | 'rejected'
-  | 'assigned'
-  | 'unassigned'
-  | 'activated'
-  | 'deactivated'
-  | 'archived'
+import type { AuditAction, AuditEntityType } from '../types'
 
-export type AuditEntityType = 
-  | 'guard' 
-  | 'shift' 
-  | 'application'
-  | 'schedule'
-  | 'user_profile'
-  | 'hiring_decision'
-  | 'role_assignment'
-  | 'compliance_record'
+// AuditAction and AuditEntityType are now imported from main types file
 
 export interface AuditLog {
   id: string

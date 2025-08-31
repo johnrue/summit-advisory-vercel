@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AssignmentService } from '@/lib/services/assignment-service';
 import { ConflictDetectionService } from '@/lib/services/conflict-detection-service';
+import { ShiftManagementService } from '@/lib/services/shift-service';
 import { AssignmentCreateData, AssignmentErrorCodes } from '@/lib/types/assignment-types';
 
 export async function POST(
@@ -123,10 +124,10 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const shiftId = params.id
+    const { id: shiftId } = await params
     
     if (!shiftId) {
       return NextResponse.json({
@@ -156,7 +157,7 @@ export async function DELETE(
       }, { status: 400 })
     }
   } catch (error) {
-    console.error(`DELETE /api/v1/shifts/${params.id}/assign error:`, error)
+    console.error(`DELETE /api/v1/shifts/[id]/assign error:`, error)
     return NextResponse.json({
       success: false,
       error: {

@@ -77,7 +77,7 @@ const updateLeadSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -94,7 +94,7 @@ export async function GET(
       )
     }
 
-    const leadId = params.id
+    const { id: leadId } = await params
 
     if (!leadId) {
       return NextResponse.json(
@@ -142,7 +142,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -159,7 +159,7 @@ export async function PUT(
       )
     }
 
-    const leadId = params.id
+    const { id: leadId } = await params
 
     if (!leadId) {
       return NextResponse.json(
@@ -236,7 +236,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -253,7 +253,7 @@ export async function DELETE(
       )
     }
 
-    const leadId = params.id
+    const { id: leadId } = await params
 
     if (!leadId) {
       return NextResponse.json(

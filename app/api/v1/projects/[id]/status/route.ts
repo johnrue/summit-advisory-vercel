@@ -5,7 +5,7 @@ import type { ProjectStatus } from '@/lib/types'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate authentication and role
@@ -32,8 +32,9 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     const result = await ProjectManagementService.updateProjectStatus(
-      params.id,
+      id,
       body.status,
       authResult.userId!,
       body.notes

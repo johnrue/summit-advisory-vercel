@@ -80,7 +80,7 @@ async function checkManagerAccess(request: NextRequest): Promise<boolean> {
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication and authorization
@@ -97,7 +97,7 @@ export async function PUT(
       )
     }
 
-    const leadId = params.id
+    const { id: leadId } = await params
     
     if (!leadId) {
       return NextResponse.json(

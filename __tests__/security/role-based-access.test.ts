@@ -35,13 +35,15 @@ jest.mock('@/lib/supabase', () => ({
   supabase: mockSupabase
 }))
 
-jest.mock('@/lib/auth/server-auth', () => ({
-  getServerAuth: jest.fn()
+jest.mock('@/lib/auth/role-service-server', () => ({
+  ServerRoleService: jest.fn().mockImplementation(() => ({
+    getUserRole: jest.fn()
+  }))
 }))
 
-import { getServerAuth } from '@/lib/auth/server-auth'
+import { ServerRoleService } from '@/lib/auth/role-service-server'
 
-const mockGetServerAuth = getServerAuth as jest.MockedFunction<typeof getServerAuth>
+const MockedServerRoleService = ServerRoleService as jest.MockedClass<typeof ServerRoleService>
 
 describe('Security Tests - Role-Based Access Control', () => {
   beforeEach(() => {

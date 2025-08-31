@@ -1,3 +1,4 @@
+import React from 'react'
 import { Resend } from 'resend'
 import { TOPSComplianceEmail } from '@/lib/templates/tops-compliance-email'
 import type { TOPSReportData } from '@/lib/types'
@@ -48,11 +49,11 @@ export class EmailService {
         from: 'Summit Advisory Compliance <compliance@summitadvisoryfirm.com>',
         to: recipients,
         subject: subject,
-        react: TOPSComplianceEmail({
-          reportData,
-          reportUrl,
-          recipientEmail: recipients[0] // Primary recipient for personalization
-        }),
+        react: <TOPSComplianceEmail
+          reportData={reportData}
+          reportUrl={reportUrl}
+          recipientEmail={recipients[0]} // Primary recipient for personalization
+        />,
         attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
         tags: [
           { name: 'type', value: 'compliance-report' },

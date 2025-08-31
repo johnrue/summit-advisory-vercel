@@ -544,6 +544,11 @@ export async function autoAssignLeads(
 /**
  * Get assignment history for a lead
  */
+// Export aliases for backward compatibility with tests
+export const assignLeadToManager = assignLead
+export const getManagerWorkload = getWorkloadDistribution
+export const bulkAssignLeads = autoAssignLeads
+
 export async function getAssignmentHistory(
   leadId: string
 ): Promise<ApiResponse<{

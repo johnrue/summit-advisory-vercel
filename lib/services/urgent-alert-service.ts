@@ -11,7 +11,7 @@ import type {
   AlertMetrics,
   AlertConfiguration 
 } from '@/lib/types/urgency-types';
-import type { ServiceResult } from '@/lib/types/service-types';
+import type { ServiceResult } from '@/lib/types';
 
 export class UrgentAlertService {
   private static supabase = createClient();

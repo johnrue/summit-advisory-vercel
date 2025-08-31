@@ -1,3 +1,4 @@
+import React from 'react'
 import { pdf } from '@react-pdf/renderer'
 import { put } from '@vercel/blob'
 import { TOPSReportPDF } from '@/lib/templates/tops-report-template'
@@ -18,7 +19,7 @@ export class PDFGenerator {
   ): Promise<{ url: string; size: number }> {
     try {
       // Generate PDF using React PDF renderer
-      const pdfDocument = pdf(TOPSReportPDF({ data: reportData }))
+      const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
       const pdfBuffer = await pdfDocument.toBuffer()
 
       // Upload to Vercel Blob storage
@@ -43,7 +44,7 @@ export class PDFGenerator {
    */
   static async generateTOPSReportBuffer(reportData: TOPSReportData): Promise<Buffer> {
     try {
-      const pdfDocument = pdf(TOPSReportPDF({ data: reportData }))
+      const pdfDocument = pdf(<TOPSReportPDF data={reportData} />)
       return await pdfDocument.toBuffer()
     } catch (error) {
       console.error('Error generating PDF buffer:', error)

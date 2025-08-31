@@ -4,10 +4,10 @@ import type { ShiftCreateData } from '@/lib/types/shift-types'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const sourceShiftId = params.id
+    const { id: sourceShiftId } = await params
     const body = await request.json()
     
     if (!sourceShiftId) {
@@ -50,7 +50,7 @@ export async function POST(
       }, { status })
     }
   } catch (error) {
-    console.error(`POST /api/v1/shifts/${params.id}/clone error:`, error)
+    console.error(`POST /api/v1/shifts/[id]/clone error:`, error)
     return NextResponse.json({
       success: false,
       error: {

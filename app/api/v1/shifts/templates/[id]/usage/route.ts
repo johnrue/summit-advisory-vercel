@@ -3,10 +3,10 @@ import { ShiftTemplateService } from '@/lib/services/shift-template-service'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const templateId = params.id
+    const { id: templateId } = await params
     
     if (!templateId) {
       return NextResponse.json({
@@ -34,7 +34,7 @@ export async function GET(
       }, { status })
     }
   } catch (error) {
-    console.error(`GET /api/v1/shifts/templates/${params.id}/usage error:`, error)
+    console.error(`GET /api/v1/shifts/templates/[id]/usage error:`, error)
     return NextResponse.json({
       success: false,
       error: {

@@ -4,7 +4,7 @@ import { validateRequestAuth } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate authentication and project access
@@ -13,7 +13,8 @@ export async function GET(
       return NextResponse.json({ error: authResult.error }, { status: authResult.status })
     }
 
-    const result = await ProjectCollaborationService.getProjectActivities(params.id, authResult.userId!)
+    const { id } = await params
+    const result = await ProjectCollaborationService.getProjectActivities(id, authResult.userId!)
     
     if (!result.success) {
       return NextResponse.json({ error: result.error }, { status: 404 })
