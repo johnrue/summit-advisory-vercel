@@ -53,7 +53,7 @@ export class NotificationPreferencesService {
           // No preferences found, create default
           return this.createDefaultPreferences(userId)
         }
-        return { success: false, error: error.message, code: 'GET_PREFERENCES_FAILED' }
+        return { success: false, error: { code: 'GET_PREFERENCES_FAILED' , message: error.message }}
       }
 
       return { success: true, data }
@@ -90,7 +90,7 @@ export class NotificationPreferencesService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'UPDATE_PREFERENCES_FAILED' }
+        return { success: false, error: { code: 'UPDATE_PREFERENCES_FAILED' , message: error.message }}
       }
 
       return { success: true, data }
@@ -133,7 +133,7 @@ export class NotificationPreferencesService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'CREATE_DEFAULT_PREFERENCES_FAILED' }
+        return { success: false, error: { code: 'CREATE_DEFAULT_PREFERENCES_FAILED' , message: error.message }}
       }
 
       return { success: true, data }
@@ -339,7 +339,7 @@ export class NotificationPreferencesService {
       const { data, error } = await query
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_USERS_FAILED' }
+        return { success: false, error: { code: 'GET_USERS_FAILED' , message: error.message }}
       }
 
       const userIds = data?.map(item => item.user_id) || []

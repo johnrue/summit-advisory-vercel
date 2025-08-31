@@ -42,7 +42,7 @@ export class NotificationService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'CREATE_NOTIFICATION_FAILED' }
+        return { success: false, error: { code: 'CREATE_NOTIFICATION_FAILED' , message: error.message }}
       }
 
       // Trigger real-time notification delivery
@@ -108,7 +108,7 @@ export class NotificationService {
       const { data, error } = await query
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_NOTIFICATIONS_FAILED' }
+        return { success: false, error: { code: 'GET_NOTIFICATIONS_FAILED' , message: error.message }}
       }
 
       return { success: true, data: data || [] }
@@ -137,7 +137,7 @@ export class NotificationService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'MARK_READ_FAILED' }
+        return { success: false, error: { code: 'MARK_READ_FAILED' , message: error.message }}
       }
 
       return { success: true, data }
@@ -165,7 +165,7 @@ export class NotificationService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'ACKNOWLEDGE_FAILED' }
+        return { success: false, error: { code: 'ACKNOWLEDGE_FAILED' , message: error.message }}
       }
 
       return { success: true, data }
@@ -189,7 +189,7 @@ export class NotificationService {
         .eq('recipient_id', userId)
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_STATS_FAILED' }
+        return { success: false, error: { code: 'GET_STATS_FAILED' , message: error.message }}
       }
 
       const stats: NotificationStats = {
@@ -272,7 +272,7 @@ export class NotificationService {
         .select('id')
 
       if (error) {
-        return { success: false, error: error.message, code: 'MARK_ALL_READ_FAILED' }
+        return { success: false, error: { code: 'MARK_ALL_READ_FAILED' , message: error.message }}
       }
 
       return { success: true, data: data.length }
@@ -297,7 +297,7 @@ export class NotificationService {
         .select('id')
 
       if (error) {
-        return { success: false, error: error.message, code: 'CLEANUP_FAILED' }
+        return { success: false, error: { code: 'CLEANUP_FAILED' , message: error.message }}
       }
 
       return { success: true, data: data.length }
@@ -449,7 +449,7 @@ export class NotificationService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'UPDATE_PREFERENCES_FAILED' }
+        return { success: false, error: { code: 'UPDATE_PREFERENCES_FAILED' , message: error.message }}
       }
 
       // Log preference change
@@ -493,7 +493,7 @@ export class NotificationService {
         .order('created_at', { ascending: false })
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_DIGEST_NOTIFICATIONS_FAILED' }
+        return { success: false, error: { code: 'GET_DIGEST_NOTIFICATIONS_FAILED' , message: error.message }}
       }
 
       // Filter out high priority notifications (these are sent immediately)
@@ -559,7 +559,7 @@ export class NotificationService {
       })
 
       if (!escalationNotification.success) {
-        return { success: false, error: escalationNotification.error, code: 'CREATE_ESCALATION_FAILED' }
+        return { success: false, error: { code: 'CREATE_ESCALATION_FAILED' , message: escalationNotification.error }}
       }
 
       // Log escalation

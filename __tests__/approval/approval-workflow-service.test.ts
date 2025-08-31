@@ -287,6 +287,25 @@ describe('ApprovalWorkflowService', () => {
       }
       mockSupabase.from.mockReturnValue({
         insert: jest.fn().mockReturnValue(mockInsertChain),
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn(),
+            order: jest.fn(() => ({
+              eq: jest.fn(),
+              single: jest.fn()
+            }))
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        })),
         update: jest.fn(() => ({
           eq: jest.fn().mockResolvedValue({
             data: mockDecisionRecord,
@@ -328,13 +347,32 @@ describe('ApprovalWorkflowService', () => {
 
       // Mock successful query
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
+            single: jest.fn(),
             order: jest.fn().mockResolvedValue({
               data: mockDecisions,
               error: null
             })
-          }))
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        })),
+        update: jest.fn(() => ({
+          eq: jest.fn()
         }))
       })
 
@@ -351,13 +389,32 @@ describe('ApprovalWorkflowService', () => {
 
       // Mock database error
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
+            single: jest.fn(),
             order: jest.fn().mockResolvedValue({
               data: null,
               error: { message: 'Database connection failed' }
             })
-          }))
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        })),
+        update: jest.fn(() => ({
+          eq: jest.fn()
         }))
       })
 
@@ -415,13 +472,35 @@ describe('ApprovalWorkflowService', () => {
 
       // Mock decision lookup
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
               data: mockDecision,
               error: null
-            })
-          }))
+            }),
+            order: jest.fn(() => ({
+              eq: jest.fn(),
+              single: jest.fn()
+            }))
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        })),
+        update: jest.fn(() => ({
+          eq: jest.fn()
         }))
       })
 
@@ -443,13 +522,35 @@ describe('ApprovalWorkflowService', () => {
 
       // Mock decision not found
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
               data: null,
               error: { message: 'Decision not found' }
-            })
-          }))
+            }),
+            order: jest.fn(() => ({
+              eq: jest.fn(),
+              single: jest.fn()
+            }))
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        })),
+        update: jest.fn(() => ({
+          eq: jest.fn()
         }))
       })
 

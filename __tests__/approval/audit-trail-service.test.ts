@@ -7,6 +7,7 @@ import type { CreateAuditRecordRequest } from '@/lib/services/audit-trail-servic
 import type { 
   AuditIntegrityReport,
   AuditFilters,
+  AuditExportFilters,
   DecisionAuditRecord,
   AuditEventType
 } from '@/lib/types/approval-workflow'
@@ -114,7 +115,23 @@ describe('AuditTrailService', () => {
         }))
       }
       mockSupabase.from.mockReturnValue({
-        insert: jest.fn().mockReturnValue(mockInsertChain)
+        insert: jest.fn().mockReturnValue(mockInsertChain),
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            order: jest.fn(),
+            single: jest.fn()
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        }))
       })
 
       const result = await service.createAuditRecord(auditRequest)
@@ -166,7 +183,23 @@ describe('AuditTrailService', () => {
         }))
       }
       mockSupabase.from.mockReturnValue({
-        insert: jest.fn().mockReturnValue(mockInsertChain)
+        insert: jest.fn().mockReturnValue(mockInsertChain),
+        select: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            order: jest.fn(),
+            single: jest.fn()
+          })),
+          order: jest.fn(() => ({
+            eq: jest.fn(),
+            single: jest.fn(),
+            in: jest.fn(),
+            gte: jest.fn(),
+            lte: jest.fn()
+          })),
+          in: jest.fn(),
+          gte: jest.fn(),
+          lte: jest.fn()
+        }))
       })
 
       const result = await service.createAuditRecord(auditRequest)
@@ -224,6 +257,11 @@ describe('AuditTrailService', () => {
         }))
       }
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn().mockReturnValue(mockQueryChain)
       })
 
@@ -244,19 +282,26 @@ describe('AuditTrailService', () => {
       }
 
       // Mock successful query with filters
-      const mockQueryChain = {
-        eq: jest.fn(() => ({
-          order: jest.fn(() => ({
-            in: jest.fn(() => ({
-              eq: jest.fn().mockResolvedValue({
-                data: [],
-                error: null
-              })
-            }))
-          }))
+      const mockOrderChain = {
+        in: jest.fn(() => ({
+          eq: jest.fn().mockResolvedValue({
+            data: [],
+            error: null
+          })
         }))
       }
+      const mockQueryChain = {
+        eq: jest.fn(() => ({
+          order: jest.fn().mockReturnValue(mockOrderChain)
+        })),
+        order: jest.fn().mockReturnValue(mockOrderChain)
+      }
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn().mockReturnValue(mockQueryChain)
       })
 
@@ -372,10 +417,9 @@ describe('AuditTrailService', () => {
 
   describe('exportAuditData', () => {
     it('should export audit data successfully', async () => {
-      const filters: AuditFilters = {
-        decisionIds: ['decision-123'],
+      const filters: AuditExportFilters = {
         format: 'json',
-        includeSystemGenerated: true
+        actions: ['decision_created']
       }
 
       const mockAuditData = [
@@ -412,6 +456,11 @@ describe('AuditTrailService', () => {
         }))
       }
       mockSupabase.from.mockReturnValue({
+        insert: jest.fn(() => ({
+          select: jest.fn(() => ({
+            single: jest.fn()
+          }))
+        })),
         select: jest.fn().mockReturnValue(mockQueryChain)
       })
 
@@ -431,10 +480,9 @@ describe('AuditTrailService', () => {
     })
 
     it('should fail when user is not authenticated', async () => {
-      const filters: AuditFilters = {
-        decisionIds: ['decision-123'],
+      const filters: AuditExportFilters = {
         format: 'json',
-        includeSystemGenerated: true
+        actions: ['decision_created']
       }
 
       // Mock failed authentication

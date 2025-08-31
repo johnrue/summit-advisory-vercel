@@ -86,7 +86,11 @@ describe('ErrorBoundary', () => {
 
   it('should show error details in development mode', () => {
     const originalEnv = process.env.NODE_ENV
-    process.env.NODE_ENV = 'development'
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+      configurable: true
+    })
 
     render(
       <ErrorBoundary>
@@ -96,7 +100,11 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('Error Details (Development)')).toBeInTheDocument()
 
-    process.env.NODE_ENV = originalEnv
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      writable: true,
+      configurable: true
+    })
   })
 })
 

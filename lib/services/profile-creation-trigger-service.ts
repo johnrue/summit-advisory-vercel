@@ -110,7 +110,7 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (decisionError) {
-        return { success: false, error: decisionError.message, code: 'DECISION_NOT_FOUND' }
+        return { success: false, error: { code: 'DECISION_NOT_FOUND' , message: decisionError.message }}
       }
 
       // Only trigger for approved decisions
@@ -143,7 +143,7 @@ export class ProfileCreationTriggerService {
         })
 
       if (tokenError) {
-        return { success: false, error: tokenError.message, code: 'TOKEN_GENERATION_ERROR' }
+        return { success: false, error: { code: 'TOKEN_GENERATION_ERROR' , message: tokenError.message }}
       }
 
       // Get the created token record
@@ -154,7 +154,7 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (tokenSelectError) {
-        return { success: false, error: tokenSelectError.message, code: 'TOKEN_RETRIEVAL_ERROR' }
+        return { success: false, error: { code: 'TOKEN_RETRIEVAL_ERROR' , message: tokenSelectError.message }}
       }
 
       // Send profile creation notification if enabled
@@ -185,7 +185,7 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'TOKEN_NOT_FOUND' }
+        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
       }
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://summitadvisoryfirm.com'
@@ -218,7 +218,7 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (error) {
-        return { success: false, error: 'Invalid or expired token', code: 'INVALID_TOKEN' }
+        return { success: false, error: { code: 'INVALID_TOKEN' , message: 'Invalid or expired token' }}
       }
 
       // Check if token has expired
@@ -229,12 +229,12 @@ export class ProfileCreationTriggerService {
           .update({ is_active: false })
           .eq('id', data.id)
 
-        return { success: false, error: 'Token has expired', code: 'TOKEN_EXPIRED' }
+        return { success: false, error: { code: 'TOKEN_EXPIRED' , message: 'Token has expired' }}
       }
 
       // Check if token has already been used
       if (data.used_at) {
-        return { success: false, error: 'Token has already been used', code: 'TOKEN_USED' }
+        return { success: false, error: { code: 'TOKEN_USED' , message: 'Token has already been used' }}
       }
 
       return { success: true, data: this.mapDatabaseToProfileCreationToken(data) }
@@ -263,13 +263,13 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (tokenError) {
-        return { success: false, error: 'Invalid token', code: 'INVALID_TOKEN' }
+        return { success: false, error: { code: 'INVALID_TOKEN' , message: 'Invalid token' }}
       }
 
       // Check if token is still valid
       const tokenValidation = await this.validateCreationToken(token.secure_token)
       if (!tokenValidation.success) {
-        return { success: false, error: tokenValidation.error, code: tokenValidation.code }
+        return { success: false, error: { code: tokenValidation.code , message: tokenValidation.error }}
       }
 
       // Create guard profile (this would typically be in a separate guards table)
@@ -333,12 +333,12 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'TOKEN_NOT_FOUND' }
+        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
       }
 
       const linkResult = await this.generateSecureCreationLink(tokenId)
       if (!linkResult.success) {
-        return { success: false, error: linkResult.error, code: linkResult.code }
+        return { success: false, error: { code: linkResult.code , message: linkResult.error }}
       }
 
       const notificationData: ApprovalNotificationData = {
@@ -397,7 +397,7 @@ export class ProfileCreationTriggerService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'TOKEN_NOT_FOUND' }
+        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
       }
 
       let status: ProfileCreationProgress['status']

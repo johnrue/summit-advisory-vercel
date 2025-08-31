@@ -54,7 +54,7 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('Calendar subscription creation error:', error)
-        return { success: false, error: 'Failed to create calendar subscription', code: 'CREATE_ERROR' }
+        return { success: false, error: { code: 'CREATE_ERROR' , message: 'Failed to create calendar subscription' }}
       }
       
       const subscription: CalendarSubscription = {
@@ -72,7 +72,7 @@ export class CalendarBroadcastService {
       return { success: true, data: subscription }
     } catch (error) {
       console.error('Calendar subscription service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -88,12 +88,12 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('Token validation error:', error)
-        return { success: false, error: 'Invalid or expired calendar subscription', code: 'INVALID_TOKEN' }
+        return { success: false, error: { code: 'INVALID_TOKEN' , message: 'Invalid or expired calendar subscription' }}
       }
       
       // Check if subscription has expired
       if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        return { success: false, error: 'Calendar subscription has expired', code: 'EXPIRED_TOKEN' }
+        return { success: false, error: { code: 'EXPIRED_TOKEN' , message: 'Calendar subscription has expired' }}
       }
       
       // Update last accessed timestamp
@@ -117,7 +117,7 @@ export class CalendarBroadcastService {
       return { success: true, data: subscription }
     } catch (error) {
       console.error('Token validation service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -142,7 +142,7 @@ export class CalendarBroadcastService {
       return { success: true, data: icsContent }
     } catch (error) {
       console.error('ICS generation error:', error)
-      return { success: false, error: 'Failed to generate calendar feed', code: 'GENERATION_ERROR' }
+      return { success: false, error: { code: 'GENERATION_ERROR' , message: 'Failed to generate calendar feed' }}
     }
   }
   
@@ -158,7 +158,7 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('User subscriptions error:', error)
-        return { success: false, error: 'Failed to fetch calendar subscriptions', code: 'FETCH_ERROR' }
+        return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch calendar subscriptions' }}
       }
       
       const subscriptions: CalendarSubscription[] = data.map(sub => ({
@@ -176,7 +176,7 @@ export class CalendarBroadcastService {
       return { success: true, data: subscriptions }
     } catch (error) {
       console.error('User subscriptions service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -191,13 +191,13 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('Subscription deactivation error:', error)
-        return { success: false, error: 'Failed to deactivate subscription', code: 'UPDATE_ERROR' }
+        return { success: false, error: { code: 'UPDATE_ERROR' , message: 'Failed to deactivate subscription' }}
       }
       
       return { success: true, data: true }
     } catch (error) {
       console.error('Deactivation service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -218,7 +218,7 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('Filter update error:', error)
-        return { success: false, error: 'Failed to update subscription filters', code: 'UPDATE_ERROR' }
+        return { success: false, error: { code: 'UPDATE_ERROR' , message: 'Failed to update subscription filters' }}
       }
       
       const subscription: CalendarSubscription = {
@@ -236,7 +236,7 @@ export class CalendarBroadcastService {
       return { success: true, data: subscription }
     } catch (error) {
       console.error('Filter update service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -318,7 +318,7 @@ export class CalendarBroadcastService {
       
       if (error) {
         console.error('Interview fetch error:', error)
-        return { success: false, error: 'Failed to fetch interviews', code: 'FETCH_ERROR' }
+        return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch interviews' }}
       }
       
       const interviews: Interview[] = data.map(item => ({
@@ -346,7 +346,7 @@ export class CalendarBroadcastService {
       return { success: true, data: interviews }
     } catch (error) {
       console.error('Subscription interviews service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   

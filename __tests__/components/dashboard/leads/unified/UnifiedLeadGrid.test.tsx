@@ -108,7 +108,7 @@ describe('UnifiedLeadGrid', () => {
   })
 
   it('should display error state', () => {
-    const error = new Error('Failed to load leads')
+    const error = 'Failed to load leads'
     render(<UnifiedLeadGrid {...defaultProps} error={error} />)
 
     expect(screen.getByText('Error loading leads')).toBeInTheDocument()
@@ -137,7 +137,7 @@ describe('UnifiedLeadGrid', () => {
 
   it('should call onRefresh when refresh button is clicked', async () => {
     const user = userEvent.setup()
-    render(<UnifiedLeadGrid {...defaultProps} error={new Error('Test error')} />)
+    render(<UnifiedLeadGrid {...defaultProps} error="Test error" />)
 
     const refreshButton = screen.getByRole('button', { name: /retry/i })
     await user.click(refreshButton)
@@ -178,7 +178,7 @@ describe('UnifiedLeadGrid', () => {
     const firstLead = screen.getByText('John Doe').closest('[data-testid=\"lead-card\"]')
     
     if (firstLead) {
-      firstLead.focus()
+      (firstLead as HTMLElement).focus()
       await user.keyboard('{Enter}')
       expect(defaultProps.onLeadClick).toHaveBeenCalledWith(mockLeads[0])
     }

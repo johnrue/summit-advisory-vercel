@@ -1,0 +1,728 @@
+// Story 3.3: Availability Pattern Service
+// Manages recurring availability patterns and schedule generation
+
+import { createClient } from '@/lib/supabase';
+import { 
+  AvailabilityPattern,
+  ServiceResult,
+  WeeklySchedule,
+  DaySchedule,
+  TimeSlot,
+  DateOverride,
+  PatternType,
+  DayOfWeek,
+  GuardAvailability
+} from '@/lib/types/availability-types';
+import { GuardAvailabilityService } from './guard-availability-service';
+
+export class AvailabilityPatternService {
+  private static supabase = createClient();
+
+  // Core pattern management
+  static async createPattern(
+    guardId: string,
+    patternData: {
+      patternName: string;
+      patternType: PatternType;
+      weeklySchedule: WeeklySchedule;
+      effectiveDate: Date;
+      endDate?: Date;
+    }
+  ): Promise<ServiceResult<AvailabilityPattern>> {
+    try {
+      // Validate weekly schedule
+      const validationResult = this.validateWeeklySchedule(patternData.weeklySchedule);
+      if (!validationResult.success) {
+        return validationResult as unknown as ServiceResult<AvailabilityPattern>;
+      }
+
+      // Check for pattern conflicts
+      const conflictCheck = await this.checkPatternConflicts(
+        guardId,
+        patternData.effectiveDate,
+        patternData.endDate
+      );
+
+      if (!conflictCheck.success) {
+        return conflictCheck as unknown as ServiceResult<AvailabilityPattern>;
+      }
+
+      const patternRecord = {
+        guard_id: guardId,
+        pattern_name: patternData.patternName,
+        pattern_type: patternData.patternType,
+        weekly_schedule: patternData.weeklySchedule,
+        is_active: true,
+        effective_date: patternData.effectiveDate.toISOString().split('T')[0],
+        end_date: patternData.endDate?.toISOString().split('T')[0],
+        date_overrides: []
+      };
+
+      const { data, error } = await this.supabase
+        .from('availability_patterns')
+        .insert(patternRecord)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'CREATE_PATTERN_ERROR',
+            message: 'Failed to create availability pattern',
+            details: { error, patternRecord }
+          }
+        };
+      }
+
+      const pattern = this.transformPatternRecord(data);
+
+      // Generate initial availability windows from pattern
+      await this.generateAvailabilityFromPattern(pattern);
+
+      return {
+        success: true,
+        data: pattern
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error creating availability pattern',
+          details: { error, guardId, patternData }
+        }
+      };
+    }
+  }
+
+  static async getPatterns(
+    guardId: string,
+    activeOnly = false
+  ): Promise<ServiceResult<AvailabilityPattern[]>> {
+    try {
+      let query = this.supabase
+        .from('availability_patterns')
+        .select('*')
+        .eq('guard_id', guardId);
+
+      if (activeOnly) {
+        query = query.eq('is_active', true);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_PATTERNS_ERROR',
+            message: 'Failed to fetch availability patterns',
+            details: { error, guardId }
+          }
+        };
+      }
+
+      const patterns = data?.map(record => this.transformPatternRecord(record)) || [];
+
+      return {
+        success: true,
+        data: patterns
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error fetching patterns',
+          details: { error, guardId }
+        }
+      };
+    }
+  }
+
+  static async updatePattern(
+    patternId: string,
+    updates: Partial<AvailabilityPattern>
+  ): Promise<ServiceResult<AvailabilityPattern>> {
+    try {
+      const updateRecord: any = {};
+
+      if (updates.patternName) updateRecord.pattern_name = updates.patternName;
+      if (updates.weeklySchedule) {
+        // Validate updated schedule
+        const validationResult = this.validateWeeklySchedule(updates.weeklySchedule);
+        if (!validationResult.success) {
+          return validationResult as unknown as ServiceResult<AvailabilityPattern>;
+        }
+        updateRecord.weekly_schedule = updates.weeklySchedule;
+      }
+      if (updates.isActive !== undefined) updateRecord.is_active = updates.isActive;
+      if (updates.effectiveDate) updateRecord.effective_date = updates.effectiveDate.toISOString().split('T')[0];
+      if (updates.endDate !== undefined) {
+        updateRecord.end_date = updates.endDate?.toISOString().split('T')[0];
+      }
+      if (updates.dateOverrides) updateRecord.date_overrides = updates.dateOverrides;
+
+      const { data, error } = await this.supabase
+        .from('availability_patterns')
+        .update(updateRecord)
+        .eq('id', patternId)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'UPDATE_PATTERN_ERROR',
+            message: 'Failed to update availability pattern',
+            details: { error, patternId, updates }
+          }
+        };
+      }
+
+      const pattern = this.transformPatternRecord(data);
+
+      // Regenerate availability if schedule was updated and pattern is active
+      if (updates.weeklySchedule && pattern.isActive) {
+        await this.regenerateAvailabilityFromPattern(pattern);
+      }
+
+      return {
+        success: true,
+        data: pattern
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error updating pattern',
+          details: { error, patternId, updates }
+        }
+      };
+    }
+  }
+
+  static async deletePattern(patternId: string): Promise<ServiceResult<boolean>> {
+    try {
+      // Get pattern details for cleanup
+      const { data: pattern, error: fetchError } = await this.supabase
+        .from('availability_patterns')
+        .select('*')
+        .eq('id', patternId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_PATTERN_ERROR',
+            message: 'Failed to fetch pattern for deletion',
+            details: { fetchError, patternId }
+          }
+        };
+      }
+
+      // Delete associated availability windows generated from this pattern
+      await this.supabase
+        .from('guard_availability')
+        .delete()
+        .eq('pattern_id', patternId)
+        .eq('is_recurring', true);
+
+      // Delete the pattern
+      const { error } = await this.supabase
+        .from('availability_patterns')
+        .delete()
+        .eq('id', patternId);
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'DELETE_PATTERN_ERROR',
+            message: 'Failed to delete availability pattern',
+            details: { error, patternId }
+          }
+        };
+      }
+
+      return {
+        success: true,
+        data: true
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error deleting pattern',
+          details: { error, patternId }
+        }
+      };
+    }
+  }
+
+  // Pattern overrides
+  static async addDateOverride(
+    patternId: string,
+    override: DateOverride
+  ): Promise<ServiceResult<AvailabilityPattern>> {
+    try {
+      // Get current pattern
+      const { data: pattern, error: fetchError } = await this.supabase
+        .from('availability_patterns')
+        .select('*')
+        .eq('id', patternId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_PATTERN_ERROR',
+            message: 'Failed to fetch pattern for override',
+            details: { fetchError, patternId }
+          }
+        };
+      }
+
+      const currentOverrides = pattern.date_overrides || [];
+      const updatedOverrides = [...currentOverrides, {
+        ...override,
+        date: override.date.toISOString().split('T')[0]
+      }];
+
+      const { data, error } = await this.supabase
+        .from('availability_patterns')
+        .update({ date_overrides: updatedOverrides })
+        .eq('id', patternId)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'ADD_OVERRIDE_ERROR',
+            message: 'Failed to add date override',
+            details: { error, patternId, override }
+          }
+        };
+      }
+
+      // Update affected availability window for the override date
+      await this.updateAvailabilityForOverride(
+        this.transformPatternRecord(data),
+        override
+      );
+
+      return {
+        success: true,
+        data: this.transformPatternRecord(data)
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error adding date override',
+          details: { error, patternId, override }
+        }
+      };
+    }
+  }
+
+  static async removeDeleteOverride(
+    patternId: string,
+    overrideDate: Date
+  ): Promise<ServiceResult<AvailabilityPattern>> {
+    try {
+      // Get current pattern
+      const { data: pattern, error: fetchError } = await this.supabase
+        .from('availability_patterns')
+        .select('*')
+        .eq('id', patternId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: {
+            code: 'FETCH_PATTERN_ERROR',
+            message: 'Failed to fetch pattern for override removal',
+            details: { fetchError, patternId }
+          }
+        };
+      }
+
+      const currentOverrides = pattern.date_overrides || [];
+      const targetDateString = overrideDate.toISOString().split('T')[0];
+      const updatedOverrides = currentOverrides.filter((override: any) => 
+        override.date !== targetDateString
+      );
+
+      const { data, error } = await this.supabase
+        .from('availability_patterns')
+        .update({ date_overrides: updatedOverrides })
+        .eq('id', patternId)
+        .select()
+        .single();
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'REMOVE_OVERRIDE_ERROR',
+            message: 'Failed to remove date override',
+            details: { error, patternId, overrideDate }
+          }
+        };
+      }
+
+      // Restore original availability for the date
+      await this.restoreAvailabilityFromPattern(
+        this.transformPatternRecord(data),
+        overrideDate
+      );
+
+      return {
+        success: true,
+        data: this.transformPatternRecord(data)
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error removing date override',
+          details: { error, patternId, overrideDate }
+        }
+      };
+    }
+  }
+
+  // Pattern generation and validation
+  private static validateWeeklySchedule(weeklySchedule: WeeklySchedule): ServiceResult<boolean> {
+    const validDays = ['0', '1', '2', '3', '4', '5', '6'];
+    
+    for (const dayKey of Object.keys(weeklySchedule)) {
+      if (!validDays.includes(dayKey)) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_WEEKLY_SCHEDULE',
+            message: `Invalid day key: ${dayKey}. Must be 0-6 for Sunday-Saturday`,
+            details: { weeklySchedule }
+          }
+        };
+      }
+
+      const daySchedule = weeklySchedule[dayKey];
+      
+      // Validate time slots
+      for (const slot of daySchedule.timeSlots) {
+        if (!this.isValidTimeFormat(slot.start) || !this.isValidTimeFormat(slot.end)) {
+          return {
+            success: false,
+            error: {
+              code: 'INVALID_TIME_FORMAT',
+              message: 'Time slots must be in HH:MM format (24-hour)',
+              details: { slot, dayKey }
+            }
+          };
+        }
+
+        if (slot.start >= slot.end) {
+          return {
+            success: false,
+            error: {
+              code: 'INVALID_TIME_RANGE',
+              message: 'Start time must be before end time',
+              details: { slot, dayKey }
+            }
+          };
+        }
+      }
+    }
+
+    return {
+      success: true,
+      data: true
+    };
+  }
+
+  private static isValidTimeFormat(time: string): boolean {
+    const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeRegex.test(time);
+  }
+
+  private static async checkPatternConflicts(
+    guardId: string,
+    effectiveDate: Date,
+    endDate?: Date
+  ): Promise<ServiceResult<boolean>> {
+    try {
+      let query = this.supabase
+        .from('availability_patterns')
+        .select('id, pattern_name, effective_date, end_date')
+        .eq('guard_id', guardId)
+        .eq('is_active', true);
+
+      // Check for overlapping effective periods
+      query = query.lte('effective_date', effectiveDate.toISOString().split('T')[0]);
+
+      if (endDate) {
+        query = query.or(`end_date.gte.${effectiveDate.toISOString().split('T')[0]},end_date.is.null`);
+      }
+
+      const { data: conflictingPatterns, error } = await query;
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'PATTERN_CONFLICT_CHECK_ERROR',
+            message: 'Failed to check pattern conflicts',
+            details: { error, guardId }
+          }
+        };
+      }
+
+      if (conflictingPatterns && conflictingPatterns.length > 0) {
+        return {
+          success: false,
+          error: {
+            code: 'PATTERN_CONFLICT',
+            message: 'Pattern conflicts with existing active patterns',
+            details: { 
+              conflictingPatterns: conflictingPatterns.map(p => ({
+                id: p.id,
+                name: p.pattern_name
+              }))
+            }
+          }
+        };
+      }
+
+      return {
+        success: true,
+        data: true
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'PATTERN_SERVICE_ERROR',
+          message: 'Unexpected error checking pattern conflicts',
+          details: { error, guardId, effectiveDate }
+        }
+      };
+    }
+  }
+
+  // Availability generation from patterns
+  private static async generateAvailabilityFromPattern(
+    pattern: AvailabilityPattern,
+    weeksAhead = 8
+  ): Promise<void> {
+    try {
+      const startDate = new Date(pattern.effectiveDate);
+      const endDate = pattern.endDate || new Date(Date.now() + (weeksAhead * 7 * 24 * 60 * 60 * 1000));
+
+      const availabilityWindows: Partial<GuardAvailability>[] = [];
+      
+      for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        const dayOfWeek = date.getDay().toString() as keyof WeeklySchedule;
+        const daySchedule = pattern.weeklySchedule[dayOfWeek];
+
+        if (!daySchedule || !daySchedule.isAvailable) {
+          continue;
+        }
+
+        // Check for date overrides
+        const dateString = date.toISOString().split('T')[0];
+        const override = pattern.dateOverrides.find(o => 
+          new Date(o.date).toISOString().split('T')[0] === dateString
+        );
+
+        const timeSlots = override?.timeSlots || daySchedule.timeSlots;
+        const availabilityType = override?.overrideType === 'custom' ? 
+          (timeSlots[0]?.availabilityType || daySchedule.availabilityType) : 
+          (override?.overrideType === 'unavailable' ? 'unavailable' : daySchedule.availabilityType);
+
+        for (const slot of timeSlots) {
+          const startTime = new Date(date);
+          const [startHour, startMin] = slot.start.split(':').map(Number);
+          startTime.setHours(startHour, startMin, 0, 0);
+
+          const endTime = new Date(date);
+          const [endHour, endMin] = slot.end.split(':').map(Number);
+          endTime.setHours(endHour, endMin, 0, 0);
+
+          availabilityWindows.push({
+            guardId: pattern.guardId,
+            availabilityWindow: {
+              start: startTime,
+              end: endTime
+            },
+            availabilityType: slot.availabilityType,
+            availabilityStatus: 'active',
+            isRecurring: true,
+            patternId: pattern.id,
+            notes: `Generated from pattern: ${pattern.patternName}`
+          });
+        }
+      }
+
+      // Batch insert availability windows
+      for (const availability of availabilityWindows) {
+        await GuardAvailabilityService.createAvailability(availability);
+      }
+    } catch (error) {
+      console.error('Failed to generate availability from pattern:', error);
+    }
+  }
+
+  private static async regenerateAvailabilityFromPattern(pattern: AvailabilityPattern): Promise<void> {
+    try {
+      // Delete existing availability generated from this pattern
+      await this.supabase
+        .from('guard_availability')
+        .delete()
+        .eq('pattern_id', pattern.id)
+        .eq('is_recurring', true)
+        .gte('availability_window', `[${new Date().toISOString()},)`); // Only future availability
+
+      // Regenerate availability
+      await this.generateAvailabilityFromPattern(pattern);
+    } catch (error) {
+      console.error('Failed to regenerate availability from pattern:', error);
+    }
+  }
+
+  private static async updateAvailabilityForOverride(
+    pattern: AvailabilityPattern,
+    override: DateOverride
+  ): Promise<void> {
+    try {
+      const targetDate = new Date(override.date);
+      const dateStart = new Date(targetDate);
+      dateStart.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(targetDate);
+      dateEnd.setHours(23, 59, 59, 999);
+
+      // Delete existing availability for this date from the pattern
+      await this.supabase
+        .from('guard_availability')
+        .delete()
+        .eq('pattern_id', pattern.id)
+        .eq('guard_id', pattern.guardId)
+        .overlaps('availability_window', `[${dateStart.toISOString()},${dateEnd.toISOString()})`);
+
+      // Create new availability based on override
+      if (override.overrideType !== 'unavailable') {
+        const timeSlots = override.timeSlots || [];
+        
+        for (const slot of timeSlots) {
+          const startTime = new Date(targetDate);
+          const [startHour, startMin] = slot.start.split(':').map(Number);
+          startTime.setHours(startHour, startMin, 0, 0);
+
+          const endTime = new Date(targetDate);
+          const [endHour, endMin] = slot.end.split(':').map(Number);
+          endTime.setHours(endHour, endMin, 0, 0);
+
+          await GuardAvailabilityService.createAvailability({
+            guardId: pattern.guardId,
+            availabilityWindow: {
+              start: startTime,
+              end: endTime
+            },
+            availabilityType: slot.availabilityType,
+            availabilityStatus: 'active',
+            isRecurring: true,
+            patternId: pattern.id,
+            notes: `Override for ${targetDate.toDateString()}: ${override.reason || 'Date-specific override'}`,
+            overrideReason: override.reason
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update availability for override:', error);
+    }
+  }
+
+  private static async restoreAvailabilityFromPattern(
+    pattern: AvailabilityPattern,
+    overrideDate: Date
+  ): Promise<void> {
+    try {
+      const targetDate = new Date(overrideDate);
+      const dayOfWeek = targetDate.getDay().toString() as keyof WeeklySchedule;
+      const daySchedule = pattern.weeklySchedule[dayOfWeek];
+
+      // Delete existing availability for this date
+      const dateStart = new Date(targetDate);
+      dateStart.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(targetDate);
+      dateEnd.setHours(23, 59, 59, 999);
+
+      await this.supabase
+        .from('guard_availability')
+        .delete()
+        .eq('pattern_id', pattern.id)
+        .eq('guard_id', pattern.guardId)
+        .overlaps('availability_window', `[${dateStart.toISOString()},${dateEnd.toISOString()})`);
+
+      // Restore original availability from pattern
+      if (daySchedule && daySchedule.isAvailable) {
+        for (const slot of daySchedule.timeSlots) {
+          const startTime = new Date(targetDate);
+          const [startHour, startMin] = slot.start.split(':').map(Number);
+          startTime.setHours(startHour, startMin, 0, 0);
+
+          const endTime = new Date(targetDate);
+          const [endHour, endMin] = slot.end.split(':').map(Number);
+          endTime.setHours(endHour, endMin, 0, 0);
+
+          await GuardAvailabilityService.createAvailability({
+            guardId: pattern.guardId,
+            availabilityWindow: {
+              start: startTime,
+              end: endTime
+            },
+            availabilityType: slot.availabilityType,
+            availabilityStatus: 'active',
+            isRecurring: true,
+            patternId: pattern.id,
+            notes: `Restored from pattern: ${pattern.patternName}`
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore availability from pattern:', error);
+    }
+  }
+
+  private static transformPatternRecord(record: any): AvailabilityPattern {
+    return {
+      id: record.id,
+      guardId: record.guard_id,
+      patternName: record.pattern_name,
+      patternType: record.pattern_type,
+      weeklySchedule: record.weekly_schedule,
+      isActive: record.is_active,
+      effectiveDate: new Date(record.effective_date),
+      endDate: record.end_date ? new Date(record.end_date) : undefined,
+      dateOverrides: (record.date_overrides || []).map((override: any) => ({
+        ...override,
+        date: new Date(override.date)
+      })),
+      createdAt: new Date(record.created_at),
+      updatedAt: new Date(record.updated_at)
+    };
+  }
+}

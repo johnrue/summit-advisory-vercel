@@ -95,8 +95,8 @@ describe('Calendar Sync Workflow Integration Tests', () => {
           provider: 'google_calendar',
           is_active: true,
           sync_enabled: true,
-          created_at: '2025-08-28T10:00:00Z',
-          updated_at: '2025-08-28T10:00:00Z'
+          created_at: new Date('2025-08-28T10:00:00Z'),
+          updated_at: new Date('2025-08-28T10:00:00Z')
         }
       })
 

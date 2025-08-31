@@ -67,7 +67,7 @@ export class AuditTrailService {
     try {
       const { data: { user } } = await this.supabase.auth.getUser()
       if (!user) {
-        return { success: false, error: 'User not authenticated', code: 'AUTH_REQUIRED' }
+        return { success: false, error: { code: 'AUTH_REQUIRED' , message: 'User not authenticated' }}
       }
 
       // Generate digital signature for the audit record
@@ -95,7 +95,7 @@ export class AuditTrailService {
         .single()
 
       if (error) {
-        return { success: false, error: error.message, code: 'DATABASE_ERROR' }
+        return { success: false, error: { code: 'DATABASE_ERROR' , message: error.message }}
       }
 
       return { success: true, data: this.mapDatabaseToAuditRecord(data) }
@@ -148,7 +148,7 @@ export class AuditTrailService {
       const { data, error } = await query
 
       if (error) {
-        return { success: false, error: error.message, code: 'DATABASE_ERROR' }
+        return { success: false, error: { code: 'DATABASE_ERROR' , message: error.message }}
       }
 
       return { 
@@ -172,7 +172,7 @@ export class AuditTrailService {
       // Get all audit records for the decision
       const auditResult = await this.getAuditTrail(decisionId)
       if (!auditResult.success) {
-        return { success: false, error: auditResult.error, code: auditResult.code }
+        return { success: false, error: { code: auditResult.code , message: auditResult.error }}
       }
 
       const auditRecords = auditResult.data
@@ -249,7 +249,7 @@ export class AuditTrailService {
     try {
       const { data: { user } } = await this.supabase.auth.getUser()
       if (!user) {
-        return { success: false, error: 'User not authenticated', code: 'AUTH_REQUIRED' }
+        return { success: false, error: { code: 'AUTH_REQUIRED' , message: 'User not authenticated' }}
       }
 
       // Build query based on filters
@@ -287,7 +287,7 @@ export class AuditTrailService {
       const { data, error } = await query
 
       if (error) {
-        return { success: false, error: error.message, code: 'DATABASE_ERROR' }
+        return { success: false, error: { code: 'DATABASE_ERROR' , message: error.message }}
       }
 
       // Generate export file (in production, this would create actual files)

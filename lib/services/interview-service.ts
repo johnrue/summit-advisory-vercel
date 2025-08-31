@@ -43,7 +43,7 @@ export class InterviewService {
       
       if (error) {
         console.error('Interview scheduling error:', error)
-        return { success: false, error: 'Failed to schedule interview', code: 'SCHEDULE_ERROR' }
+        return { success: false, error: { code: 'SCHEDULE_ERROR' , message: 'Failed to schedule interview' }}
       }
       
       // Update application status to interview_scheduled in guard_leads
@@ -60,7 +60,7 @@ export class InterviewService {
       return { success: true, data: interview }
     } catch (error) {
       console.error('Interview service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -87,7 +87,7 @@ export class InterviewService {
       
       if (error) {
         console.error('Interview history error:', error)
-        return { success: false, error: 'Failed to fetch interview history', code: 'FETCH_ERROR' }
+        return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch interview history' }}
       }
       
       const interviews: Interview[] = data.map(this.mapDatabaseToInterview)
@@ -95,7 +95,7 @@ export class InterviewService {
       return { success: true, data: interviews }
     } catch (error) {
       console.error('Interview service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -126,7 +126,7 @@ export class InterviewService {
       
       if (error) {
         console.error('Interview update error:', error)
-        return { success: false, error: 'Failed to update interview', code: 'UPDATE_ERROR' }
+        return { success: false, error: { code: 'UPDATE_ERROR' , message: 'Failed to update interview' }}
       }
       
       const interview: Interview = this.mapDatabaseToInterview(data)
@@ -134,7 +134,7 @@ export class InterviewService {
       return { success: true, data: interview }
     } catch (error) {
       console.error('Interview service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -165,7 +165,7 @@ export class InterviewService {
       return updateResult
     } catch (error) {
       console.error('Interview reschedule error:', error)
-      return { success: false, error: 'Failed to reschedule interview', code: 'RESCHEDULE_ERROR' }
+      return { success: false, error: { code: 'RESCHEDULE_ERROR' , message: 'Failed to reschedule interview' }}
     }
   }
   
@@ -193,7 +193,7 @@ export class InterviewService {
       
       if (feedbackError) {
         console.error('Feedback submission error:', feedbackError)
-        return { success: false, error: 'Failed to submit feedback', code: 'FEEDBACK_ERROR' }
+        return { success: false, error: { code: 'FEEDBACK_ERROR' , message: 'Failed to submit feedback' }}
       }
       
       // Update interview with overall rating and hiring recommendation
@@ -231,7 +231,7 @@ export class InterviewService {
       return { success: true, data: interviewFeedback }
     } catch (error) {
       console.error('Feedback service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -265,7 +265,7 @@ export class InterviewService {
       
       if (error) {
         console.error('Filtered interviews error:', error)
-        return { success: false, error: 'Failed to fetch interviews', code: 'FETCH_ERROR' }
+        return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch interviews' }}
       }
       
       const interviews: Interview[] = data.map(this.mapDatabaseToInterview)
@@ -273,7 +273,7 @@ export class InterviewService {
       return { success: true, data: interviews }
     } catch (error) {
       console.error('Interview service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   
@@ -291,7 +291,7 @@ export class InterviewService {
       
       if (error) {
         console.error('Availability check error:', error)
-        return { success: false, error: 'Failed to check availability', code: 'AVAILABILITY_ERROR' }
+        return { success: false, error: { code: 'AVAILABILITY_ERROR' , message: 'Failed to check availability' }}
       }
       
       // Simple time slot generation (9 AM - 5 PM, 1-hour slots)
@@ -333,7 +333,7 @@ export class InterviewService {
       return { success: true, data: timeSlots }
     } catch (error) {
       console.error('Availability service error:', error)
-      return { success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }
+      return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
   

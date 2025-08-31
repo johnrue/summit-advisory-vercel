@@ -47,8 +47,11 @@ describe('NotificationBell', () => {
       is_read: false,
       delivery_channels: ['in_app'],
       created_at: '2025-01-15T10:00:00Z',
+      updated_at: '2025-01-15T10:00:00Z',
       entity_type: 'shift',
-      entity_id: 'shift-456'
+      entity_id: 'shift-456',
+      action_data: {},
+      delivery_status: 'pending'
     },
     {
       id: 'notification-2',
@@ -61,13 +64,16 @@ describe('NotificationBell', () => {
       is_read: false,
       delivery_channels: ['in_app'],
       created_at: '2025-01-15T09:00:00Z',
+      updated_at: '2025-01-15T09:00:00Z',
       entity_type: 'availability',
-      entity_id: 'availability-789'
+      entity_id: 'availability-789',
+      action_data: {},
+      delivery_status: 'pending'
     },
     {
       id: 'notification-3',
       recipient_id: 'user-123',
-      notification_type: 'shift_update',
+      notification_type: 'shift_modification',
       priority: 'emergency',
       category: 'emergency',
       title: 'Emergency Shift Update',
@@ -75,8 +81,11 @@ describe('NotificationBell', () => {
       is_read: false,
       delivery_channels: ['in_app', 'email'],
       created_at: '2025-01-15T11:00:00Z',
+      updated_at: '2025-01-15T11:00:00Z',
       entity_type: 'shift',
-      entity_id: 'shift-emergency'
+      entity_id: 'shift-emergency',
+      action_data: {},
+      delivery_status: 'pending'
     }
   ]
 

@@ -172,8 +172,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'REJECTION_ERROR' 
+        error: { 
+          code: 'REJECTION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -200,8 +202,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'HISTORY_ERROR' 
+        error: { 
+          code: 'HISTORY_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -219,7 +223,7 @@ export class ApprovalWorkflowService {
       // Validate that user can delegate the specified authority level
       const canDelegate = await this.canDelegateAuthority(user.id, delegation.authorityLevel)
       if (!canDelegate) {
-        return { success: false, error: 'Cannot delegate this authority level', code: 'DELEGATION_DENIED' }
+        return { success: false, error: { code: 'DELEGATION_DENIED', message: 'Cannot delegate this authority level' } }
       }
 
       const { data, error } = await this.supabase
@@ -262,7 +266,7 @@ export class ApprovalWorkflowService {
         .single()
 
       if (!decision) {
-        return { success: false, error: 'Decision not found', code: 'NOT_FOUND' }
+        return { success: false, error: { code: 'NOT_FOUND' , message: 'Decision not found' }}
       }
 
       // Generate secure token using database function
@@ -273,7 +277,7 @@ export class ApprovalWorkflowService {
         })
 
       if (error) {
-        return { success: false, error: error.message, code: 'TOKEN_GENERATION_ERROR' }
+        return { success: false, error: { code: 'TOKEN_GENERATION_ERROR' , message: error.message }}
       }
 
       const profileCreationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/profile-creation/${tokenData}`
@@ -299,7 +303,7 @@ export class ApprovalWorkflowService {
         })
 
       if (error) {
-        return { success: false, error: error.message, code: 'AUTHORITY_CHECK_ERROR' }
+        return { success: false, error: { code: 'AUTHORITY_CHECK_ERROR' , message: error.message }}
       }
 
       return { success: true, data }

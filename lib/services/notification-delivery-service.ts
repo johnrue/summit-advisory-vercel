@@ -40,7 +40,7 @@ export class NotificationDeliveryService {
         return { success: true, data: true }
       } else {
         await this.updateNotificationStatus(notification.id, 'failed')
-        return { success: false, error: 'All delivery channels failed', code: 'DELIVERY_FAILED' }
+        return { success: false, error: { code: 'DELIVERY_FAILED' , message: 'All delivery channels failed' }}
       }
     } catch (error) {
       return { 
@@ -128,7 +128,7 @@ export class NotificationDeliveryService {
         .single()
 
       if (error || !data) {
-        return { success: false, error: 'Notification not found', code: 'IN_APP_DELIVERY_FAILED' }
+        return { success: false, error: { code: 'IN_APP_DELIVERY_FAILED' , message: 'Notification not found' }}
       }
 
       return { success: true, data: true }
@@ -206,7 +206,7 @@ export class NotificationDeliveryService {
     // TODO: Implement SMS delivery service integration
     // This will be a future enhancement
     console.log('SMS delivery not yet implemented for notification:', notification.id)
-    return { success: false, error: 'SMS delivery not implemented', code: 'SMS_NOT_IMPLEMENTED' }
+    return { success: false, error: { code: 'SMS_NOT_IMPLEMENTED' , message: 'SMS delivery not implemented' }}
   }
 
   /**
@@ -289,7 +289,7 @@ export class NotificationDeliveryService {
         .single()
 
       if (error || !notification) {
-        return { success: false, error: 'Notification not found', code: 'NOTIFICATION_NOT_FOUND' }
+        return { success: false, error: { code: 'NOTIFICATION_NOT_FOUND' , message: 'Notification not found' }}
       }
 
       // Increment retry count
@@ -330,7 +330,7 @@ export class NotificationDeliveryService {
         .limit(100) // Process in batches
 
       if (error) {
-        return { success: false, error: error.message, code: 'QUEUE_FETCH_FAILED' }
+        return { success: false, error: { code: 'QUEUE_FETCH_FAILED' , message: error.message }}
       }
 
       if (!notifications || notifications.length === 0) {
@@ -368,7 +368,7 @@ export class NotificationDeliveryService {
         .order('attempted_at', { ascending: false })
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_HISTORY_FAILED' }
+        return { success: false, error: { code: 'GET_HISTORY_FAILED' , message: error.message }}
       }
 
       return { success: true, data: data || [] }
@@ -393,7 +393,7 @@ export class NotificationDeliveryService {
         .lte('attempted_at', timeRange.to)
 
       if (error) {
-        return { success: false, error: error.message, code: 'GET_ANALYTICS_FAILED' }
+        return { success: false, error: { code: 'GET_ANALYTICS_FAILED' , message: error.message }}
       }
 
       // Process analytics data

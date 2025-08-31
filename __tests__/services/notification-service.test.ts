@@ -132,8 +132,7 @@ describe('NotificationService', () => {
       const result = await notificationService.createNotification(mockCreateRequest)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Database connection failed')
-      expect(result.code).toBe('CREATE_NOTIFICATION_FAILED')
+      expect(result.error).toEqual({ code: 'CREATE_NOTIFICATION_FAILED', message: 'Database connection failed' })
     })
 
     it('should handle unexpected exceptions during creation', async () => {
@@ -142,8 +141,7 @@ describe('NotificationService', () => {
       const result = await notificationService.createNotification(mockCreateRequest)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Network error')
-      expect(result.code).toBe('CREATE_NOTIFICATION_ERROR')
+      expect(result.error).toEqual({ code: 'CREATE_NOTIFICATION_ERROR', message: 'Network error' })
     })
   })
 
@@ -255,8 +253,7 @@ describe('NotificationService', () => {
       const result = await notificationService.getNotifications('user-123')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Query timeout')
-      expect(result.code).toBe('GET_NOTIFICATIONS_FAILED')
+      expect(result.error).toEqual({ code: 'GET_NOTIFICATIONS_FAILED', message: 'Query timeout' })
     })
   })
 
@@ -292,8 +289,7 @@ describe('NotificationService', () => {
       const result = await notificationService.markAsRead('invalid-id')
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Notification not found')
-      expect(result.code).toBe('MARK_READ_FAILED')
+      expect(result.error).toEqual({ code: 'MARK_READ_FAILED', message: 'Notification not found' })
     })
   })
 
@@ -522,8 +518,7 @@ describe('NotificationService', () => {
       const result = await notificationService.createNotification(mockCreateRequest)
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Unknown error')
-      expect(result.code).toBe('CREATE_NOTIFICATION_ERROR')
+      expect(result.error).toEqual({ code: 'CREATE_NOTIFICATION_ERROR', message: 'Unknown error' })
     })
 
     it('should return empty array when data is null', async () => {
