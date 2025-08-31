@@ -6,9 +6,9 @@ import type {
   CalendarSubscription,
   CalendarFilters,
   SubscriptionType,
-  Interview,
-  ServiceResult
+  Interview
 } from '@/lib/types/interview-types'
+import type { ServiceResult } from '@/lib/types'
 import { generateRandomString } from '@/lib/utils'
 
 interface ICSCalendarEvent {
@@ -130,11 +130,21 @@ export class CalendarBroadcastService {
       // Fetch interviews based on subscription filters
       const interviewsResult = await this.getInterviewsForSubscription(subscription, filters)
       if (!interviewsResult.success) {
-        return interviewsResult
+        return { 
+          success: false, 
+          error: interviewsResult.error || { code: 'FETCH_FAILED', message: 'Failed to fetch interviews' }
+        }
+      }
+      
+      if (!interviewsResult.data) {
+        return {
+          success: false,
+          error: { code: 'NO_DATA', message: 'No interview data returned' }
+        }
       }
       
       // Convert interviews to ICS events
-      const events = interviewsResult.data.map(interview => this.convertInterviewToICSEvent(interview))
+      const events = interviewsResult.data.map((interview: Interview) => this.convertInterviewToICSEvent(interview))
       
       // Generate ICS calendar content
       const icsContent = this.generateICSCalendarContent(events, subscription)

@@ -511,7 +511,7 @@ describe('Kanban Real-time Collaboration', () => {
       const boardUpdates: any[] = [];
       
       // Simulate multiple managers listening to board updates
-      realTimeHandler.on('board_update', (data) => {
+      realTimeHandler.on('board_update', (data: any) => {
         boardUpdates.push(data);
       });
 
@@ -531,7 +531,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('handles bulk operation synchronization', async () => {
       const boardUpdates: any[] = [];
       
-      realTimeHandler.on('board_update', (data) => {
+      realTimeHandler.on('board_update', (data: any) => {
         boardUpdates.push(data);
       });
 
@@ -552,7 +552,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('handles filter changes across managers', async () => {
       const filterUpdates: any[] = [];
       
-      realTimeHandler.on('filter_shared', (data) => {
+      realTimeHandler.on('filter_shared', (data: any) => {
         filterUpdates.push(data);
       });
 
@@ -575,7 +575,7 @@ describe('Kanban Real-time Collaboration', () => {
     it('handles connection recovery', async () => {
       const connectionEvents: string[] = [];
       
-      realTimeHandler.on('connection', (event) => {
+      realTimeHandler.on('connection', (event: any) => {
         connectionEvents.push(event);
       });
 

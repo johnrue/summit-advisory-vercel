@@ -52,7 +52,7 @@ class CalendarIntegrationService {
       const connections: OAuthConnection[] = integrations?.map(integration => ({
         provider: integration.provider,
         isConnected: integration.is_active,
-        connectionStatus: this.getConnectionStatus(integration),
+        connectionStatus: this.getIntegrationStatus(integration),
         lastSync: integration.last_sync_at ? new Date(integration.last_sync_at) : undefined,
         syncEnabled: integration.sync_enabled,
         userEmail: undefined // Would need to decrypt and fetch from provider
@@ -357,7 +357,7 @@ class CalendarIntegrationService {
   }
 
   // Helper methods
-  private getConnectionStatus(integration: any): 'connected' | 'expired' | 'error' | 'disconnected' {
+  private getIntegrationStatus(integration: any): 'connected' | 'expired' | 'error' | 'disconnected' {
     if (!integration.is_active) {
       return 'disconnected'
     }

@@ -65,8 +65,8 @@ export class CertificationMonitoringService {
 
       // Log monitoring execution
       await this.auditService.logAction({
-        action: 'executed',
-        entity_type: 'certification_monitoring',
+        action: 'updated',
+        entity_type: 'compliance_record',
         entity_id: 'system',
         details: {
           certificationsChecked: certifications?.length || 0,
@@ -215,8 +215,8 @@ export class CertificationMonitoringService {
 
       // Log escalation processing
       await this.auditService.logAction({
-        action: 'processed_escalations',
-        entity_type: 'certification_monitoring',
+        action: 'updated',
+        entity_type: 'compliance_record',
         entity_id: 'system',
         details: {
           guardsProcessed: guardsForEscalation.length,
@@ -322,8 +322,8 @@ export class CertificationMonitoringService {
 
       // Log the alert in audit trail
       await this.auditService.logAction({
-        action: 'alert_sent',
-        entity_type: 'certification_expiry',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: check.certification.id,
         details: {
           guardId: check.guard.id,
@@ -360,8 +360,8 @@ export class CertificationMonitoringService {
 
       // Log the escalation in audit trail
       await this.auditService.logAction({
-        action: 'escalation_sent',
-        entity_type: 'certification_expiry',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: check.certification.id,
         details: {
           guardId: check.guard.id,

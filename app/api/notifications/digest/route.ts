@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const digest = result.data
+    const digest = result.data!
 
     // In a full implementation, this would send the digest via email
     // For now, we'll just return the digest data

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUnifiedAnalytics } from '@/lib/services/unified-lead-analytics-service'
-import { FilterCriteria } from '@/lib/types/unified-leads'
+import { FilterCriteria, LeadSource } from '@/lib/types/unified-leads'
 import { LeadStatus } from '@/lib/types'
 
 /**
@@ -25,13 +25,12 @@ export async function GET(request: NextRequest) {
     // Build filter criteria
     const filters: FilterCriteria = {
       dateRange: {
-        start: new Date(startDate),
-        end: new Date(endDate)
+        start: startDate,
+        end: endDate
       },
-      sources: searchParams.get('sources')?.split(',').filter(Boolean),
+      sources: searchParams.get('sources')?.split(',').filter(Boolean) as LeadSource[] | undefined,
       statuses: searchParams.get('statuses')?.split(',').filter(Boolean) as LeadStatus[] | undefined,
-      assignedManagers: searchParams.get('managers')?.split(',').filter(Boolean),
-      searchTerm: searchParams.get('search') || undefined
+      assignedUsers: searchParams.get('managers')?.split(',').filter(Boolean)
     }
 
     // Get analytics type

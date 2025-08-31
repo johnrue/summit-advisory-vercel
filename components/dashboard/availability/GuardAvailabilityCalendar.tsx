@@ -191,7 +191,7 @@ export default function GuardAvailabilityCalendar({
   const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3174ad';
     let borderColor = '#3174ad';
-    let color = 'white';
+    const color = 'white';
 
     if (event.eventType === 'availability') {
       backgroundColor = '#10b981'; // Green for availability

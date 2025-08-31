@@ -248,8 +248,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'DELEGATION_ERROR' 
+        error: {
+          code: 'DELEGATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -285,8 +287,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'LINK_GENERATION_ERROR' 
+        error: {
+          code: 'LINK_GENERATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -310,8 +314,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'VALIDATION_ERROR' 
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -358,8 +364,10 @@ export class ApprovalWorkflowService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'QUERY_ERROR' 
+        error: {
+          code: 'QUERY_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }

@@ -216,7 +216,7 @@ export function ShiftArchiveViewer({ managerId, className }: ShiftArchiveViewerP
   const setDateRangePreset = useCallback((preset: string) => {
     const today = new Date();
     let start: Date;
-    let end: Date = today;
+    const end: Date = today;
 
     switch (preset) {
       case 'last7days':

@@ -499,6 +499,17 @@ export interface NotificationEscalation {
   resolvedAt?: string
 }
 
+export interface NotificationFilter {
+  read?: boolean
+  type?: NotificationType
+  category?: NotificationCategory
+  priority?: NotificationPriority
+  limit?: number
+  offset?: number
+  dateFrom?: string
+  dateTo?: string
+}
+
 // Lead Management Types
 export interface Lead {
   id: string

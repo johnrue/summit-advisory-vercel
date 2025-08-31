@@ -142,11 +142,11 @@ describe('NotificationBell', () => {
 
       const { rerender } = render(<NotificationBell userId="user-123" size="sm" />)
       let button = screen.getByRole('button')
-      expect(button).toHaveClass('h-8', 'w-8')
+      expect(button).toHaveClass('h-8 w-8')
 
       rerender(<NotificationBell userId="user-123" size="lg" />)
       button = screen.getByRole('button')
-      expect(button).toHaveClass('h-12', 'w-12')
+      expect(button).toHaveClass('h-12 w-12')
     })
   })
 

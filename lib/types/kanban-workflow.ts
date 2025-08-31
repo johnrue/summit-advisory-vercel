@@ -52,6 +52,7 @@ export interface ApplicationComment {
   updated_at: string
   is_deleted: boolean
   mentions?: string[] // User IDs mentioned in comment
+  replies?: ApplicationComment[] // Child comments for threading
 }
 
 // Kanban board props

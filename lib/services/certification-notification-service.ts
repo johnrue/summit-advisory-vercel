@@ -66,8 +66,8 @@ export class CertificationNotificationService {
       
       // Log notification in audit trail
       await this.auditService.logAction({
-        action: 'notification_sent',
-        entity_type: 'certification_expiry',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: check.certification.id,
         details: {
           guardId: check.guard.id,
@@ -133,8 +133,8 @@ export class CertificationNotificationService {
 
       // Log escalation in audit trail
       await this.auditService.logAction({
-        action: 'escalation_sent',
-        entity_type: 'certification_expiry',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: check.certification.id,
         details: {
           guardId: check.guard.id,
@@ -196,8 +196,8 @@ export class CertificationNotificationService {
 
       // Log notification in audit trail
       await this.auditService.logAction({
-        action: 'renewal_request_notification_sent',
-        entity_type: 'certification_renewal',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: data.requestId,
         details: {
           guardName: data.guardName,
@@ -255,8 +255,8 @@ export class CertificationNotificationService {
 
       // Log notification in audit trail
       await this.auditService.logAction({
-        action: 'renewal_decision_notification_sent',
-        entity_type: 'certification_renewal',
+        action: 'updated',
+        entity_type: 'compliance_record',
         entity_id: 'renewal_decision',
         details: {
           guardName: data.guardName,
@@ -315,8 +315,8 @@ export class CertificationNotificationService {
 
       // Log summary in audit trail
       await this.auditService.logAction({
-        action: 'compliance_summary_sent',
-        entity_type: 'certification_monitoring',
+        action: 'created',
+        entity_type: 'compliance_report',
         entity_id: 'weekly_summary',
         details: {
           periodStart: data.periodStart.toISOString(),

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     let updateData: any = {}
-    let auditLogEntry: any = {
+    const auditLogEntry: any = {
       application_id: id,
       processing_type: 'manager_review',
       ai_model: application.ai_parsed_data?.processing_model || 'unknown',

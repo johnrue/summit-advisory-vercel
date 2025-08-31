@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/lib/auth/supabase'
 import { AuditService } from './audit-service'
 import type { 
   Notification, 
@@ -11,7 +11,8 @@ import type {
   NotificationStats,
   NotificationTemplate,
   NotificationDigest,
-  NotificationEscalation
+  NotificationEscalation,
+  NotificationFilter
 } from '@/lib/types'
 import type { ServiceResult } from '@/lib/types'
 
@@ -30,7 +31,7 @@ export class NotificationService {
   /**
    * Create a new notification
    */
-  async createNotification(request: CreateNotificationRequest): Promise<ServiceResult<Notification>> {
+  async createNotification(request: CreateNotificationData): Promise<ServiceResult<Notification>> {
     try {
       const { data, error } = await this.supabase
         .from('notifications')
@@ -218,8 +219,10 @@ export class NotificationService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'GET_STATS_ERROR' 
+        error: {
+          code: 'GET_STATS_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -279,8 +282,10 @@ export class NotificationService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'MARK_ALL_READ_ERROR' 
+        error: {
+          code: 'MARK_ALL_READ_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -304,8 +309,10 @@ export class NotificationService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'CLEANUP_ERROR' 
+        error: {
+          code: 'CLEANUP_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -336,7 +343,7 @@ export class NotificationService {
     const message = this.interpolateTemplate(template.message_template, variables)
 
     return this.createNotification({
-      recipient_id: recipientId,
+      recipientId: recipientId,
       notification_type: template.type,
       priority: template.default_priority,
       category: template.category,
@@ -360,7 +367,7 @@ export class NotificationService {
 
       // Create notification record
       const notificationResult = await this.createNotification({
-        recipient_id: data.recipientId,
+        recipientId: data.recipientId,
         sender_id: data.senderId,
         notification_type: data.type,
         priority: data.priority || 'normal',
@@ -391,8 +398,8 @@ export class NotificationService {
 
       // Log notification creation
       await NotificationService.auditService.logAction({
-        action: 'sent',
-        entity_type: 'notification',
+        action: 'created',
+        entity_type: 'user_profile',
         entity_id: notification.id,
         details: {
           recipientId: data.recipientId,
@@ -404,13 +411,15 @@ export class NotificationService {
         user_id: data.senderId || 'system'
       })
 
-      return { success: true, data: { ...notification, delivery_status: deliveryStatus } }
+      return { success: true, data: { ...notification, deliveryStatus } }
 
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to send notification',
-        code: 'SEND_WITH_PREFERENCES_ERROR'
+        error: {
+          code: 'SEND_WITH_PREFERENCES_ERROR',
+          message: error instanceof Error ? error.message : 'Failed to send notification'
+        }
       }
     }
   }
@@ -455,7 +464,7 @@ export class NotificationService {
       // Log preference change
       await NotificationService.auditService.logAction({
         action: 'updated',
-        entity_type: 'notification_preferences',
+        entity_type: 'user_profile',
         entity_id: preferences.id,
         details: { updates },
         user_id: userId
@@ -546,7 +555,7 @@ export class NotificationService {
       // In a full implementation, this would be stored in a separate escalations table
       // For now, create a new notification with escalation data
       const escalationNotification = await this.createNotification({
-        recipient_id: escalatedTo || recipientId,
+        recipientId: escalatedTo || recipientId,
         notification_type: 'system_alert',
         priority: 'critical',
         category: 'emergency',
@@ -564,8 +573,8 @@ export class NotificationService {
 
       // Log escalation
       await NotificationService.auditService.logAction({
-        action: 'escalated',
-        entity_type: 'notification',
+        action: 'created',
+        entity_type: 'user_profile',
         entity_id: originalNotificationId,
         details: {
           escalationLevel,
@@ -748,10 +757,18 @@ export class NotificationService {
 
   private getNotificationByType(type: NotificationType) {
     // Helper method to get notification details by type for priority/category checking
-    const typeMap = {
-      'emergency_alert': { priority: 'critical', category: 'emergency' },
+    const typeMap: Record<NotificationType, { priority: string; category: string }> = {
       'shift_assignment': { priority: 'normal', category: 'scheduling' },
+      'shift_change': { priority: 'normal', category: 'scheduling' },
+      'shift_cancellation': { priority: 'high', category: 'scheduling' },
       'certification_expiry': { priority: 'high', category: 'compliance' },
+      'compliance_reminder': { priority: 'normal', category: 'compliance' },
+      'emergency_alert': { priority: 'critical', category: 'emergency' },
+      'approval_needed': { priority: 'normal', category: 'workflow' },
+      'approval_granted': { priority: 'normal', category: 'workflow' },
+      'approval_denied': { priority: 'normal', category: 'workflow' },
+      'hiring_update': { priority: 'normal', category: 'hiring' },
+      'document_required': { priority: 'normal', category: 'compliance' },
       'system_alert': { priority: 'normal', category: 'system' }
     }
     return typeMap[type] || null

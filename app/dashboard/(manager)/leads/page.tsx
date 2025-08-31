@@ -27,7 +27,7 @@ import {
   Clock, 
   Target, 
   Filter,
-  Refresh,
+  RefreshCw,
   Download,
   Settings,
   Plus,
@@ -139,7 +139,7 @@ export default function UnifiedLeadDashboard() {
             onClick={refreshDashboard}
             disabled={isLoading}
           >
-            <Refresh className="h-4 w-4 mr-2" />
+            <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
           

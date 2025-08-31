@@ -3,11 +3,10 @@
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
 import { AuditTrailService } from '@/lib/services/audit-trail-service'
-import type { CreateAuditRecordRequest } from '@/lib/services/audit-trail-service'
+import type { CreateAuditRecordRequest, AuditExportFilters } from '@/lib/services/audit-trail-service'
 import type { 
   AuditIntegrityReport,
   AuditFilters,
-  AuditExportFilters,
   DecisionAuditRecord,
   AuditEventType
 } from '@/lib/types/approval-workflow'
@@ -419,7 +418,8 @@ describe('AuditTrailService', () => {
     it('should export audit data successfully', async () => {
       const filters: AuditExportFilters = {
         format: 'json',
-        actions: ['decision_created']
+        auditEventTypes: ['decision_created'],
+        includeSystemGenerated: true
       }
 
       const mockAuditData = [
@@ -482,7 +482,8 @@ describe('AuditTrailService', () => {
     it('should fail when user is not authenticated', async () => {
       const filters: AuditExportFilters = {
         format: 'json',
-        actions: ['decision_created']
+        auditEventTypes: ['decision_created'],
+        includeSystemGenerated: true
       }
 
       // Mock failed authentication

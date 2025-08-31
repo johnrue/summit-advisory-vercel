@@ -269,7 +269,12 @@ export class ProfileCreationTriggerService {
       // Check if token is still valid
       const tokenValidation = await this.validateCreationToken(token.secure_token)
       if (!tokenValidation.success) {
-        return { success: false, error: { code: tokenValidation.code , message: tokenValidation.error }}
+        return { 
+          success: false, 
+          error: typeof tokenValidation.error === 'string' 
+            ? { code: 'VALIDATION_FAILED', message: tokenValidation.error }
+            : tokenValidation.error || { code: 'VALIDATION_FAILED', message: 'Token validation failed' }
+        }
       }
 
       // Create guard profile (this would typically be in a separate guards table)
@@ -338,7 +343,12 @@ export class ProfileCreationTriggerService {
 
       const linkResult = await this.generateSecureCreationLink(tokenId)
       if (!linkResult.success) {
-        return { success: false, error: { code: linkResult.code , message: linkResult.error }}
+        return { 
+          success: false, 
+          error: typeof linkResult.error === 'string' 
+            ? { code: 'LINK_GENERATION_FAILED', message: linkResult.error }
+            : linkResult.error || { code: 'LINK_GENERATION_FAILED', message: 'Failed to generate secure link' }
+        }
       }
 
       const notificationData: ApprovalNotificationData = {

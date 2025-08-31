@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { UnifiedLeadDashboardService } from '@/lib/services/unified-lead-dashboard-service'
-import { FilterCriteria } from '@/lib/types/unified-leads'
+import { FilterCriteria, LeadSource } from '@/lib/types/unified-leads'
+import { LeadStatus } from '@/lib/types'
 
 /**
  * GET /api/unified-leads
@@ -24,17 +25,12 @@ export async function GET(request: NextRequest) {
     // Build filter criteria
     const filters: FilterCriteria = {
       dateRange: {
-        start: new Date(startDate),
-        end: new Date(endDate)
+        start: startDate,
+        end: endDate
       },
-      sources: searchParams.get('sources')?.split(',').filter(Boolean),
-      statuses: searchParams.get('statuses')?.split(',').filter(Boolean),
-      assignedManagers: searchParams.get('managers')?.split(',').filter(Boolean),
-      searchTerm: searchParams.get('search') || undefined,
-      pagination: {
-        page: parseInt(searchParams.get('page') || '1'),
-        limit: parseInt(searchParams.get('limit') || '50')
-      }
+      sources: searchParams.get('sources')?.split(',').filter(Boolean) as LeadSource[] | undefined,
+      statuses: searchParams.get('statuses')?.split(',').filter(Boolean) as LeadStatus[] | undefined,
+      assignedUsers: searchParams.get('managers')?.split(',').filter(Boolean)
     }
 
     // Fetch unified leads
@@ -90,8 +86,8 @@ export async function POST(request: NextRequest) {
     let result
     if (leadType === 'client') {
       // Use existing client lead service
-      const { createClientLead } = await import('@/lib/services/lead-management-service')
-      result = await createClientLead(leadData)
+      const { createLead } = await import('@/lib/services/lead-management-service')
+      result = await createLead(leadData)
     } else {
       // Use guard lead service (would need to be implemented)
       return NextResponse.json(

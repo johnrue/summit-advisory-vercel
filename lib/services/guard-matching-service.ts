@@ -114,8 +114,8 @@ export class GuardMatchingService {
       // Initialize scoring components
       let certificationScore = 0;
       let availabilityScore = 0;
-      let proximityScore = eligibility.proximityScore || 0;
-      let performanceScore = eligibility.performanceScore || 0;
+      const proximityScore = eligibility.proximityScore || 0;
+      const performanceScore = eligibility.performanceScore || 0;
       let preferenceScore = 0;
 
       // 1. Certification Score (30% weight)

@@ -190,7 +190,9 @@ class OAuthService {
         provider: oauthState.provider,
         provider_user_id: userInfo.data!.id,
         ...encryptedTokens,
-        token_expires_at: tokens.expires_at
+        token_expires_at: tokens.expires_at,
+        is_active: true,
+        sync_enabled: true
       })
 
       // Cleanup OAuth state

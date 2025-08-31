@@ -64,7 +64,7 @@ export async function GET(
       }
 
       // Sort results
-      let sortedGuards = [...result.data!];
+      const sortedGuards = [...result.data!];
       switch (sortBy) {
         case 'eligibility_score':
           sortedGuards.sort((a, b) => b.eligibilityScore - a.eligibilityScore);

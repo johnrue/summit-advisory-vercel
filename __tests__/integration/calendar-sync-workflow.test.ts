@@ -5,6 +5,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createClient } from '@/lib/supabase'
+import type { EventType } from '@/lib/types/calendar-types'
 import { oauthService } from '@/lib/services/oauth-service'
 import { calendarExportService } from '@/lib/services/calendar-export-service'
 import { calendarIntegrationService } from '@/lib/services/calendar-integration-service'
@@ -93,6 +94,8 @@ describe('Calendar Sync Workflow Integration Tests', () => {
           id: 'integration-789',
           user_id: 'user-123',
           provider: 'google_calendar',
+          provider_user_id: 'google-user-123',
+          access_token_encrypted: 'encrypted-token-data',
           is_active: true,
           sync_enabled: true,
           created_at: new Date('2025-08-28T10:00:00Z'),
@@ -192,7 +195,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
       const syncRequest = {
         integration_id: 'integration-789',
-        event_types: ['shift', 'availability'] as const,
+        event_types: ['shift', 'availability'] as EventType[],
         date_range: {
           start: new Date('2025-08-28T00:00:00Z'),
           end: new Date('2025-08-29T00:00:00Z')
@@ -263,7 +266,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
       const syncRequest = {
         integration_id: 'integration-789',
-        event_types: ['shift'] as const,
+        event_types: ['shift'] as EventType[],
         date_range: {
           start: new Date('2025-08-28T00:00:00Z'),
           end: new Date('2025-08-29T00:00:00Z')
@@ -342,7 +345,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
       const syncRequest = {
         integration_id: 'google-integration',
-        event_types: ['shift'] as const,
+        event_types: ['shift'] as EventType[],
         date_range: {
           start: new Date('2025-08-28T00:00:00Z'),
           end: new Date('2025-08-29T00:00:00Z')
@@ -634,7 +637,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
           sync_availability: false,
           include_client_info: false,
           sync_frequency: 'hourly',
-          updated_at: '2025-08-28T10:00:00Z'
+          updated_at: new Date('2025-08-28T10:00:00Z')
         }
       })
 

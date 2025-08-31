@@ -102,8 +102,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'AUDIT_CREATION_ERROR' 
+        error: {
+          code: 'AUDIT_CREATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -158,8 +160,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'AUDIT_RETRIEVAL_ERROR' 
+        error: {
+          code: 'AUDIT_RETRIEVAL_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -172,10 +176,22 @@ export class AuditTrailService {
       // Get all audit records for the decision
       const auditResult = await this.getAuditTrail(decisionId)
       if (!auditResult.success) {
-        return { success: false, error: { code: auditResult.code , message: auditResult.error }}
+        return { 
+          success: false, 
+          error: typeof auditResult.error === 'string' 
+            ? { code: 'AUDIT_RETRIEVAL_FAILED', message: auditResult.error }
+            : auditResult.error || { code: 'AUDIT_RETRIEVAL_FAILED', message: 'Failed to retrieve audit records' }
+        }
       }
 
       const auditRecords = auditResult.data
+      if (!auditRecords) {
+        return {
+          success: false,
+          error: { code: 'NO_AUDIT_RECORDS', message: 'No audit records found' }
+        }
+      }
+
       let verifiedRecords = 0
       const suspiciousActivities: AuditIntegrityReport['suspiciousActivities'] = []
 
@@ -236,8 +252,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'INTEGRITY_VALIDATION_ERROR' 
+        error: {
+          code: 'INTEGRITY_VALIDATION_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -322,8 +340,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'EXPORT_ERROR' 
+        error: {
+          code: 'EXPORT_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -359,8 +379,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'COMPLIANCE_REPORT_ERROR' 
+        error: {
+          code: 'COMPLIANCE_REPORT_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }
@@ -376,8 +398,10 @@ export class AuditTrailService {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'SCHEDULING_ERROR' 
+        error: {
+          code: 'SCHEDULING_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        }
       }
     }
   }

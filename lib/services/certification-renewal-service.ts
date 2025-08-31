@@ -62,8 +62,8 @@ export class CertificationRenewalService {
 
       // Log submission in audit trail
       await this.auditService.logAction({
-        action: 'submitted',
-        entity_type: 'certification_renewal',
+        action: 'created',
+        entity_type: 'compliance_record',
         entity_id: renewalRequest.id,
         details: {
           certificationId,
@@ -134,7 +134,7 @@ export class CertificationRenewalService {
       // Log review action in audit trail
       await this.auditService.logAction({
         action: action,
-        entity_type: 'certification_renewal',
+        entity_type: 'compliance_record',
         entity_id: renewalRequestId,
         details: {
           certificationId: renewalRequest.guard_certification_id,

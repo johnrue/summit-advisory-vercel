@@ -129,7 +129,7 @@ export class ConflictDetectionService {
       const { data: conflictData } = await supabase
         .rpc('detect_assignment_conflicts', {
           p_guard_id: guardId,
-          p_time_range: `[${shift.timeRange.start.toISOString()}, ${shift.timeRange.end.toISOString()})`
+          p_time_range: `[${new Date(shift.timeRange.startTime).toISOString()}, ${new Date(shift.timeRange.endTime).toISOString()})`
         });
 
       if (!conflictData || !conflictData.has_conflicts) {
@@ -142,7 +142,10 @@ export class ConflictDetectionService {
             start: new Date(conflict.time_range.start),
             end: new Date(conflict.time_range.end)
           },
-          shift.timeRange
+          {
+            start: new Date(shift.timeRange.startTime),
+            end: new Date(shift.timeRange.endTime)
+          }
         );
 
         const severity = overlapDuration > 0.8 ? 'critical' : 
@@ -185,7 +188,7 @@ export class ConflictDetectionService {
         .eq('guard_id', guardId)
         .eq('availability_type', 'unavailable')
         .eq('status', 'active')
-        .overlaps('availability_window', `[${shift.timeRange.start.toISOString()}, ${shift.timeRange.end.toISOString()})`);
+        .overlaps('availability_window', `[${new Date(shift.timeRange.startTime).toISOString()}, ${new Date(shift.timeRange.endTime).toISOString()})`);
 
       for (const period of unavailablePeriods || []) {
         conflicts.push({
@@ -207,7 +210,7 @@ export class ConflictDetectionService {
         .eq('guard_id', guardId)
         .eq('availability_type', 'emergency_only')
         .eq('status', 'active')
-        .overlaps('availability_window', `[${shift.timeRange.start.toISOString()}, ${shift.timeRange.end.toISOString()})`);
+        .overlaps('availability_window', `[${new Date(shift.timeRange.startTime).toISOString()}, ${new Date(shift.timeRange.endTime).toISOString()})`);
 
       if (emergencyOnly && emergencyOnly.length > 0 && shift.priority < 5) {
         conflicts.push({
@@ -406,10 +409,10 @@ export class ConflictDetectionService {
   private static async detectWorkloadConflicts(guardId: string, shift: Shift): Promise<AssignmentConflict[]> {
     try {
       const conflicts: AssignmentConflict[] = [];
-      const shiftHours = (shift.timeRange.end.getTime() - shift.timeRange.start.getTime()) / (1000 * 60 * 60);
+      const shiftHours = (new Date(shift.timeRange.endTime).getTime() - new Date(shift.timeRange.startTime).getTime()) / (1000 * 60 * 60);
 
       // Check daily hour limit (12 hours max per day)
-      const dayStart = new Date(shift.timeRange.start);
+      const dayStart = new Date(shift.timeRange.startTime);
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(dayStart);
       dayEnd.setDate(dayEnd.getDate() + 1);
@@ -459,7 +462,7 @@ export class ConflictDetectionService {
       }
 
       // Check weekly hour limit (60 hours max per week)
-      const weekStart = new Date(shift.timeRange.start);
+      const weekStart = new Date(shift.timeRange.startTime);
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       weekStart.setHours(0, 0, 0, 0);
       const weekEnd = new Date(weekStart);
@@ -526,7 +529,7 @@ export class ConflictDetectionService {
 
     try {
       // Check shifts ending within buffer time before this shift
-      const beforeShiftStart = new Date(shift.timeRange.start.getTime() - bufferTime);
+      const beforeShiftStart = new Date(new Date(shift.timeRange.startTime).getTime() - bufferTime);
       const { data: previousShifts } = await supabase
         .from('shift_assignments')
         .select(`
@@ -540,10 +543,10 @@ export class ConflictDetectionService {
         .eq('guard_id', guardId)
         .in('assignment_status', ['accepted', 'confirmed'])
         .gte('shifts.time_range', beforeShiftStart.toISOString())
-        .lt('shifts.time_range', shift.timeRange.start.toISOString());
+        .lt('shifts.time_range', new Date(shift.timeRange.startTime).toISOString());
 
       // Check shifts starting within buffer time after this shift
-      const afterShiftEnd = new Date(shift.timeRange.end.getTime() + bufferTime);
+      const afterShiftEnd = new Date(new Date(shift.timeRange.endTime).getTime() + bufferTime);
       const { data: nextShifts } = await supabase
         .from('shift_assignments')
         .select(`
@@ -556,7 +559,7 @@ export class ConflictDetectionService {
         `)
         .eq('guard_id', guardId)
         .in('assignment_status', ['accepted', 'confirmed'])
-        .gt('shifts.time_range', shift.timeRange.end.toISOString())
+        .gt('shifts.time_range', new Date(shift.timeRange.endTime).toISOString())
         .lte('shifts.time_range', afterShiftEnd.toISOString());
 
       // Analyze previous shifts
@@ -568,7 +571,7 @@ export class ConflictDetectionService {
           );
 
           const prevShiftEnd = new Date(prevShift.shifts.time_range.split(',')[1].slice(0, -1));
-          const actualBuffer = shift.timeRange.start.getTime() - prevShiftEnd.getTime();
+          const actualBuffer = new Date(shift.timeRange.startTime).getTime() - prevShiftEnd.getTime();
 
           if (travelTime > actualBuffer) {
             conflicts.push({
@@ -595,7 +598,7 @@ export class ConflictDetectionService {
           );
 
           const nextShiftStart = new Date(nextShift.shifts.time_range.split(',')[0].substring(1));
-          const actualBuffer = nextShiftStart.getTime() - shift.timeRange.end.getTime();
+          const actualBuffer = nextShiftStart.getTime() - new Date(shift.timeRange.endTime).getTime();
 
           if (travelTime > actualBuffer) {
             conflicts.push({

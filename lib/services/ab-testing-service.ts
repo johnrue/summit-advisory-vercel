@@ -64,7 +64,7 @@ export async function createABTest(testData: {
         isControl: index === 0
       })),
       trafficSplit: testData.variants.reduce((split, variant, index) => {
-        split[`variant_${testId}_${index}`] = Object.values(variant.config?.trafficPercentage || { default: 0 })[0]
+        split[`variant_${testId}_${index}`] = Object.values(variant.config?.trafficPercentage || { default: 0 })[0] as number
         return split
       }, {} as Record<string, number>),
       confidenceLevel: testData.confidenceLevel || 95,
@@ -397,7 +397,7 @@ export async function calculateTestResults(testId: string): Promise<ApiResponse<
     })
 
     // Find control variant (first variant)
-    const controlVariant = variantResults.find(v => 
+    const controlVariant = variantResults.find((v: any) => 
       test.variants.find((tv: any) => tv.id === v.variantId)?.isControl
     )
 
@@ -406,7 +406,7 @@ export async function calculateTestResults(testId: string): Promise<ApiResponse<
     }
 
     // Calculate lift for non-control variants
-    const variantResultsWithLift = variantResults.map(variant => {
+    const variantResultsWithLift = variantResults.map((variant: any) => {
       if (variant.variantId === controlVariant.variantId) {
         return variant
       }

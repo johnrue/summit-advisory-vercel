@@ -306,7 +306,7 @@ class ReportSchedulingService {
       case 'daily':
         // If time has passed today, schedule for tomorrow
         if (nextRun <= now) {
-          nextRun.setDate(nextRun.getDate() + 1)
+          nextRun = new Date(nextRun.getTime() + 24 * 60 * 60 * 1000) // Add 1 day
         }
         break
 
@@ -321,19 +321,22 @@ class ReportSchedulingService {
           daysUntilTarget = 7
         }
 
-        nextRun.setDate(nextRun.getDate() + daysUntilTarget)
+        nextRun = new Date(nextRun.getTime() + daysUntilTarget * 24 * 60 * 60 * 1000)
         break
 
       case 'monthly':
         // Set to the specified day of month
         const targetDate = schedule.dayOfMonth || 1
-        nextRun.setDate(targetDate)
+        const tempDate = new Date(nextRun)
+        tempDate.setDate(targetDate)
 
         // If date has passed this month, move to next month
-        if (nextRun <= now) {
-          nextRun.setMonth(nextRun.getMonth() + 1)
-          nextRun.setDate(targetDate)
+        if (tempDate <= now) {
+          tempDate.setMonth(tempDate.getMonth() + 1)
+          tempDate.setDate(targetDate)
         }
+        
+        nextRun = tempDate
         break
     }
 

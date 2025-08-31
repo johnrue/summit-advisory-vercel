@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
 
     booleanFields.forEach(field => {
       if (field in preferences && typeof preferences[field] === 'boolean') {
-        validatedPreferences[field as keyof NotificationPreferences] = preferences[field]
+        (validatedPreferences as any)[field] = preferences[field]
       }
     })
 

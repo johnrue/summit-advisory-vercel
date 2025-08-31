@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { useBackgroundCheck } from '@/hooks/use-background-check'
 import type { BackgroundCheckUpdate } from '@/lib/types/background-check'
 

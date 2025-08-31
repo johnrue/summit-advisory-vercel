@@ -23,13 +23,12 @@ export async function POST(request: NextRequest) {
     // Build filter criteria
     const filterCriteria: FilterCriteria = {
       dateRange: {
-        start: new Date(filters.dateRange.start),
-        end: new Date(filters.dateRange.end)
+        start: filters.dateRange.start,
+        end: filters.dateRange.end
       },
       sources: filters.sources,
       statuses: filters.statuses,
-      assignedManagers: filters.assignedManagers,
-      searchTerm: filters.searchTerm
+      assignedUsers: filters.assignedManagers
     }
 
     // Default export options

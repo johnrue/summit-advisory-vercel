@@ -144,11 +144,20 @@ export class AuditService {
   ): Promise<ServiceResult<AuditLog>> {
     const details = createAuditContext(null, reportParameters, context)
     
+    // Map specific report actions to valid audit actions
+    const auditActionMap: Record<typeof action, 'created' | 'updated' | 'activated' | 'deleted'> = {
+      'generated': 'created',
+      'downloaded': 'updated', 
+      'emailed': 'updated',
+      'scheduled': 'activated',
+      'failed': 'updated'
+    }
+    
     return this.logAction({
-      action,
+      action: auditActionMap[action],
       entity_type: 'compliance_report',
       entity_id: reportId,
-      details,
+      details: { ...details, originalAction: action },
       user_id: userId
     })
   }
@@ -162,11 +171,18 @@ export class AuditService {
   ): Promise<ServiceResult<AuditLog>> {
     const details = createAuditContext(null, accessDetails, context)
     
+    // Map specific access actions to valid audit actions
+    const auditActionMap: Record<typeof action, 'updated' | 'activated'> = {
+      'viewed': 'updated',
+      'downloaded': 'updated',
+      'shared': 'activated'
+    }
+    
     return this.logAction({
-      action,
-      entity_type: 'compliance_report_access',
+      action: auditActionMap[action],
+      entity_type: 'compliance_report',
       entity_id: reportId,
-      details,
+      details: { ...details, originalAction: action },
       user_id: userId
     })
   }
@@ -183,7 +199,7 @@ export class AuditService {
     
     return this.logAction({
       action,
-      entity_type: 'report_schedule',
+      entity_type: 'schedule',
       entity_id: scheduleId,
       details,
       user_id: userId

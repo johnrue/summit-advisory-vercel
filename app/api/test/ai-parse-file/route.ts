@@ -152,10 +152,17 @@ export async function POST(request: NextRequest) {
       throw new Error('No response from Summit AI engine')
     }
 
+    // Handle both string and array response formats
+    const responseText = typeof aiResponse === 'string' 
+      ? aiResponse 
+      : Array.isArray(aiResponse) 
+        ? JSON.stringify(aiResponse)
+        : String(aiResponse)
+
     // Parse the JSON response
     let parsedData
     try {
-      parsedData = JSON.parse(aiResponse)
+      parsedData = JSON.parse(responseText)
     } catch (parseError) {
       console.error('Failed to parse AI response:', aiResponse)
       throw new Error('Invalid response format from Summit AI')

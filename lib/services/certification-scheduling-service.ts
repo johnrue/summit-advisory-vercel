@@ -118,8 +118,8 @@ export class CertificationSchedulingService {
 
       // Log the override in audit trail
       await this.auditService.logAction({
-        action: 'emergency_override_created',
-        entity_type: 'certification_scheduling',
+        action: 'created',
+        entity_type: 'schedule',
         entity_id: override.id,
         details: {
           guardId,

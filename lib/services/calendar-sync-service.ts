@@ -117,8 +117,8 @@ class CalendarSyncMonitor {
         ? successfulSyncs.reduce((sum, log) => sum + (log.operation_duration_ms || 0), 0) / successfulSyncs.length
         : 0
 
-      // Get consecutive failures
-      const consecutiveFailures = this.countConsecutiveFailures(logs)
+      // Get consecutive failures  
+      const consecutiveFailures = this.countConsecutiveFailures(logs as CalendarSyncLog[])
 
       // Determine health status
       const status = this.determineHealthStatus(
@@ -200,7 +200,7 @@ class CalendarSyncMonitor {
       // Create retry sync request
       const retryRequest: CalendarSyncRequest = {
         integration_id: syncLog.integration_id,
-        event_types: [syncLog.event_type as any] || ['shift'],
+        event_types: syncLog.event_type ? [syncLog.event_type as any] : ['shift'],
         force_sync: true
       }
 
