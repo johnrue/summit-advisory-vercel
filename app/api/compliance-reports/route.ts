@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ComplianceReportService } from '@/lib/services/compliance-report-service'
 import { PDFGenerator, CSVGenerator } from '@/lib/utils/pdf-generator'
 import { EmailService } from '@/lib/utils/email-service'
+import { createServerSupabaseClient } from '@/lib/supabase'
+import { cookies } from 'next/headers'
+import { validateRequestAuth } from '@/lib/auth'
 import type { ReportParameters } from '@/lib/types'
 
 /**
@@ -143,35 +146,103 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Validate authentication - only admins and managers can access reports
+    const authResult = await validateRequestAuth(request, ['admin', 'manager'])
+    if (!authResult.success) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: authResult.error || 'Unauthorized',
+          message: 'Access denied. Admin or manager role required.'
+        },
+        { status: authResult.status || 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
+    const reportType = searchParams.get('type') || 'all'
+    const startDate = searchParams.get('start_date')
+    const endDate = searchParams.get('end_date')
     
-    // This would typically fetch from database
-    // For now, return mock data
-    const mockReports = [
-      {
-        id: 'report-1',
-        type: 'tops_compliance',
-        reportPeriod: {
-          startDate: '2024-01-01',
-          endDate: '2024-01-31'
-        },
-        generatedAt: '2024-02-01T10:00:00Z',
-        generatedBy: 'admin-user-1',
-        format: 'pdf',
-        fileUrl: '#',
-        fileSize: 125440,
-        guardsCount: 15
-      }
-    ]
+    // Create Supabase client
+    const cookieStore = cookies()
+    const supabase = createServerSupabaseClient(cookieStore)
+
+    // Build query for compliance reports
+    let query = supabase
+      .from('compliance_reports')
+      .select(`
+        id,
+        report_type,
+        start_date,
+        end_date,
+        generated_at,
+        generated_by,
+        format,
+        file_url,
+        file_size,
+        metadata,
+        users!generated_by(first_name, last_name, email)
+      `)
+      .order('generated_at', { ascending: false })
+
+    // Apply filters
+    if (reportType !== 'all') {
+      query = query.eq('report_type', reportType)
+    }
+
+    if (startDate) {
+      query = query.gte('generated_at', startDate)
+    }
+
+    if (endDate) {
+      query = query.lte('generated_at', endDate)
+    }
+
+    // Get total count
+    const { count } = await query.select('*', { count: 'exact', head: true })
+
+    // Apply pagination
+    const { data: reports, error } = await query.range(offset, offset + limit - 1)
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`)
+    }
+
+    // Transform the data to match expected format
+    const formattedReports = (reports || []).map(report => ({
+      id: report.id,
+      type: report.report_type,
+      reportPeriod: {
+        startDate: report.start_date,
+        endDate: report.end_date
+      },
+      generatedAt: report.generated_at,
+      generatedBy: report.generated_by,
+      generatedByName: report.users 
+        ? `${report.users.first_name} ${report.users.last_name}` 
+        : 'Unknown',
+      format: report.format,
+      fileUrl: report.file_url,
+      fileSize: report.file_size,
+      guardsCount: report.metadata?.guards_count || 0,
+      metadata: report.metadata
+    }))
 
     return NextResponse.json({
       success: true,
       data: {
-        reports: mockReports.slice(offset, offset + limit),
-        total: mockReports.length,
-        hasMore: offset + limit < mockReports.length
+        reports: formattedReports,
+        total: count || 0,
+        hasMore: offset + limit < (count || 0),
+        pagination: {
+          limit,
+          offset,
+          total: count || 0,
+          pages: Math.ceil((count || 0) / limit)
+        }
       }
     })
 
@@ -180,6 +251,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(
       { 
+        success: false,
         error: 'Failed to fetch reports',
         details: error instanceof Error ? error.message : 'Unknown error'
       },

@@ -1,4 +1,7 @@
 import { NextRequest } from 'next/server'
+import { createServerComponentClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { User } from '@supabase/supabase-js'
 
 export interface AuthResult {
   success: boolean
@@ -7,6 +10,7 @@ export interface AuthResult {
   userId?: string
   role?: string
   userEmail?: string
+  user?: User
 }
 
 export async function validateRequestAuth(
@@ -36,16 +40,53 @@ export async function validateRequestAuth(
       }
     }
 
-    // TODO: Implement actual JWT validation with Supabase
-    // For now, we'll mock the validation
-    const mockUser = {
-      userId: 'mock-user-id',
-      role: 'manager',
-      email: 'manager@summitadvisory.com'
+    // Create Supabase client with server-side configuration
+    const cookieStore = cookies()
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+
+    // Verify the JWT token with Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return {
+        success: false,
+        error: 'Invalid or expired token',
+        status: 401
+      }
+    }
+
+    // Get user role from user_roles table
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role, permissions')
+      .eq('user_id', user.id)
+      .single()
+
+    if (roleError || !userRole) {
+      // If no role found, default to 'guard' role
+      console.warn(`No role found for user ${user.id}, defaulting to 'guard'`)
+      const defaultRole = 'guard'
+      
+      // Check if user has required role
+      if (requiredRoles.length > 0 && !requiredRoles.includes(defaultRole)) {
+        return {
+          success: false,
+          error: 'Insufficient permissions',
+          status: 403
+        }
+      }
+      
+      return {
+        success: true,
+        userId: user.id,
+        role: defaultRole,
+        userEmail: user.email || '',
+        user
+      }
     }
 
     // Check if user has required role
-    if (requiredRoles.length > 0 && !requiredRoles.includes(mockUser.role)) {
+    if (requiredRoles.length > 0 && !requiredRoles.includes(userRole.role)) {
       return {
         success: false,
         error: 'Insufficient permissions',
@@ -55,9 +96,10 @@ export async function validateRequestAuth(
 
     return {
       success: true,
-      userId: mockUser.userId,
-      role: mockUser.role,
-      userEmail: mockUser.email
+      userId: user.id,
+      role: userRole.role,
+      userEmail: user.email || '',
+      user
     }
 
   } catch (error) {
@@ -70,21 +112,99 @@ export async function validateRequestAuth(
   }
 }
 
-export function extractUserFromToken(token: string): AuthResult {
+export async function extractUserFromToken(token: string): Promise<AuthResult> {
   try {
-    // TODO: Implement actual JWT decoding
-    // For now, return mock user data
+    // Create Supabase client
+    const cookieStore = cookies()
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+
+    // Verify the JWT token
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return {
+        success: false,
+        error: 'Invalid token',
+        status: 401
+      }
+    }
+
+    // Get user role
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    const role = userRole?.role || 'guard' // Default to guard if no role found
+
     return {
       success: true,
-      userId: 'mock-user-id',
-      role: 'manager',
-      userEmail: 'manager@summitadvisory.com'
+      userId: user.id,
+      role,
+      userEmail: user.email || '',
+      user
     }
   } catch (error) {
+    console.error('Error extracting user from token:', error)
     return {
       success: false,
       error: 'Invalid token',
       status: 401
+    }
+  }
+}
+
+// Helper function to create authenticated Supabase client
+export async function createAuthenticatedClient(token: string) {
+  const cookieStore = cookies()
+  const supabase = createServerComponentClient({ cookies: () => cookieStore })
+  
+  // Set the auth token
+  await supabase.auth.setSession({
+    access_token: token,
+    refresh_token: '', // We'll handle refresh tokens separately
+  })
+  
+  return supabase
+}
+
+// Helper function to get current user session
+export async function getCurrentUser(): Promise<AuthResult> {
+  try {
+    const cookieStore = cookies()
+    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    
+    const { data: { session }, error } = await supabase.auth.getSession()
+    
+    if (error || !session) {
+      return {
+        success: false,
+        error: 'No active session',
+        status: 401
+      }
+    }
+
+    // Get user role
+    const { data: userRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id)
+      .single()
+
+    return {
+      success: true,
+      userId: session.user.id,
+      role: userRole?.role || 'guard',
+      userEmail: session.user.email || '',
+      user: session.user
+    }
+  } catch (error) {
+    console.error('Error getting current user:', error)
+    return {
+      success: false,
+      error: 'Failed to get current user',
+      status: 500
     }
   }
 }

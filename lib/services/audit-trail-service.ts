@@ -472,19 +472,239 @@ export class AuditTrailService {
     reportType: string, 
     filters: ComplianceFilters
   ): Promise<Record<string, any>> {
-    // Build compliance report data based on type
-    const baseData = {
-      totalDecisions: 0,
-      approvals: 0,
-      rejections: 0,
-      delegatedDecisions: 0,
-      auditRecords: 0,
-      complianceIssues: 0
+    try {
+      // Build base query for hiring decisions
+      let decisionQuery = this.supabase
+        .from('hiring_decisions')
+        .select('id, decision_type, status, approver_id, delegated_from_id, created_at')
+
+      // Apply date range filter
+      if (filters.dateRange) {
+        decisionQuery = decisionQuery
+          .gte('created_at', filters.dateRange.from.toISOString())
+          .lte('created_at', filters.dateRange.to.toISOString())
+      }
+
+      // Apply other filters
+      if (filters.decisionTypes?.length) {
+        decisionQuery = decisionQuery.in('decision_type', filters.decisionTypes)
+      }
+
+      if (filters.approverIds?.length) {
+        decisionQuery = decisionQuery.in('approver_id', filters.approverIds)
+      }
+
+      const { data: decisions, error: decisionError } = await decisionQuery
+
+      if (decisionError) {
+        throw new Error(`Failed to fetch decisions: ${decisionError.message}`)
+      }
+
+      // Build audit records query
+      let auditQuery = this.supabase
+        .from('decision_audit_trail')
+        .select('id, audit_event_type, compliance_flag')
+
+      if (filters.dateRange) {
+        auditQuery = auditQuery
+          .gte('created_at', filters.dateRange.from.toISOString())
+          .lte('created_at', filters.dateRange.to.toISOString())
+      }
+
+      const { data: auditRecords, error: auditError } = await auditQuery
+
+      if (auditError) {
+        throw new Error(`Failed to fetch audit records: ${auditError.message}`)
+      }
+
+      // Calculate metrics
+      const totalDecisions = decisions?.length || 0
+      const approvals = decisions?.filter(d => d.status === 'approved').length || 0
+      const rejections = decisions?.filter(d => d.status === 'rejected').length || 0
+      const delegatedDecisions = decisions?.filter(d => d.delegated_from_id).length || 0
+      const totalAuditRecords = auditRecords?.length || 0
+      const complianceIssues = auditRecords?.filter(r => r.compliance_flag).length || 0
+
+      const baseData = {
+        totalDecisions,
+        approvals,
+        rejections,
+        delegatedDecisions,
+        auditRecords: totalAuditRecords,
+        complianceIssues,
+        complianceRate: totalDecisions > 0 ? ((totalDecisions - complianceIssues) / totalDecisions) * 100 : 100,
+        delegationRate: totalDecisions > 0 ? (delegatedDecisions / totalDecisions) * 100 : 0,
+        approvalRate: totalDecisions > 0 ? (approvals / totalDecisions) * 100 : 0
+      }
+
+      // Add report-type specific data
+      switch (reportType) {
+        case 'approval_summary':
+          return {
+            ...baseData,
+            averageDecisionTime: this.calculateAverageDecisionTime(decisions || []),
+            decisionsByType: this.groupDecisionsByType(decisions || [])
+          }
+
+        case 'audit_trail':
+          return {
+            ...baseData,
+            auditEventTypes: this.groupAuditEventsByType(auditRecords || []),
+            integrityMetrics: await this.calculateIntegrityMetrics(auditRecords || [])
+          }
+
+        case 'delegation_report':
+          return {
+            ...baseData,
+            delegationChains: this.analyzeDelegationChains(decisions || []),
+            delegationFrequency: this.calculateDelegationFrequency(decisions || [])
+          }
+
+        case 'decision_integrity':
+          return {
+            ...baseData,
+            signatureVerification: await this.verifyAllSignatures(auditRecords || []),
+            suspiciousPatterns: this.detectSuspiciousPatterns(auditRecords || [])
+          }
+
+        default:
+          return baseData
+      }
+    } catch (error) {
+      // Log error and return minimal data structure
+      console.error('Error building compliance report data:', error)
+      return {
+        totalDecisions: 0,
+        approvals: 0,
+        rejections: 0,
+        delegatedDecisions: 0,
+        auditRecords: 0,
+        complianceIssues: 0,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
+    }
+  }
+
+  private calculateAverageDecisionTime(decisions: any[]): number {
+    if (!decisions.length) return 0
+    
+    const decisionTimes = decisions
+      .filter(d => d.created_at)
+      .map(d => {
+        const created = new Date(d.created_at).getTime()
+        return Date.now() - created // Simple approximation
+      })
+
+    return decisionTimes.length > 0 
+      ? decisionTimes.reduce((a, b) => a + b, 0) / decisionTimes.length 
+      : 0
+  }
+
+  private groupDecisionsByType(decisions: any[]): Record<string, number> {
+    return decisions.reduce((acc, decision) => {
+      acc[decision.decision_type] = (acc[decision.decision_type] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+  }
+
+  private groupAuditEventsByType(auditRecords: any[]): Record<string, number> {
+    return auditRecords.reduce((acc, record) => {
+      acc[record.audit_event_type] = (acc[record.audit_event_type] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+  }
+
+  private async calculateIntegrityMetrics(auditRecords: any[]): Promise<Record<string, any>> {
+    return {
+      totalRecords: auditRecords.length,
+      recordsWithSignatures: auditRecords.filter(r => r.digital_signature).length,
+      complianceFlagged: auditRecords.filter(r => r.compliance_flag).length
+    }
+  }
+
+  private analyzeDelegationChains(decisions: any[]): Record<string, any> {
+    const delegated = decisions.filter(d => d.delegated_from_id)
+    return {
+      totalDelegations: delegated.length,
+      uniqueDelegators: new Set(delegated.map(d => d.delegated_from_id)).size,
+      uniqueDelegatees: new Set(delegated.map(d => d.approver_id)).size
+    }
+  }
+
+  private calculateDelegationFrequency(decisions: any[]): Record<string, number> {
+    const delegated = decisions.filter(d => d.delegated_from_id)
+    return delegated.reduce((acc, decision) => {
+      acc[decision.delegated_from_id] = (acc[decision.delegated_from_id] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+  }
+
+  private async verifyAllSignatures(auditRecords: any[]): Promise<Record<string, any>> {
+    const results = {
+      total: auditRecords.length,
+      verified: 0,
+      failed: 0,
+      missing: 0
     }
 
-    // In production, this would query the actual data
-    // For now, return mock data structure
-    return baseData
+    for (const record of auditRecords) {
+      if (!record.digital_signature) {
+        results.missing++
+      } else {
+        const isValid = await this.verifyAuditSignature({
+          ...record,
+          hiringDecisionId: record.hiring_decision_id,
+          auditEventType: record.audit_event_type,
+          actorId: record.actor_id,
+          changeReason: record.change_reason,
+          previousState: record.previous_state,
+          newState: record.new_state,
+          digitalSignature: record.digital_signature,
+          createdAt: new Date(record.created_at),
+          isSystemGenerated: record.is_system_generated,
+          complianceFlag: record.compliance_flag
+        } as DecisionAuditRecord)
+        
+        if (isValid) {
+          results.verified++
+        } else {
+          results.failed++
+        }
+      }
+    }
+
+    return results
+  }
+
+  private detectSuspiciousPatterns(auditRecords: any[]): Array<{ pattern: string; count: number; severity: string }> {
+    const patterns = []
+
+    // Pattern 1: Rapid successive changes by same user
+    const userChanges = auditRecords.reduce((acc, record) => {
+      const key = record.actor_id
+      if (!acc[key]) acc[key] = []
+      acc[key].push(new Date(record.created_at))
+      return acc
+    }, {} as Record<string, Date[]>)
+
+    for (const [userId, timestamps] of Object.entries(userChanges)) {
+      timestamps.sort()
+      let rapidChanges = 0
+      for (let i = 1; i < timestamps.length; i++) {
+        if (timestamps[i].getTime() - timestamps[i-1].getTime() < 60000) {
+          rapidChanges++
+        }
+      }
+      if (rapidChanges > 2) {
+        patterns.push({
+          pattern: `Rapid changes by user ${userId}`,
+          count: rapidChanges,
+          severity: 'medium'
+        })
+      }
+    }
+
+    return patterns
   }
 
   private mapDatabaseToAuditRecord(dbRecord: any): DecisionAuditRecord {
