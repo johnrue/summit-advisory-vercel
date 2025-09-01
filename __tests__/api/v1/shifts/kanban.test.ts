@@ -1,13 +1,13 @@
 // Story 3.4: Kanban API Endpoint Tests
 // Tests for /api/v1/shifts/kanban route handlers
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { GET, POST } from '@/app/api/v1/shifts/kanban/route';
 import { ShiftKanbanService } from '@/lib/services/shift-kanban-service';
 import { NextRequest } from 'next/server';
 
 // Mock the service
-vi.mock('@/lib/services/shift-kanban-service');
+jest.mock('@/lib/services/shift-kanban-service');
 
 // Mock data
 const mockBoardData = {
@@ -66,16 +66,16 @@ const createMockRequest = (
 
 describe('/api/v1/shifts/kanban', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('GET /api/v1/shifts/kanban', () => {
     it('returns board data successfully with valid manager ID', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: true,
         data: mockBoardData
       });
@@ -118,7 +118,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('parses and applies date range filters', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: true,
         data: mockBoardData
       });
@@ -144,7 +144,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('parses and applies multiple filter types', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: true,
         data: mockBoardData
       });
@@ -183,7 +183,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('handles service errors gracefully', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: false,
         error: { code: 'DATABASE_ERROR', message: 'Database connection failed' }
       });
@@ -203,7 +203,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('handles unexpected exceptions', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockRejectedValue(
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockRejectedValue(
         new Error('Unexpected error')
       );
 
@@ -222,7 +222,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('ignores invalid assignment_status values', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: true,
         data: mockBoardData
       });
@@ -243,7 +243,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('handles malformed priority values', async () => {
-      vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
         success: true,
         data: mockBoardData
       });
@@ -268,7 +268,7 @@ describe('/api/v1/shifts/kanban', () => {
 
   describe('POST /api/v1/shifts/kanban', () => {
     it('moves shift successfully with valid data', async () => {
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
@@ -368,7 +368,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('handles invalid transition errors with 409 status', async () => {
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: false,
         error: { code: 'INVALID_TRANSITION', message: 'Cannot move from unassigned to completed' }
       });
@@ -394,7 +394,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('handles other service errors with 500 status', async () => {
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: false,
         error: { code: 'DATABASE_ERROR', message: 'Database connection failed' }
       });
@@ -438,7 +438,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('accepts optional reason parameter', async () => {
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
@@ -468,7 +468,7 @@ describe('/api/v1/shifts/kanban', () => {
     });
 
     it('accepts all valid status values', async () => {
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });

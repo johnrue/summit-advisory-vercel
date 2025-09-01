@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals'
 import { EmailNotificationService } from '@/lib/services/email-notification-service'
 import type { 
   Notification, 
@@ -40,12 +40,12 @@ describe('EmailNotificationService', () => {
   }
 
   beforeEach(() => {
-    mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {})
     emailService = EmailNotificationService.getInstance()
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     mockConsoleLog.mockRestore()
   })
 

@@ -3,27 +3,27 @@
  * Tests OAuth flows for Google Calendar and Microsoft Graph APIs
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { oauthService } from '@/lib/services/oauth-service'
 import { createClient } from '@/lib/supabase'
 
 // Mock Supabase
-vi.mock('@/lib/supabase')
+jest.mock('@/lib/supabase')
 const mockSupabase = {
-  from: vi.fn(() => mockSupabase),
-  select: vi.fn(() => mockSupabase),
-  insert: vi.fn(() => mockSupabase),
-  update: vi.fn(() => mockSupabase),
-  delete: vi.fn(() => mockSupabase),
-  eq: vi.fn(() => mockSupabase),
-  single: vi.fn(() => mockSupabase),
-  upsert: vi.fn(() => mockSupabase)
+  from: jest.fn(() => mockSupabase),
+  select: jest.fn(() => mockSupabase),
+  insert: jest.fn(() => mockSupabase),
+  update: jest.fn(() => mockSupabase),
+  delete: jest.fn(() => mockSupabase),
+  eq: jest.fn(() => mockSupabase),
+  single: jest.fn(() => mockSupabase),
+  upsert: jest.fn(() => mockSupabase)
 }
 
-vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+jest.mocked(createClient).mockReturnValue(mockSupabase as any)
 
 // Mock fetch for OAuth API calls
-const mockFetch = vi.fn()
+const mockFetch = jest.fn()
 global.fetch = mockFetch
 
 // Mock crypto for UUID generation
@@ -34,20 +34,20 @@ Object.defineProperty(global, 'crypto', {
 })
 
 // Mock environment variables
-vi.stubEnv('GOOGLE_CALENDAR_CLIENT_ID', 'test-google-client-id')
-vi.stubEnv('GOOGLE_CALENDAR_CLIENT_SECRET', 'test-google-client-secret')
-vi.stubEnv('MICROSOFT_CLIENT_ID', 'test-microsoft-client-id')
-vi.stubEnv('MICROSOFT_CLIENT_SECRET', 'test-microsoft-client-secret')
-vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://test.example.com')
+jest.stubEnv('GOOGLE_CALENDAR_CLIENT_ID', 'test-google-client-id')
+jest.stubEnv('GOOGLE_CALENDAR_CLIENT_SECRET', 'test-google-client-secret')
+jest.stubEnv('MICROSOFT_CLIENT_ID', 'test-microsoft-client-id')
+jest.stubEnv('MICROSOFT_CLIENT_SECRET', 'test-microsoft-client-secret')
+jest.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://test.example.com')
 
 describe('OAuthService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.setSystemTime(new Date('2025-08-28T10:00:00Z'))
+    jest.clearAllMocks()
+    jest.setSystemTime(new Date('2025-08-28T10:00:00Z'))
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    jest.useRealTimers()
   })
 
   describe('initiateOAuth', () => {
@@ -576,7 +576,7 @@ describe('OAuthService', () => {
 
   describe('OAuth Configuration', () => {
     it('should throw error for unsupported provider in configuration', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       const result = await oauthService.initiateOAuth(
         'user-123',

@@ -4,22 +4,22 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { DndContext } from '@dnd-kit/core';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {  describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 import { ShiftKanbanBoard } from '@/components/dashboard/kanban/ShiftKanbanBoard';
 import type { KanbanBoardData } from '@/lib/types/kanban-types';
 
 // Mock dependencies
-vi.mock('@/lib/services/shift-kanban-service');
-vi.mock('sonner', () => ({
+jest.mock('@/lib/services/shift-kanban-service');
+jest.mock('sonner', () => ({
   toast: {
-    success: vi.fn(),
-    error: vi.fn()
+    success: jest.fn(),
+    error: jest.fn()
   }
 }));
 
 // Mock fetch for API calls
-const mockFetch = vi.fn();
+const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 // Mock board data
@@ -83,7 +83,7 @@ describe('ShiftKanbanBoard', () => {
   
   beforeEach(() => {
     // Reset all mocks
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     
     // Mock successful API response
     mockFetch.mockResolvedValue({
@@ -96,7 +96,7 @@ describe('ShiftKanbanBoard', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Initial Loading', () => {

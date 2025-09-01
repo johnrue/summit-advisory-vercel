@@ -1,35 +1,35 @@
 // Story 3.4: Kanban Real-time Collaboration Integration Tests
 // End-to-end tests for multi-manager collaboration scenarios
 
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import { createClient } from '@/lib/supabase';
 import { ShiftKanbanService } from '@/lib/services/shift-kanban-service';
 import type { KanbanActivity, ManagerPresence } from '@/lib/types/kanban-types';
 
 // Mock WebSocket and real-time subscriptions for testing
 const mockSubscription = {
-  unsubscribe: vi.fn(),
-  on: vi.fn(),
-  subscribe: vi.fn()
+  unsubscribe: jest.fn(),
+  on: jest.fn(),
+  subscribe: jest.fn()
 };
 
 const mockSupabaseClient = {
-  channel: vi.fn(() => ({
-    on: vi.fn().mockReturnThis(),
-    subscribe: vi.fn().mockResolvedValue(mockSubscription)
+  channel: jest.fn(() => ({
+    on: jest.fn().mockReturnThis(),
+    subscribe: jest.fn().mockResolvedValue(mockSubscription)
   })),
-  from: vi.fn(),
-  removeChannel: vi.fn()
+  from: jest.fn(),
+  removeChannel: jest.fn()
 };
 
 // Mock Supabase client
-vi.mock('@/lib/supabase', () => ({
-  createClient: vi.fn(() => mockSupabaseClient)
+jest.mock('@/lib/supabase', () => ({
+  createClient: jest.fn(() => mockSupabaseClient)
 }));
 
 // Mock service dependencies
-vi.mock('@/lib/services/shift-workflow-service');
-vi.mock('@/lib/services/urgent-alert-service');
+jest.mock('@/lib/services/shift-workflow-service');
+jest.mock('@/lib/services/urgent-alert-service');
 
 // Test data
 const mockManagers = [
@@ -124,7 +124,7 @@ describe('Kanban Real-time Collaboration', () => {
   });
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     realTimeHandler.reset();
 
     // Setup mock board data
@@ -149,7 +149,7 @@ describe('Kanban Real-time Collaboration', () => {
     };
 
     // Setup mock service responses
-    vi.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
+    jest.mocked(ShiftKanbanService.getKanbanBoardData).mockResolvedValue({
       success: true,
       data: mockBoardData
     });
@@ -419,7 +419,7 @@ describe('Kanban Real-time Collaboration', () => {
   describe('Optimistic Updates with Conflict Resolution', () => {
     it('handles successful optimistic update', async () => {
       // Mock successful shift move
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
@@ -445,7 +445,7 @@ describe('Kanban Real-time Collaboration', () => {
 
     it('handles failed optimistic update with rollback', async () => {
       // Mock failed shift move
-      vi.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.moveShift).mockResolvedValue({
         success: false,
         error: { code: 'INVALID_TRANSITION', message: 'Invalid transition' }
       });
@@ -486,7 +486,7 @@ describe('Kanban Real-time Collaboration', () => {
       );
 
       // Mock first succeeds, second conflicts
-      vi.mocked(ShiftKanbanService.moveShift)
+      jest.mocked(ShiftKanbanService.moveShift)
         .mockResolvedValueOnce({
           success: true,
           data: { transitionId: 'transition-1' }

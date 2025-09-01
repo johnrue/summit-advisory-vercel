@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import {  describe, it, expect, beforeEach } from '@jest/globals';
 import { DndContext } from '@dnd-kit/core';
 
 import { KanbanColumn } from '@/components/dashboard/kanban/KanbanColumn';
@@ -39,11 +39,11 @@ const mockColumn: KanbanColumnType = {
 };
 
 describe('KanbanColumn', () => {
-  const mockOnShiftSelection = vi.fn();
+  const mockOnShiftSelection = jest.fn();
   const mockSelectedShifts = new Set<string>();
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders column title and shift count', () => {

@@ -3,27 +3,27 @@
  * Tests timezone detection, conversion, and DST handling
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { timezoneService } from '@/lib/services/timezone-service'
 
 describe('TimezoneService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    jest.useRealTimers()
   })
 
   describe('detectUserTimezone', () => {
     it('should detect user timezone using Intl API', () => {
       // Mock Intl.DateTimeFormat
-      const mockResolvedOptions = vi.fn().mockReturnValue({
+      const mockResolvedOptions = jest.fn().mockReturnValue({
         timeZone: 'America/New_York'
       })
       
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => ({
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => ({
           resolvedOptions: mockResolvedOptions
         }))
       })
@@ -35,11 +35,11 @@ describe('TimezoneService', () => {
     })
 
     it('should fallback to UTC when detection fails', () => {
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
 
       // Mock Intl API failure
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => {
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => {
           throw new Error('Timezone detection failed')
         })
       })
@@ -58,12 +58,12 @@ describe('TimezoneService', () => {
 
   describe('getTimezoneInfo', () => {
     beforeEach(() => {
-      vi.setSystemTime(new Date('2025-08-28T15:00:00Z'))
+      jest.setSystemTime(new Date('2025-08-28T15:00:00Z'))
     })
 
     it('should return timezone information for Eastern Time', () => {
       // Mock Intl.DateTimeFormat for Eastern Time
-      const mockFormatToParts = vi.fn().mockReturnValue([
+      const mockFormatToParts = jest.fn().mockReturnValue([
         { type: 'month', value: '8' },
         { type: 'literal', value: '/' },
         { type: 'day', value: '28' },
@@ -79,8 +79,8 @@ describe('TimezoneService', () => {
         { type: 'timeZoneName', value: 'EDT' }
       ])
 
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => ({
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => ({
           formatToParts: mockFormatToParts
         }))
       })
@@ -100,12 +100,12 @@ describe('TimezoneService', () => {
     })
 
     it('should return timezone information for UTC', () => {
-      const mockFormatToParts = vi.fn().mockReturnValue([
+      const mockFormatToParts = jest.fn().mockReturnValue([
         { type: 'timeZoneName', value: 'UTC' }
       ])
 
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => ({
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => ({
           formatToParts: mockFormatToParts
         }))
       })
@@ -125,11 +125,11 @@ describe('TimezoneService', () => {
     })
 
     it('should handle timezone info error gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Mock Intl API failure
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => {
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => {
           throw new Error('Invalid timezone')
         })
       })
@@ -150,14 +150,14 @@ describe('TimezoneService', () => {
 
     it('should detect DST correctly', () => {
       // Test with a date during DST (August)
-      vi.setSystemTime(new Date('2025-08-15T15:00:00Z'))
+      jest.setSystemTime(new Date('2025-08-15T15:00:00Z'))
 
-      const mockFormatToParts = vi.fn().mockReturnValue([
+      const mockFormatToParts = jest.fn().mockReturnValue([
         { type: 'timeZoneName', value: 'EDT' }
       ])
 
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => ({
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => ({
           formatToParts: mockFormatToParts
         }))
       })
@@ -227,7 +227,7 @@ describe('TimezoneService', () => {
     })
 
     it('should handle conversion errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       const conversion = timezoneService.convertTime(
         new Date('invalid-date'),
@@ -276,11 +276,11 @@ describe('TimezoneService', () => {
     })
 
     it('should fallback to ISO string on format error', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Mock Intl.DateTimeFormat failure
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => {
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => {
           throw new Error('Format error')
         })
       })
@@ -348,7 +348,7 @@ describe('TimezoneService', () => {
     })
 
     it('should handle DST transition errors gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       const transitions = timezoneService.getDstTransitions('Invalid/Timezone', 2025)
 
@@ -516,8 +516,8 @@ describe('TimezoneService', () => {
 
     it('should handle timezone validation errors gracefully', () => {
       // Mock Intl.DateTimeFormat to throw error
-      vi.stubGlobal('Intl', {
-        DateTimeFormat: vi.fn(() => {
+      jest.stubGlobal('Intl', {
+        DateTimeFormat: jest.fn(() => {
           throw new Error('Invalid timezone')
         })
       })
@@ -552,7 +552,7 @@ describe('TimezoneService', () => {
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle null/undefined dates gracefully', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       const conversion = timezoneService.convertTime(
         null as any,
@@ -567,7 +567,7 @@ describe('TimezoneService', () => {
     })
 
     it('should handle invalid date objects', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       const invalidDate = new Date('invalid-date-string')
       const conversion = timezoneService.convertTime(
@@ -582,10 +582,10 @@ describe('TimezoneService', () => {
     })
 
     it('should handle timezone service initialization errors', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Test when all Intl APIs fail
-      vi.stubGlobal('Intl', undefined)
+      jest.stubGlobal('Intl', undefined)
 
       const timezone = timezoneService.detectUserTimezone()
       expect(timezone).toBe('UTC')

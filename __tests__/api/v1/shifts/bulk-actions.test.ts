@@ -1,14 +1,14 @@
 // Story 3.4: Bulk Actions API Endpoint Tests  
 // Tests for /api/v1/shifts/bulk-actions route handlers
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { GET, POST } from '@/app/api/v1/shifts/bulk-actions/route';
 import { ShiftKanbanService } from '@/lib/services/shift-kanban-service';
 import { NextRequest } from 'next/server';
 import type { BulkOperation } from '@/lib/types/kanban-types';
 
 // Mock the service
-vi.mock('@/lib/services/shift-kanban-service');
+jest.mock('@/lib/services/shift-kanban-service');
 
 // Mock bulk operation data
 const mockBulkOperation: BulkOperation = {
@@ -42,16 +42,16 @@ const createMockRequest = (
 
 describe('/api/v1/shifts/bulk-actions', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('POST /api/v1/shifts/bulk-actions', () => {
     it('executes bulk status change successfully', async () => {
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: true,
         data: mockBulkOperation
       });
@@ -101,7 +101,7 @@ describe('/api/v1/shifts/bulk-actions', () => {
         parameters: { guardId: 'guard-123' }
       };
 
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: true,
         data: assignmentOperation
       });
@@ -138,7 +138,7 @@ describe('/api/v1/shifts/bulk-actions', () => {
         parameters: { priority: 1 }
       };
 
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: true,
         data: priorityOperation
       });
@@ -421,7 +421,7 @@ describe('/api/v1/shifts/bulk-actions', () => {
     });
 
     it('handles service errors gracefully', async () => {
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: false,
         error: { code: 'DATABASE_ERROR', message: 'Database connection failed' }
       });
@@ -457,7 +457,7 @@ describe('/api/v1/shifts/bulk-actions', () => {
         ]
       };
 
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: true,
         data: partialFailureOperation
       });
@@ -488,7 +488,7 @@ describe('/api/v1/shifts/bulk-actions', () => {
     });
 
     it('handles empty parameters correctly', async () => {
-      vi.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
+      jest.mocked(ShiftKanbanService.executeBulkAction).mockResolvedValue({
         success: true,
         data: mockBulkOperation
       });

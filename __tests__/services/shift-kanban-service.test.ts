@@ -1,31 +1,31 @@
 // Story 3.4: ShiftKanbanService Tests
 // Comprehensive tests for Kanban workflow management service
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { ShiftKanbanService } from '@/lib/services/shift-kanban-service';
 import { ShiftWorkflowService } from '@/lib/services/shift-workflow-service';
 import { UrgentAlertService } from '@/lib/services/urgent-alert-service';
 import type { KanbanFilters, BulkActionRequest } from '@/lib/types/kanban-types';
 
 // Mock dependencies
-vi.mock('@/lib/supabase');
-vi.mock('@/lib/services/shift-workflow-service');
-vi.mock('@/lib/services/urgent-alert-service');
-vi.mock('@/lib/services/shift-archive-service');
+jest.mock('@/lib/supabase');
+jest.mock('@/lib/services/shift-workflow-service');
+jest.mock('@/lib/services/urgent-alert-service');
+jest.mock('@/lib/services/shift-archive-service');
 
 // Mock Supabase client
 const mockSupabaseClient = {
-  from: vi.fn(),
-  select: vi.fn(),
-  eq: vi.fn(),
-  not: vi.fn(),
-  or: vi.fn(),
-  in: vi.fn(),
-  is: vi.fn(),
-  gte: vi.fn(),
-  lt: vi.fn(),
-  order: vi.fn(),
-  update: vi.fn(),
+  from: jest.fn(),
+  select: jest.fn(),
+  eq: jest.fn(),
+  not: jest.fn(),
+  or: jest.fn(),
+  in: jest.fn(),
+  is: jest.fn(),
+  gte: jest.fn(),
+  lt: jest.fn(),
+  order: jest.fn(),
+  update: jest.fn(),
 };
 
 // Setup chainable query mocks
@@ -90,12 +90,12 @@ const mockColumns = [
 
 describe('ShiftKanbanService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     setupMockQuery();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('getKanbanBoardData', () => {
@@ -103,11 +103,11 @@ describe('ShiftKanbanService', () => {
       // Mock successful database response
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          not: vi.fn().mockReturnValue({
+          not: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockResolvedValue({
+            order: jest.fn().mockResolvedValue({
               data: mockShifts,
               error: null
             })
@@ -116,13 +116,13 @@ describe('ShiftKanbanService', () => {
       });
 
       // Mock workflow service
-      vi.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
         success: true,
         data: mockColumns
       });
 
       // Mock alert service
-      vi.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
+      jest.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
         success: true,
         data: []
       });
@@ -145,15 +145,15 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          not: vi.fn().mockReturnValue({
+          not: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockReturnValue({
+            order: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              gte: vi.fn().mockReturnValue({
+              gte: jest.fn().mockReturnValue({
                 ...mockSupabaseClient,
-                lt: vi.fn().mockResolvedValue({
+                lt: jest.fn().mockResolvedValue({
                   data: [mockShifts[0]], // Filtered result
                   error: null
                 })
@@ -163,12 +163,12 @@ describe('ShiftKanbanService', () => {
         })
       });
 
-      vi.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
         success: true,
         data: mockColumns
       });
 
-      vi.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
+      jest.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
         success: true,
         data: []
       });
@@ -190,13 +190,13 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       const mockQuery = {
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          not: vi.fn().mockReturnValue({
+          not: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockReturnValue({
+            order: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              or: vi.fn().mockResolvedValue({
+              or: jest.fn().mockResolvedValue({
                 data: [mockShifts[0]],
                 error: null
               })
@@ -206,12 +206,12 @@ describe('ShiftKanbanService', () => {
       };
       mockSupabaseClient.from.mockReturnValueOnce(mockQuery);
 
-      vi.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
         success: true,
         data: mockColumns
       });
 
-      vi.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
+      jest.mocked(UrgentAlertService.getActiveAlerts).mockResolvedValue({
         success: true,
         data: []
       });
@@ -229,11 +229,11 @@ describe('ShiftKanbanService', () => {
     it('handles database errors gracefully', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          not: vi.fn().mockReturnValue({
+          not: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockResolvedValue({
+            order: jest.fn().mockResolvedValue({
               data: null,
               error: { message: 'Database connection error' }
             })
@@ -260,11 +260,11 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          not: vi.fn().mockReturnValue({
+          not: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockResolvedValue({
+            order: jest.fn().mockResolvedValue({
               data: mockShifts,
               error: null
             })
@@ -272,7 +272,7 @@ describe('ShiftKanbanService', () => {
         })
       });
 
-      vi.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.getWorkflowConfig).mockResolvedValue({
         success: false,
         error: { code: 'CONFIG_ERROR', message: 'Failed to get workflow config' }
       });
@@ -290,7 +290,7 @@ describe('ShiftKanbanService', () => {
 
   describe('moveShift', () => {
     it('successfully moves shift between columns', async () => {
-      vi.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
@@ -315,7 +315,7 @@ describe('ShiftKanbanService', () => {
     });
 
     it('handles transition validation failures', async () => {
-      vi.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
         success: false,
         error: { code: 'INVALID_TRANSITION', message: 'Cannot move from unassigned to completed' }
       });
@@ -331,13 +331,13 @@ describe('ShiftKanbanService', () => {
     });
 
     it('records activity after successful move', async () => {
-      vi.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
 
       // Mock console.log to verify activity recording
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
       const result = await ShiftKanbanService.moveShift(
         'shift-1',
@@ -361,7 +361,7 @@ describe('ShiftKanbanService', () => {
 
   describe('executeBulkAction', () => {
     it('executes bulk status change successfully', async () => {
-      vi.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });
@@ -385,9 +385,9 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValue({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockResolvedValue({
+          eq: jest.fn().mockResolvedValue({
             error: null
           })
         })
@@ -408,7 +408,7 @@ describe('ShiftKanbanService', () => {
     });
 
     it('handles partial failures in bulk operations', async () => {
-      vi.mocked(ShiftWorkflowService.executeTransition)
+      jest.mocked(ShiftWorkflowService.executeTransition)
         .mockResolvedValueOnce({
           success: true,
           data: { transitionId: 'transition-1' }
@@ -463,9 +463,9 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValue({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockResolvedValue({
+          eq: jest.fn().mockResolvedValue({
             error: { message: 'Database error' }
           })
         })
@@ -534,13 +534,13 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValue({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          order: vi.fn().mockReturnValue({
+          order: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            limit: vi.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              eq: vi.fn().mockResolvedValue({
+              eq: jest.fn().mockResolvedValue({
                 data: mockActivityData,
                 error: null
               })
@@ -567,11 +567,11 @@ describe('ShiftKanbanService', () => {
       setupMockQuery();
       mockSupabaseClient.from.mockReturnValue({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            eq: vi.fn().mockResolvedValue({
+            eq: jest.fn().mockResolvedValue({
               data: [
                 { id: 'alert-1', alert_type: 'unassigned_24h' }
               ],
@@ -581,12 +581,12 @@ describe('ShiftKanbanService', () => {
         })
       });
 
-      vi.mocked(UrgentAlertService.resolveAlert).mockResolvedValue({
+      jest.mocked(UrgentAlertService.resolveAlert).mockResolvedValue({
         success: true,
         data: { resolved: true }
       });
 
-      vi.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
+      jest.mocked(ShiftWorkflowService.executeTransition).mockResolvedValue({
         success: true,
         data: { transitionId: 'transition-123' }
       });

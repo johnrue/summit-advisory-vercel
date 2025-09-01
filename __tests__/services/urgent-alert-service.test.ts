@@ -1,7 +1,7 @@
 // Story 3.4: UrgentAlertService Tests
 // Tests for 24-hour shift monitoring and alert system
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import { UrgentAlertService } from '@/lib/services/urgent-alert-service';
 import type { 
   UrgentShiftAlert, 
@@ -10,19 +10,19 @@ import type {
 } from '@/lib/types/urgency-types';
 
 // Mock dependencies
-vi.mock('@/lib/supabase');
+jest.mock('@/lib/supabase');
 
 // Mock Supabase client
 const mockSupabaseClient = {
-  from: vi.fn(),
-  select: vi.fn(),
-  insert: vi.fn(),
-  update: vi.fn(),
-  eq: vi.fn(),
-  in: vi.fn(),
-  lt: vi.fn(),
-  order: vi.fn(),
-  single: vi.fn()
+  from: jest.fn(),
+  select: jest.fn(),
+  insert: jest.fn(),
+  update: jest.fn(),
+  eq: jest.fn(),
+  in: jest.fn(),
+  lt: jest.fn(),
+  order: jest.fn(),
+  single: jest.fn()
 };
 
 // Setup chainable query mocks
@@ -90,23 +90,23 @@ const mockShifts = [
 
 describe('UrgentAlertService', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     setupMockQuery();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('getActiveAlerts', () => {
     it('retrieves active alerts successfully', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockResolvedValue({
+            order: jest.fn().mockResolvedValue({
               data: mockAlerts,
               error: null
             })
@@ -124,13 +124,13 @@ describe('UrgentAlertService', () => {
     it('filters alerts by shift IDs when provided', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            in: vi.fn().mockReturnValue({
+            in: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              order: vi.fn().mockResolvedValue({
+              order: jest.fn().mockResolvedValue({
                 data: [mockAlerts[0]],
                 error: null
               })
@@ -149,11 +149,11 @@ describe('UrgentAlertService', () => {
     it('handles database errors gracefully', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            order: vi.fn().mockResolvedValue({
+            order: jest.fn().mockResolvedValue({
               data: null,
               error: { message: 'Database connection error' }
             })
@@ -183,11 +183,11 @@ describe('UrgentAlertService', () => {
 
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        insert: vi.fn().mockReturnValue({
+        insert: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          select: vi.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            single: vi.fn().mockResolvedValue({
+            single: jest.fn().mockResolvedValue({
               data: { ...newAlert, id: 'alert-new' },
               error: null
             })
@@ -216,11 +216,11 @@ describe('UrgentAlertService', () => {
 
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        insert: vi.fn().mockReturnValue({
+        insert: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          select: vi.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            single: vi.fn().mockResolvedValue({
+            single: jest.fn().mockResolvedValue({
               data: null,
               error: { code: '23505', message: 'duplicate key value violates unique constraint' }
             })
@@ -239,13 +239,13 @@ describe('UrgentAlertService', () => {
     it('resolves alert successfully', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: { 
                   ...mockAlerts[0], 
                   alert_status: 'resolved',
@@ -278,13 +278,13 @@ describe('UrgentAlertService', () => {
     it('handles non-existent alert resolution', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: null,
                 error: { code: 'PGRST116', message: 'No rows updated' }
               })
@@ -308,13 +308,13 @@ describe('UrgentAlertService', () => {
     it('acknowledges alert successfully', async () => {
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: { 
                   ...mockAlerts[0], 
                   alert_status: 'acknowledged',
@@ -352,13 +352,13 @@ describe('UrgentAlertService', () => {
 
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: { 
                   ...mockAlerts[0], 
                   escalation_level: 2,
@@ -387,11 +387,11 @@ describe('UrgentAlertService', () => {
 
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            single: vi.fn().mockResolvedValue({
+            single: jest.fn().mockResolvedValue({
               data: alertAtMaxLevel,
               error: null
             })
@@ -481,11 +481,11 @@ describe('UrgentAlertService', () => {
       // Mock shift query
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          in: vi.fn().mockReturnValue({
+          in: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            lt: vi.fn().mockResolvedValue({
+            lt: jest.fn().mockResolvedValue({
               data: mockShifts,
               error: null
             })
@@ -496,11 +496,11 @@ describe('UrgentAlertService', () => {
       // Mock alert creation
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        insert: vi.fn().mockReturnValue({
+        insert: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          select: vi.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            single: vi.fn().mockResolvedValue({
+            single: jest.fn().mockResolvedValue({
               data: { id: 'new-alert', ...mockAlerts[0] },
               error: null
             })
@@ -523,11 +523,11 @@ describe('UrgentAlertService', () => {
 
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        select: vi.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          in: vi.fn().mockReturnValue({
+          in: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            lt: vi.fn().mockResolvedValue({
+            lt: jest.fn().mockResolvedValue({
               data: shiftsWithAlerts,
               error: null
             })
@@ -560,11 +560,11 @@ describe('UrgentAlertService', () => {
       // Mock create
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        insert: vi.fn().mockReturnValue({
+        insert: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          select: vi.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            single: vi.fn().mockResolvedValue({
+            single: jest.fn().mockResolvedValue({
               data: { ...newAlert, id: 'lifecycle-alert' },
               error: null
             })
@@ -575,13 +575,13 @@ describe('UrgentAlertService', () => {
       // Mock acknowledge
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: { ...newAlert, id: 'lifecycle-alert', alert_status: 'acknowledged' },
                 error: null
               })
@@ -593,13 +593,13 @@ describe('UrgentAlertService', () => {
       // Mock resolve
       mockSupabaseClient.from.mockReturnValueOnce({
         ...mockSupabaseClient,
-        update: vi.fn().mockReturnValue({
+        update: jest.fn().mockReturnValue({
           ...mockSupabaseClient,
-          eq: vi.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
             ...mockSupabaseClient,
-            select: vi.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
               ...mockSupabaseClient,
-              single: vi.fn().mockResolvedValue({
+              single: jest.fn().mockResolvedValue({
                 data: { ...newAlert, id: 'lifecycle-alert', alert_status: 'resolved' },
                 error: null
               })

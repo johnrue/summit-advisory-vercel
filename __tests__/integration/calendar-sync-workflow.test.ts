@@ -3,7 +3,7 @@
  * Tests end-to-end calendar synchronization workflows
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { createClient } from '@/lib/supabase'
 import type { EventType } from '@/lib/types/calendar-types'
 import { oauthService } from '@/lib/services/oauth-service'
@@ -12,38 +12,38 @@ import { calendarIntegrationService } from '@/lib/services/calendar-integration-
 import { timezoneService } from '@/lib/services/timezone-service'
 
 // Mock all dependencies
-vi.mock('@/lib/supabase')
-vi.mock('@/lib/services/oauth-service')
-vi.mock('@/lib/services/calendar-export-service')
-vi.mock('@/lib/services/calendar-integration-service')
-vi.mock('@/lib/services/timezone-service')
+jest.mock('@/lib/supabase')
+jest.mock('@/lib/services/oauth-service')
+jest.mock('@/lib/services/calendar-export-service')
+jest.mock('@/lib/services/calendar-integration-service')
+jest.mock('@/lib/services/timezone-service')
 
 const mockSupabase = {
-  from: vi.fn(() => mockSupabase),
-  select: vi.fn(() => mockSupabase),
-  insert: vi.fn(() => mockSupabase),
-  update: vi.fn(() => mockSupabase),
-  eq: vi.fn(() => mockSupabase),
-  single: vi.fn(() => mockSupabase),
+  from: jest.fn(() => mockSupabase),
+  select: jest.fn(() => mockSupabase),
+  insert: jest.fn(() => mockSupabase),
+  update: jest.fn(() => mockSupabase),
+  eq: jest.fn(() => mockSupabase),
+  single: jest.fn(() => mockSupabase),
   auth: {
-    getUser: vi.fn()
+    getUser: jest.fn()
   }
 }
 
-vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+jest.mocked(createClient).mockReturnValue(mockSupabase as any)
 
 // Mock fetch for external API calls
-const mockFetch = vi.fn()
+const mockFetch = jest.fn()
 global.fetch = mockFetch
 
 describe('Calendar Sync Workflow Integration Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.setSystemTime(new Date('2025-08-28T10:00:00Z'))
+    jest.clearAllMocks()
+    jest.setSystemTime(new Date('2025-08-28T10:00:00Z'))
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    jest.useRealTimers()
   })
 
   const mockUser = {
@@ -69,7 +69,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Complete OAuth Flow Integration', () => {
     it('should complete full OAuth flow from initiation to callback', async () => {
       // Step 1: Initiate OAuth
-      vi.mocked(oauthService.initiateOAuth).mockResolvedValueOnce({
+      jest.mocked(oauthService.initiateOAuth).mockResolvedValueOnce({
         success: true,
         data: {
           authUrl: 'https://accounts.google.com/o/oauth2/v2/auth?client_id=test&state=oauth-state-123',
@@ -88,7 +88,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(oauthInitiation.data?.state).toBe('oauth-state-123')
 
       // Step 2: Handle OAuth callback
-      vi.mocked(oauthService.handleOAuthCallback).mockResolvedValueOnce({
+      jest.mocked(oauthService.handleOAuthCallback).mockResolvedValueOnce({
         success: true,
         data: {
           id: 'integration-789',
@@ -126,7 +126,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
     it('should handle OAuth flow with token refresh', async () => {
       // Mock expired token scenario
-      vi.mocked(oauthService.refreshAccessToken).mockResolvedValueOnce({
+      jest.mocked(oauthService.refreshAccessToken).mockResolvedValueOnce({
         success: true,
         data: {
           access_token: 'refreshed-access-token',
@@ -146,7 +146,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
     })
 
     it('should handle OAuth flow failure gracefully', async () => {
-      vi.mocked(oauthService.handleOAuthCallback).mockResolvedValueOnce({
+      jest.mocked(oauthService.handleOAuthCallback).mockResolvedValueOnce({
         success: false,
         error: 'Invalid authorization code',
         errorCode: 'INVALID_GRANT'
@@ -166,7 +166,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('End-to-End Calendar Export Workflow', () => {
     it('should complete full calendar export workflow for guard user', async () => {
       // Step 1: Get user connections
-      vi.mocked(calendarIntegrationService.getUserConnections).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.getUserConnections).mockResolvedValueOnce({
         success: true,
         data: [{
           provider: 'google_calendar',
@@ -184,7 +184,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(connections.data![0].provider).toBe('google_calendar')
 
       // Step 2: Trigger calendar sync
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 3,
         events_failed: 0,
@@ -214,7 +214,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(exportResult.events_failed).toBe(0)
 
       // Step 3: Get sync statistics
-      vi.mocked(calendarIntegrationService.getSyncStats).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.getSyncStats).mockResolvedValueOnce({
         success: true,
         data: {
           integration_id: 'integration-789',
@@ -249,7 +249,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
     it('should handle partial sync failure in workflow', async () => {
       // Mock sync with some failures
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: false,
         events_synced: 2,
         events_failed: 1,
@@ -291,7 +291,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Multi-Provider Integration Workflow', () => {
     it('should handle multiple calendar providers for the same user', async () => {
       // Mock user with multiple integrations
-      vi.mocked(calendarIntegrationService.getUserConnections).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.getUserConnections).mockResolvedValueOnce({
         success: true,
         data: [
           {
@@ -325,7 +325,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(microsoftProvider?.isConnected).toBe(true)
 
       // Verify both providers can sync independently
-      vi.mocked(calendarExportService.exportEvents)
+      jest.mocked(calendarExportService.exportEvents)
         .mockResolvedValueOnce({
           success: true,
           events_synced: 5,
@@ -369,8 +369,8 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Timezone-Aware Sync Workflow', () => {
     it('should handle timezone conversions in sync workflow', async () => {
       // Mock timezone service
-      vi.mocked(timezoneService.detectUserTimezone).mockReturnValueOnce('America/New_York')
-      vi.mocked(timezoneService.convertTime).mockReturnValueOnce({
+      jest.mocked(timezoneService.detectUserTimezone).mockReturnValueOnce('America/New_York')
+      jest.mocked(timezoneService.convertTime).mockReturnValueOnce({
         utc: new Date('2025-08-28T18:00:00Z'),
         local: new Date('2025-08-28T14:00:00-04:00'),
         timezone: 'America/New_York',
@@ -391,7 +391,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(timeConversion.formatted).toContain('EDT')
 
       // Mock export with timezone-aware events
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 1,
         events_failed: 0,
@@ -418,7 +418,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
     })
 
     it('should detect and handle DST transitions', async () => {
-      vi.mocked(timezoneService.getDstTransitions).mockReturnValueOnce([
+      jest.mocked(timezoneService.getDstTransitions).mockReturnValueOnce([
         {
           date: new Date('2025-03-09T07:00:00Z'),
           type: 'spring_forward',
@@ -434,7 +434,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(dstTransitions[0].type).toBe('spring_forward')
 
       // Mock conflict detection
-      vi.mocked(timezoneService.detectTimezoneConflicts).mockReturnValueOnce([
+      jest.mocked(timezoneService.detectTimezoneConflicts).mockReturnValueOnce([
         {
           eventIndex: 0,
           issue: 'dst_transition',
@@ -459,7 +459,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Role-Based Access Control in Sync Workflow', () => {
     it('should enforce role-based filtering in export workflow', async () => {
       // Test admin access (all events)
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 25, // High number indicating admin sees all events
         events_failed: 0,
@@ -486,7 +486,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(adminSync.events_synced).toBe(25) // Admin sees all events
 
       // Test guard access (limited events)
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 3, // Lower number indicating filtered view
         events_failed: 0,
@@ -517,7 +517,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Error Recovery and Retry Workflow', () => {
     it('should handle sync failures with automatic retry', async () => {
       // First attempt fails
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: false,
         events_synced: 0,
         events_failed: 3,
@@ -552,7 +552,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(firstAttempt.errors[0].error_code).toBe('NETWORK_ERROR')
 
       // Retry attempt succeeds
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 3,
         events_failed: 0,
@@ -581,7 +581,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
     it('should handle token expiration and refresh in workflow', async () => {
       // Mock token refresh during sync
-      vi.mocked(oauthService.refreshAccessToken).mockResolvedValueOnce({
+      jest.mocked(oauthService.refreshAccessToken).mockResolvedValueOnce({
         success: true,
         data: {
           access_token: 'new-fresh-token',
@@ -597,7 +597,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(tokenRefresh.success).toBe(true)
 
       // Sync proceeds with refreshed token
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 5,
         events_failed: 0,
@@ -628,7 +628,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
   describe('Preference Management Workflow', () => {
     it('should handle preference updates affecting sync behavior', async () => {
       // Update preferences
-      vi.mocked(calendarIntegrationService.updatePreferences).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.updatePreferences).mockResolvedValueOnce({
         success: true,
         data: {
           user_id: 'user-123',
@@ -656,7 +656,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(prefUpdate.data?.sync_availability).toBe(false)
 
       // Sync respects updated preferences (only shifts, no availability)
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 2, // Only shifts, no availability
         events_failed: 0,
@@ -685,7 +685,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
 
     it('should handle sync toggle workflow', async () => {
       // Disable sync
-      vi.mocked(calendarIntegrationService.toggleSync).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.toggleSync).mockResolvedValueOnce({
         success: true
       })
 
@@ -698,7 +698,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(disableSync.success).toBe(true)
 
       // Enable sync
-      vi.mocked(calendarIntegrationService.toggleSync).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.toggleSync).mockResolvedValueOnce({
         success: true
       })
 
@@ -729,7 +729,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       }
 
       // Mock sync with performance tracking
-      vi.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
+      jest.mocked(calendarExportService.exportEvents).mockResolvedValueOnce({
         success: true,
         events_synced: 15,
         events_failed: 0,
@@ -757,7 +757,7 @@ describe('Calendar Sync Workflow Integration Tests', () => {
       expect(perfSync.events_synced).toBe(15)
 
       // Get performance statistics
-      vi.mocked(calendarIntegrationService.getSyncStats).mockResolvedValueOnce({
+      jest.mocked(calendarIntegrationService.getSyncStats).mockResolvedValueOnce({
         success: true,
         data: {
           integration_id: 'integration-789',

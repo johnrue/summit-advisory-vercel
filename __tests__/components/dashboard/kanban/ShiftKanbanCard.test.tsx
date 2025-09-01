@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import {  describe, it, expect, beforeEach } from '@jest/globals';
 import { DndContext } from '@dnd-kit/core';
 
 import { ShiftKanbanCard } from '@/components/dashboard/kanban/ShiftKanbanCard';
@@ -51,10 +51,10 @@ const mockAssignedShift = {
 };
 
 describe('ShiftKanbanCard', () => {
-  const mockOnSelectionChange = vi.fn();
+  const mockOnSelectionChange = jest.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders shift basic information correctly', () => {

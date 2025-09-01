@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals'
 import { NotificationService } from '@/lib/services/notification-service'
 import { createClient } from '@/lib/supabase'
 import type { 
@@ -9,8 +9,8 @@ import type {
 } from '@/lib/types/notification-types'
 
 // Mock Supabase client
-vi.mock('@/lib/supabase', () => ({
-  createClient: vi.fn()
+jest.mock('@/lib/supabase', () => ({
+  createClient: jest.fn()
 }))
 
 describe('NotificationService', () => {
@@ -47,38 +47,38 @@ describe('NotificationService', () => {
 
   beforeEach(() => {
     mockSubscription = {
-      unsubscribe: vi.fn()
+      unsubscribe: jest.fn()
     }
 
     mockSupabase = {
-      from: vi.fn(() => mockSupabase),
-      insert: vi.fn(() => mockSupabase),
-      update: vi.fn(() => mockSupabase),
-      delete: vi.fn(() => mockSupabase),
-      select: vi.fn(() => mockSupabase),
-      single: vi.fn(() => mockSupabase),
-      eq: vi.fn(() => mockSupabase),
-      in: vi.fn(() => mockSupabase),
-      gte: vi.fn(() => mockSupabase),
-      lte: vi.fn(() => mockSupabase),
-      lt: vi.fn(() => mockSupabase),
-      order: vi.fn(() => mockSupabase),
-      limit: vi.fn(() => mockSupabase),
-      range: vi.fn(() => mockSupabase),
-      channel: vi.fn(() => ({
-        on: vi.fn(() => ({
-          subscribe: vi.fn(() => mockSubscription)
+      from: jest.fn(() => mockSupabase),
+      insert: jest.fn(() => mockSupabase),
+      update: jest.fn(() => mockSupabase),
+      delete: jest.fn(() => mockSupabase),
+      select: jest.fn(() => mockSupabase),
+      single: jest.fn(() => mockSupabase),
+      eq: jest.fn(() => mockSupabase),
+      in: jest.fn(() => mockSupabase),
+      gte: jest.fn(() => mockSupabase),
+      lte: jest.fn(() => mockSupabase),
+      lt: jest.fn(() => mockSupabase),
+      order: jest.fn(() => mockSupabase),
+      limit: jest.fn(() => mockSupabase),
+      range: jest.fn(() => mockSupabase),
+      channel: jest.fn(() => ({
+        on: jest.fn(() => ({
+          subscribe: jest.fn(() => mockSubscription)
         }))
       })),
-      removeChannel: vi.fn()
+      removeChannel: jest.fn()
     }
 
-    vi.mocked(createClient).mockReturnValue(mockSupabase)
+    jest.mocked(createClient).mockReturnValue(mockSupabase)
     notificationService = NotificationService.getInstance()
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('Singleton Pattern', () => {
@@ -351,7 +351,7 @@ describe('NotificationService', () => {
 
   describe('Real-time Subscriptions', () => {
     it('should create real-time subscription with correct channel and filter', () => {
-      const mockCallback = vi.fn()
+      const mockCallback = jest.fn()
       
       notificationService.subscribeToNotifications('user-123', mockCallback)
 
@@ -365,13 +365,13 @@ describe('NotificationService', () => {
     })
 
     it('should handle real-time notification callback', () => {
-      const mockCallback = vi.fn()
+      const mockCallback = jest.fn()
       let subscriptionCallback: (payload: any) => void
       
       const mockChannel = {
-        on: vi.fn((event, config, callback) => {
+        on: jest.fn((event, config, callback) => {
           subscriptionCallback = callback
-          return { subscribe: vi.fn(() => mockSubscription) }
+          return { subscribe: jest.fn(() => mockSubscription) }
         })
       }
       mockSupabase.channel.mockReturnValue(mockChannel)

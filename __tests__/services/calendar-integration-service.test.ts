@@ -3,44 +3,44 @@
  * Tests main orchestration service for calendar operations
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { calendarIntegrationService } from '@/lib/services/calendar-integration-service'
 import { createClient } from '@/lib/supabase'
 import { calendarExportService } from '@/lib/services/calendar-export-service'
 
 // Mock dependencies
-vi.mock('@/lib/supabase')
-vi.mock('@/lib/services/calendar-export-service')
+jest.mock('@/lib/supabase')
+jest.mock('@/lib/services/calendar-export-service')
 
 const mockSupabase = {
-  from: vi.fn(() => mockSupabase),
-  select: vi.fn(() => mockSupabase),
-  insert: vi.fn(() => mockSupabase),
-  update: vi.fn(() => mockSupabase),
-  upsert: vi.fn(() => mockSupabase),
-  eq: vi.fn(() => mockSupabase),
-  gte: vi.fn(() => mockSupabase),
-  single: vi.fn(() => mockSupabase),
-  order: vi.fn(() => mockSupabase),
-  filter: vi.fn(() => mockSupabase)
+  from: jest.fn(() => mockSupabase),
+  select: jest.fn(() => mockSupabase),
+  insert: jest.fn(() => mockSupabase),
+  update: jest.fn(() => mockSupabase),
+  upsert: jest.fn(() => mockSupabase),
+  eq: jest.fn(() => mockSupabase),
+  gte: jest.fn(() => mockSupabase),
+  single: jest.fn(() => mockSupabase),
+  order: jest.fn(() => mockSupabase),
+  filter: jest.fn(() => mockSupabase)
 }
 
-vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+jest.mocked(createClient).mockReturnValue(mockSupabase as any)
 
 // Mock calendar export service
 const mockCalendarExportService = {
-  exportEvents: vi.fn()
+  exportEvents: jest.fn()
 }
-vi.mocked(calendarExportService).exportEvents = mockCalendarExportService.exportEvents
+jest.mocked(calendarExportService).exportEvents = mockCalendarExportService.exportEvents
 
 describe('CalendarIntegrationService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.setSystemTime(new Date('2025-08-28T10:00:00Z'))
+    jest.clearAllMocks()
+    jest.setSystemTime(new Date('2025-08-28T10:00:00Z'))
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    jest.useRealTimers()
   })
 
   const mockIntegration = {
@@ -568,7 +568,7 @@ describe('CalendarIntegrationService', () => {
     })
 
     it('should calculate 24-hour window correctly', async () => {
-      vi.setSystemTime(new Date('2025-08-28T10:00:00Z'))
+      jest.setSystemTime(new Date('2025-08-28T10:00:00Z'))
 
       mockSupabase.select.mockResolvedValueOnce({
         data: { id: 'integration-123' },
@@ -797,7 +797,7 @@ describe('CalendarIntegrationService', () => {
     })
 
     it('should log sync toggle even if logging fails', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       mockSupabase.update.mockResolvedValueOnce({
         data: null,
@@ -910,7 +910,7 @@ describe('CalendarIntegrationService', () => {
 
   describe('Error Handling', () => {
     it('should handle general service errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Mock database connection failure
       mockSupabase.from.mockImplementationOnce(() => {

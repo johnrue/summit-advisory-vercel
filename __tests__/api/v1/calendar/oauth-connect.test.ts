@@ -3,38 +3,38 @@
  * Tests calendar OAuth connection initiation endpoint
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { POST } from '@/app/api/v1/calendar/oauth/connect/route'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase'
 import { oauthService } from '@/lib/services/oauth-service'
 
 // Mock dependencies
-vi.mock('@/lib/supabase')
-vi.mock('@/lib/services/oauth-service')
+jest.mock('@/lib/supabase')
+jest.mock('@/lib/services/oauth-service')
 
 const mockSupabase = {
   auth: {
-    getUser: vi.fn()
+    getUser: jest.fn()
   },
-  from: vi.fn(() => mockSupabase),
-  select: vi.fn(() => mockSupabase),
-  eq: vi.fn(() => mockSupabase),
-  single: vi.fn(),
+  from: jest.fn(() => mockSupabase),
+  select: jest.fn(() => mockSupabase),
+  eq: jest.fn(() => mockSupabase),
+  single: jest.fn(),
   data: null,
   error: null
 }
 
-vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+jest.mocked(createClient).mockReturnValue(mockSupabase as any)
 
 const mockOAuthService = {
-  initiateOAuth: vi.fn()
+  initiateOAuth: jest.fn()
 }
-vi.mocked(oauthService).initiateOAuth = mockOAuthService.initiateOAuth
+jest.mocked(oauthService).initiateOAuth = mockOAuthService.initiateOAuth
 
 describe('/api/v1/calendar/oauth/connect', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
     mockSupabase.single.mockResolvedValue({ data: null, error: null })
   })
 
@@ -572,7 +572,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
     })
 
     it('should handle unexpected errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Mock authentication to throw an error
       mockSupabase.auth.getUser.mockImplementationOnce(() => {
@@ -601,7 +601,7 @@ describe('/api/v1/calendar/oauth/connect', () => {
     })
 
     it('should handle database connection errors', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       // Mock database error during existing integration check
       mockSupabase.single.mockImplementationOnce(() => {

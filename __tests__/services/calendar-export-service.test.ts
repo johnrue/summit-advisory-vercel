@@ -3,37 +3,37 @@
  * Tests role-based calendar event export with one-way sync enforcement
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from '@jest/globals'
 import { calendarExportService } from '@/lib/services/calendar-export-service'
 import { createClient } from '@/lib/supabase'
 import { oauthService } from '@/lib/services/oauth-service'
 
 // Mock dependencies
-vi.mock('@/lib/supabase')
-vi.mock('@/lib/services/oauth-service')
+jest.mock('@/lib/supabase')
+jest.mock('@/lib/services/oauth-service')
 
 const mockSupabase = {
-  from: vi.fn(() => mockSupabase),
-  select: vi.fn(() => mockSupabase),
-  insert: vi.fn(() => mockSupabase),
-  update: vi.fn(() => mockSupabase),
-  eq: vi.fn(() => mockSupabase),
-  in: vi.fn(() => mockSupabase),
-  gte: vi.fn(() => mockSupabase),
-  lte: vi.fn(() => mockSupabase),
-  single: vi.fn(() => Promise.resolve({ data: null, error: null }))
+  from: jest.fn(() => mockSupabase),
+  select: jest.fn(() => mockSupabase),
+  insert: jest.fn(() => mockSupabase),
+  update: jest.fn(() => mockSupabase),
+  eq: jest.fn(() => mockSupabase),
+  in: jest.fn(() => mockSupabase),
+  gte: jest.fn(() => mockSupabase),
+  lte: jest.fn(() => mockSupabase),
+  single: jest.fn(() => Promise.resolve({ data: null, error: null }))
 }
 
-vi.mocked(createClient).mockReturnValue(mockSupabase as any)
+jest.mocked(createClient).mockReturnValue(mockSupabase as any)
 
 // Mock OAuth service
 const mockOAuthService = {
-  refreshAccessToken: vi.fn()
+  refreshAccessToken: jest.fn()
 }
-vi.mocked(oauthService).refreshAccessToken = mockOAuthService.refreshAccessToken
+jest.mocked(oauthService).refreshAccessToken = mockOAuthService.refreshAccessToken
 
 // Mock fetch for calendar API calls
-const mockFetch = vi.fn()
+const mockFetch = jest.fn()
 global.fetch = mockFetch
 
 // Mock crypto
@@ -45,12 +45,12 @@ Object.defineProperty(global, 'crypto', {
 
 describe('CalendarExportService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.setSystemTime(new Date('2025-08-28T10:00:00Z'))
+    jest.clearAllMocks()
+    jest.setSystemTime(new Date('2025-08-28T10:00:00Z'))
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    jest.useRealTimers()
   })
 
   const mockIntegration = {

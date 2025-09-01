@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals'
 import { GET, POST } from '@/app/api/v1/notifications/route'
 import { NotificationService } from '@/lib/services/notification-service'
 import { NextRequest } from 'next/server'
 import type { CreateNotificationRequest, NotificationFilter } from '@/lib/types/notification-types'
 
 // Mock the NotificationService
-vi.mock('@/lib/services/notification-service', () => ({
+jest.mock('@/lib/services/notification-service', () => ({
   NotificationService: {
-    getInstance: vi.fn()
+    getInstance: jest.fn()
   }
 }))
 
@@ -43,18 +43,18 @@ describe('/api/v1/notifications', () => {
 
   beforeEach(() => {
     mockNotificationService = {
-      getNotifications: vi.fn(),
-      createNotification: vi.fn(),
-      getNotificationStats: vi.fn(),
-      markAsRead: vi.fn(),
-      acknowledgeNotification: vi.fn()
+      getNotifications: jest.fn(),
+      createNotification: jest.fn(),
+      getNotificationStats: jest.fn(),
+      markAsRead: jest.fn(),
+      acknowledgeNotification: jest.fn()
     }
 
-    vi.mocked(NotificationService.getInstance).mockReturnValue(mockNotificationService)
+    jest.mocked(NotificationService.getInstance).mockReturnValue(mockNotificationService)
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('GET /api/v1/notifications', () => {
@@ -523,7 +523,7 @@ describe('/api/v1/notifications', () => {
 
   describe('Error Handling', () => {
     it('should handle service unavailable errors', async () => {
-      vi.mocked(NotificationService.getInstance).mockImplementation(() => {
+      jest.mocked(NotificationService.getInstance).mockImplementation(() => {
         throw new Error('Service unavailable')
       })
 

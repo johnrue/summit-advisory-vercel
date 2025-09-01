@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
 import { NotificationService } from '@/lib/services/notification-service'
 import type { Notification } from '@/lib/types/notification-types'
 
 // Mock the NotificationService
-vi.mock('@/lib/services/notification-service', () => ({
+jest.mock('@/lib/services/notification-service', () => ({
   NotificationService: {
-    getInstance: vi.fn()
+    getInstance: jest.fn()
   }
 }))
 
 // Mock the NotificationDropdown component
-vi.mock('@/components/notifications/NotificationDropdown', () => ({
+jest.mock('@/components/notifications/NotificationDropdown', () => ({
   NotificationDropdown: ({ isOpen, notifications, unreadCount, onNotificationRead, onMarkAllRead }: any) => (
     <div data-testid="notification-dropdown">
       <div data-testid="dropdown-open">{isOpen.toString()}</div>
@@ -25,7 +25,7 @@ vi.mock('@/components/notifications/NotificationDropdown', () => ({
 }))
 
 // Mock lucide-react icons
-vi.mock('lucide-react', () => ({
+jest.mock('lucide-react', () => ({
   Bell: ({ className, ...props }: any) => (
     <div data-testid="bell-icon" className={className} {...props} />
   )
@@ -91,21 +91,21 @@ describe('NotificationBell', () => {
 
   beforeEach(() => {
     mockSubscription = {
-      unsubscribe: vi.fn()
+      unsubscribe: jest.fn()
     }
 
     mockNotificationService = {
-      getNotifications: vi.fn(),
-      subscribeToNotifications: vi.fn(() => mockSubscription),
-      unsubscribeFromNotifications: vi.fn(),
-      markAllAsRead: vi.fn()
+      getNotifications: jest.fn(),
+      subscribeToNotifications: jest.fn(() => mockSubscription),
+      unsubscribeFromNotifications: jest.fn(),
+      markAllAsRead: jest.fn()
     }
 
-    vi.mocked(NotificationService.getInstance).mockReturnValue(mockNotificationService)
+    jest.mocked(NotificationService.getInstance).mockReturnValue(mockNotificationService)
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('Rendering', () => {
@@ -168,7 +168,7 @@ describe('NotificationBell', () => {
     })
 
     it('should handle loading errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
       mockNotificationService.getNotifications.mockRejectedValue(new Error('Network error'))
 
       render(<NotificationBell userId="user-123" />)
@@ -426,7 +426,7 @@ describe('NotificationBell', () => {
     })
 
     it('should log high priority notifications to console', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
       mockNotificationService.getNotifications.mockResolvedValue({
         success: true,
         data: []
@@ -501,7 +501,7 @@ describe('NotificationBell', () => {
     })
 
     it('should handle mark all read errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
       mockNotificationService.markAllAsRead.mockRejectedValue(new Error('Network error'))
 
       render(<NotificationBell userId="user-123" />)
