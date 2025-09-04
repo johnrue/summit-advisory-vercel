@@ -21,6 +21,10 @@ yarn-error.log*
 
 # MCP configuration
 .mcp.json
+.claude/mcp-servers.json
+
+# AWS MCP documentation with credentials
+docs/aws-mcp-*.md
 
 # vercel
 .vercel
