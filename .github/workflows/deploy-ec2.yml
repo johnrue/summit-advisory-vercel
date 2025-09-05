@@ -8,10 +8,10 @@ on:
 
 env:
   NODE_VERSION: '22.17.0'
-  EC2_HOST: ${{ secrets.EC2_HOST }}
-  EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+  EC2_HOST: '18.212.109.180'
+  EC2_USERNAME: 'ec2-user'
   EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-  APP_NAME: summit-advisory-saas
+  APP_NAME: summit-advisory
 
 jobs:
   test:
@@ -115,31 +115,32 @@ jobs:
             pm2 delete ${{ env.APP_NAME }} || true
             
             # Backup current deployment
-            sudo mv /opt/${{ env.APP_NAME }} /opt/${{ env.APP_NAME }}.backup.$(date +%Y%m%d_%H%M%S) || true
+            [ -d /home/ec2-user/${{ env.APP_NAME }} ] && mv /home/ec2-user/${{ env.APP_NAME }} /home/ec2-user/${{ env.APP_NAME }}.backup.$(date +%Y%m%d_%H%M%S) || true
             
             # Create application directory
-            sudo mkdir -p /opt/${{ env.APP_NAME }}
-            sudo mkdir -p /opt/${{ env.APP_NAME }}/logs
+            mkdir -p /home/ec2-user/${{ env.APP_NAME }}
+            mkdir -p /home/ec2-user/${{ env.APP_NAME }}/logs
             
             # Extract new deployment
-            cd /opt/${{ env.APP_NAME }}
-            sudo tar -xzf /tmp/deployment.tar.gz --strip-components=1
+            cd /home/ec2-user/${{ env.APP_NAME }}
+            tar -xzf /tmp/deployment.tar.gz
             
             # Set ownership
-            sudo chown -R ec2-user:ec2-user /opt/${{ env.APP_NAME }}
+            chmod 600 .env.local
             
             # Install global dependencies if not already installed
             npm install -g pnpm pm2 || true
             
             # Install application dependencies
-            cd /opt/${{ env.APP_NAME }}
+            cd /home/ec2-user/${{ env.APP_NAME }}
             pnpm install --frozen-lockfile --production
             
             # Set environment variables from AWS Secrets Manager
-            sudo aws secretsmanager get-secret-value \
-              --secret-id summit-advisory-saas-env \
+            aws secretsmanager get-secret-value \
+              --secret-id summit-advisory-env \
               --region us-east-1 \
-              --query SecretString --output text > .env.local
+              --query SecretString \
+              --output text | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' > .env.local
             sudo chown ec2-user:ec2-user .env.local
             sudo chmod 600 .env.local
             

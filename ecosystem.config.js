@@ -5,10 +5,10 @@
 module.exports = {
   apps: [
     {
-      name: 'summit-advisory-saas',
+      name: 'summit-advisory',
       script: 'node_modules/.bin/next',
       args: 'start',
-      cwd: '/opt/summit-advisory-saas',
+      cwd: '/home/ec2-user/summit-advisory',
       
       // Cluster mode configuration
       instances: 1, // Use 1 instance for smaller EC2 (t3.micro/t3.small)
@@ -33,12 +33,12 @@ module.exports = {
       restart_delay: 4000,
       
       // Memory management
-      max_memory_restart: '800M', // Reduced for smaller instance
+      max_memory_restart: '900M', // Optimized for t3.small (2GB RAM)
       
       // Logging configuration
-      log_file: '/opt/summit-advisory-saas/logs/combined.log',
-      out_file: '/opt/summit-advisory-saas/logs/out.log',
-      error_file: '/opt/summit-advisory-saas/logs/error.log',
+      log_file: '/home/ec2-user/summit-advisory/logs/combined.log',
+      out_file: '/home/ec2-user/summit-advisory/logs/out.log',
+      error_file: '/home/ec2-user/summit-advisory/logs/error.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       log_type: 'json',
@@ -81,10 +81,10 @@ module.exports = {
   deploy: {
     production: {
       user: 'ec2-user',
-      host: process.env.EC2_HOST || 'app.summitadvisoryfirm.com',
+      host: '18.212.109.180',
       ref: 'origin/main',
       repo: 'https://github.com/johnrue/summit-advisory-vercel.git',
-      path: '/opt/summit-advisory-saas',
+      path: '/home/ec2-user/summit-advisory',
       'post-deploy': 'pnpm install --frozen-lockfile --production && pnpm run build && pm2 reload ecosystem.config.js --env production',
       'pre-setup': 'apt update && apt install git -y'
     }
