@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { ExternalLink, AlertCircle } from "lucide-react"
 
 interface PortalLinkProps {
@@ -49,7 +49,7 @@ export function PortalLink({
   }
 
   // Check if SaaS platform is available
-  const checkSaaSAvailability = async () => {
+  const checkSaaSAvailability = useCallback(async () => {
     if (!checkAvailability) return true
     
     setIsChecking(true)
@@ -70,7 +70,7 @@ export function PortalLink({
     } finally {
       setIsChecking(false)
     }
-  }
+  }, [checkAvailability])
 
   // Track portal link click
   const trackPortalClick = () => {

@@ -8,7 +8,7 @@ import {
   Paperclip,
   Upload,
   FileText,
-  Image,
+  Image as ImageIcon,
   Download,
   Trash2
 } from 'lucide-react'
@@ -71,7 +71,7 @@ export function ProjectAttachments({ project, onUpdate }: ProjectAttachmentsProp
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) {
-      return <Image className="w-8 h-8 text-green-500" />
+      return <ImageIcon className="w-8 h-8 text-green-500" />
     }
     return <FileText className="w-8 h-8 text-blue-500" />
   }

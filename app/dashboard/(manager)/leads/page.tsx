@@ -32,27 +32,27 @@ export default function LeadsDashboard() {
   const { toast } = useToast()
 
   useEffect(() => {
-    fetchLeads()
-  }, [])
-
-  const fetchLeads = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/v1/leads')
-      if (response.ok) {
-        const data = await response.json()
-        setLeads(data.leads || [])
+    const fetchLeads = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/v1/leads')
+        if (response.ok) {
+          const data = await response.json()
+          setLeads(data.leads || [])
+        }
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to load leads',
+          variant: 'destructive'
+        })
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load leads',
-        variant: 'destructive'
-      })
-    } finally {
-      setLoading(false)
     }
-  }
+    
+    fetchLeads()
+  }, [toast])
 
   const filteredLeads = leads.filter(lead =>
     lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

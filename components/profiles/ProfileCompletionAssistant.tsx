@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -47,7 +47,7 @@ export function ProfileCompletionAssistant({
   const [activeSuggestions, setActiveSuggestions] = useState<Record<string, FieldSuggestion[]>>({})
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false)
 
-  const guardProfileService = new GuardProfileService()
+  const guardProfileService = useMemo(() => new GuardProfileService(), [])
 
   // Load initial compliance data
   useEffect(() => {

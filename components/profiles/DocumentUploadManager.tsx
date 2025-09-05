@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useCallback, useRef } from 'react'
+import NextImage from 'next/image'
 import { useDropzone } from 'react-dropzone'
 import { format } from 'date-fns'
 
@@ -17,7 +18,7 @@ import {
   Upload, 
   File, 
   FileText, 
-  Image, 
+  Image as ImageIcon, 
   X, 
   CheckCircle, 
   AlertCircle, 
@@ -120,6 +121,7 @@ export function DocumentUploadManager({
     newUploadingFiles.forEach(uploadingFile => {
       uploadDocument(uploadingFile)
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDocumentType, expiryDate, documents.length, uploadingFiles.length, maxFiles])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -224,7 +226,7 @@ export function DocumentUploadManager({
   }
 
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) return <Image className="h-4 w-4" />
+    if (mimeType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />
     if (mimeType === 'application/pdf') return <FileText className="h-4 w-4" />
     return <File className="h-4 w-4" />
   }
@@ -422,11 +424,15 @@ export function DocumentUploadManager({
                         </DialogHeader>
                         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                           {document.mimeType.startsWith('image/') ? (
-                            <img 
-                              src={document.url} 
-                              alt={document.name}
-                              className="max-w-full max-h-full object-contain rounded-lg"
-                            />
+                            <div className="relative w-full h-full">
+                              <NextImage 
+                                src={document.url} 
+                                alt={document.name}
+                                fill
+                                className="object-contain rounded-lg"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                            </div>
                           ) : (
                             <div className="text-center">
                               <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
