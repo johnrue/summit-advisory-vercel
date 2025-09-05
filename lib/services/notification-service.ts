@@ -11,9 +11,9 @@ import type {
   NotificationStats,
   NotificationTemplate,
   NotificationDigest,
-  NotificationEscalation,
-  NotificationFilter
+  NotificationEscalation
 } from '@/lib/types'
+import type { NotificationFilter } from '@/lib/types/notification-types'
 import type { ServiceResult } from '@/lib/types'
 
 export class NotificationService {
@@ -611,14 +611,14 @@ export class NotificationService {
 
         case 'sms':
           // SMS implementation would go here (not implemented in this version)
-          console.log('SMS delivery not implemented yet')
+          
           return false
 
         default:
           return false
       }
     } catch (error) {
-      console.error(`Error delivering notification to ${channel}:`, error)
+      
       return false
     }
   }
@@ -628,7 +628,7 @@ export class NotificationService {
       // Get email template for notification type
       const template = await this.getEmailTemplate(notification.type)
       if (!template) {
-        console.error(`No email template found for type: ${notification.type}`)
+        
         return false
       }
 
@@ -640,7 +640,7 @@ export class NotificationService {
         .single()
 
       if (profileError || !profile?.email) {
-        console.error('Failed to get recipient email:', profileError)
+        
         return false
       }
 
@@ -654,16 +654,12 @@ export class NotificationService {
 
       // For now, log the email that would be sent
       // In production, this would integrate with an email service like Resend
-      console.log('Email notification to send:', {
-        to: profile.email,
-        subject: emailContent.subject,
-        html: emailContent.body
-      })
+      
 
       return true
 
     } catch (error) {
-      console.error('Error sending email notification:', error)
+      
       return false
     }
   }
@@ -678,7 +674,7 @@ export class NotificationService {
       .single()
 
     if (error) {
-      console.error('Error getting email template:', error)
+      
       return null
     }
 

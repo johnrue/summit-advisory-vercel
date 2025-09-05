@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     if (managerId) {
       // Manual assignment to specific manager
-      result = await manualAssignLead(leadId, managerId)
+      result = await manualAssignLead(leadId, managerId, 'Manual assignment')
     } else {
       // Auto-assignment using service type and priority
       if (!serviceType || !priority) {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-      result = await autoAssignLead(leadId, serviceType, priority)
+      result = await autoAssignLead(leadId)
     }
 
     if (!result.success) {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Lead assignment error:', error)
+    
     return NextResponse.json(
       {
         success: false,

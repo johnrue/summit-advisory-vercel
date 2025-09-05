@@ -32,49 +32,49 @@ export async function GET(request: NextRequest) {
     // Filter by processing type if specified
     let filteredData = complianceData
     if (processingType && processingType.length > 0 && !processingType.includes('all')) {
-      filteredData = complianceData.filter(entry => 
+      filteredData = complianceData.filter((entry: any) => 
         processingType.includes(entry.processing_type)
       )
     }
 
     // Filter by status if specified
     if (status && status.length > 0 && !status.includes('all')) {
-      filteredData = filteredData.filter(entry => 
+      filteredData = filteredData.filter((entry: any) => 
         status.includes(entry.processing_status)
       )
     }
 
     // Generate compliance summary
-    const totalApplications = new Set(filteredData.map(entry => entry.application_id)).size
-    const aiProcessingEntries = filteredData.filter(entry => 
+    const totalApplications = new Set(filteredData.map((entry: any) => entry.application_id)).size
+    const aiProcessingEntries = filteredData.filter((entry: any) => 
       ['resume_parsing', 'data_validation'].includes(entry.processing_type)
     )
-    const managerReviewEntries = filteredData.filter(entry => 
+    const managerReviewEntries = filteredData.filter((entry: any) => 
       entry.processing_type === 'manager_review'
     )
 
     // Calculate AI processing stats
-    const successfulAIProcessing = aiProcessingEntries.filter(entry => 
+    const successfulAIProcessing = aiProcessingEntries.filter((entry: any) => 
       entry.processing_status === 'success'
     ).length
     const totalAIProcessing = aiProcessingEntries.length
 
-    const totalOverrides = managerReviewEntries.filter(entry =>
+    const totalOverrides = managerReviewEntries.filter((entry: any) =>
       entry.manager_overrides?.action?.includes('override')
     ).length
     const totalReviews = managerReviewEntries.length
 
     // Calculate average confidence from successful AI processing
     const confidenceScores = aiProcessingEntries
-      .filter(entry => entry.confidence_scores?.overall)
-      .map(entry => entry.confidence_scores!.overall!)
+      .filter((entry: any) => entry.confidence_scores?.overall)
+      .map((entry: any) => entry.confidence_scores!.overall!)
     const averageConfidence = confidenceScores.length > 0 
-      ? confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length * 100
+      ? confidenceScores.reduce((sum: number, score: number) => sum + score, 0) / confidenceScores.length * 100
       : 0
 
     // Get most overridden fields
     const fieldOverrides: Record<string, number> = {}
-    managerReviewEntries.forEach(entry => {
+    managerReviewEntries.forEach((entry: any) => {
       if (entry.manager_overrides?.field) {
         const field = entry.manager_overrides.field
         fieldOverrides[field] = (fieldOverrides[field] || 0) + 1
@@ -88,14 +88,14 @@ export async function GET(request: NextRequest) {
 
     // Calculate compliance indicators
     const auditTrailCompleteness = filteredData.length > 0 
-      ? (filteredData.filter(entry => 
+      ? (filteredData.filter((entry: any) => 
           entry.processing_start_time && 
           entry.processing_end_time &&
           entry.processing_status
         ).length / filteredData.length) * 100
       : 100
 
-    const processingTimesWithinSLA = filteredData.filter(entry => 
+    const processingTimesWithinSLA = filteredData.filter((entry: any) => 
       entry.processing_duration_seconds && entry.processing_duration_seconds < 300 // 5 minutes SLA
     ).length
     const processingTimeWithinSLARate = filteredData.length > 0 
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
         total_ai_operations: totalAIProcessing,
         success_rate: totalAIProcessing > 0 ? (successfulAIProcessing / totalAIProcessing) * 100 : 0,
         average_confidence: averageConfidence,
-        models_used: [...new Set(aiProcessingEntries.map(entry => entry.ai_model))]
+        models_used: [...new Set(aiProcessingEntries.map((entry: any) => entry.ai_model))]
       },
       manager_review_stats: {
         total_reviews: totalReviews,
@@ -128,10 +128,10 @@ export async function GET(request: NextRequest) {
         processing_time_within_sla: processingTimeWithinSLARate
       },
       quality_metrics: {
-        high_confidence_processing: confidenceScores.filter(score => score >= 0.8).length,
+        high_confidence_processing: confidenceScores.filter((score: number) => score >= 0.8).length,
         manual_intervention_rate: totalReviews > 0 ? (totalOverrides / totalReviews) * 100 : 0,
-        error_resolution_rate: auditSummary.failure_rate > 0 
-          ? 100 - auditSummary.failure_rate 
+        error_resolution_rate: auditSummary.success_rate < 100 
+          ? auditSummary.success_rate 
           : 100
       }
     }

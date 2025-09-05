@@ -27,7 +27,7 @@ export function useScrollAnimation() {
   return scrollY
 }
 
-export function useInView(ref: React.RefObject<HTMLElement>, threshold = 0.1) {
+export function useInView(ref: React.RefObject<HTMLElement | null>, threshold = 0.1) {
   const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SystemAdminGate } from '@/components/auth/permission-gate'
 import { ThemeToggle } from '@/components/dashboard/theme-toggle'
-import { AdminRoleViewSwitcher, RoleViewIndicator } from '@/components/admin/role-view'
+// Role view removed for simplification
 import { Bell, Settings, User, LogOut, Shield, UserCog, Monitor, Eye } from 'lucide-react'
 import Link from 'next/link'
 
@@ -68,9 +68,7 @@ export function DashboardHeader() {
 
       <div className="flex items-center gap-4">
         {/* Admin Role View Switcher */}
-        {canSwitchRoleViews ? (
-          <AdminRoleViewSwitcher variant="compact" />
-        ) : (
+        {!canSwitchRoleViews && (
           /* Role Badge for non-admins */
           <Badge 
             variant={getRoleBadgeVariant(role || 'guard')}

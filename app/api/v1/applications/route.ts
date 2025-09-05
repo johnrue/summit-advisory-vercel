@@ -58,7 +58,29 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total count for pagination
-    const { count } = await query.select('*', { count: 'exact', head: true })
+    let countQuery = supabase
+      .from('guard_leads')
+      .select('*', { count: 'exact', head: true })
+      .not('application_data', 'is', null)
+    
+    // Apply same filters to count query
+    if (hasAIData) {
+      countQuery = countQuery.not('ai_parsed_data', 'is', null)
+    }
+    if (statusFilter && statusFilter.length > 0) {
+      countQuery = countQuery.in('status', statusFilter)
+    }
+    if (confidenceThreshold > 0 && hasAIData) {
+      countQuery = countQuery.gte('confidence_scores->overall', confidenceThreshold)
+    }
+    if (dateFrom) {
+      countQuery = countQuery.gte('created_at', dateFrom)
+    }
+    if (dateTo) {
+      countQuery = countQuery.lte('created_at', dateTo)
+    }
+    
+    const { count } = await countQuery
 
     // Apply pagination and ordering
     const { data: applications, error } = await query

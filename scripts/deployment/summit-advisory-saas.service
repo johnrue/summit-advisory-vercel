@@ -1,0 +1,30 @@
+[Unit]
+Description=Summit Advisory SaaS Platform
+Documentation=https://github.com/johnrue/summit-advisory-vercel
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/opt/summit-advisory-saas
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/opt/summit-advisory-saas/.env.local
+ExecStart=/usr/local/bin/pnpm start
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=summit-advisory-saas
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/summit-advisory-saas
+
+[Install]
+WantedBy=multi-user.target

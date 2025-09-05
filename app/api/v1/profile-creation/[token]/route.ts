@@ -16,13 +16,15 @@ export async function GET(
     const result = await profileCreationTriggerService.validateCreationToken(token)
     
     if (!result.success) {
+      const errorMessage = typeof result.error === 'string' ? result.error : result.error?.message;
+      const errorCode = typeof result.error === 'string' ? undefined : result.error?.code;
       return NextResponse.json(
         { 
           success: false, 
-          error: result.error,
-          code: result.code 
+          error: errorMessage,
+          code: errorCode
         },
-        { status: result.code === 'TOKEN_EXPIRED' ? 410 : 404 }
+        { status: errorCode === 'TOKEN_EXPIRED' ? 410 : 404 }
       )
     }
 
@@ -34,7 +36,7 @@ export async function GET(
       }
     })
   } catch (error) {
-    console.error('Profile creation token validation error:', error)
+    
     return NextResponse.json(
       { 
         success: false, 
@@ -57,13 +59,15 @@ export async function POST(
     // Validate the token first
     const tokenValidation = await profileCreationTriggerService.validateCreationToken(token)
     if (!tokenValidation.success) {
+      const errorMessage = typeof tokenValidation.error === 'string' ? tokenValidation.error : tokenValidation.error?.message;
+      const errorCode = typeof tokenValidation.error === 'string' ? undefined : tokenValidation.error?.code;
       return NextResponse.json(
         { 
           success: false, 
-          error: tokenValidation.error,
-          code: tokenValidation.code 
+          error: errorMessage,
+          code: errorCode
         },
-        { status: tokenValidation.code === 'TOKEN_EXPIRED' ? 410 : 404 }
+        { status: errorCode === 'TOKEN_EXPIRED' ? 410 : 404 }
       )
     }
 
@@ -82,17 +86,39 @@ export async function POST(
     }
 
     // Complete profile creation
+    if (!tokenValidation.data) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Invalid token data',
+          code: 'INVALID_TOKEN_DATA'
+        },
+        { status: 400 }
+      )
+    }
+    if (!profileData.data) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Invalid profile data',
+          code: 'INVALID_PROFILE_DATA'
+        },
+        { status: 400 }
+      )
+    }
     const result = await profileCreationTriggerService.completeProfileCreation(
       tokenValidation.data.id,
       profileData.data
     )
 
     if (!result.success) {
+      const errorMessage = typeof result.error === 'string' ? result.error : result.error?.message;
+      const errorCode = typeof result.error === 'string' ? undefined : result.error?.code;
       return NextResponse.json(
         { 
           success: false, 
-          error: result.error,
-          code: result.code 
+          error: errorMessage,
+          code: errorCode
         },
         { status: 500 }
       )
@@ -106,7 +132,7 @@ export async function POST(
       }
     }, { status: 201 })
   } catch (error) {
-    console.error('Profile creation error:', error)
+    
     return NextResponse.json(
       { 
         success: false, 

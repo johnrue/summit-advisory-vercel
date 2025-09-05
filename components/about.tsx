@@ -9,7 +9,7 @@ import AnimatedSection from "@/components/animated-section"
 
 export default function About() {
   const imageRef = useRef<HTMLDivElement>(null)
-  const isImageInView = useInView(imageRef, 0.1)
+  const isImageInView = useInView(imageRef as React.RefObject<HTMLElement>, 0.1)
 
   const benefits = [
     "Licensed & insured security professionals",

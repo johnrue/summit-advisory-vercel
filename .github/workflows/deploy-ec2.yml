@@ -1,0 +1,204 @@
+name: Deploy SaaS Platform to EC2
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '22.17.0'
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+  APP_NAME: summit-advisory-saas
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install pnpm
+        run: npm install -g pnpm
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run TypeScript check
+        run: pnpm run type-check
+      
+      - name: Run linting
+        run: pnpm run lint
+      
+      - name: Run tests
+        run: pnpm run test
+        env:
+          CI: true
+      
+      - name: Build application
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Deploy to EC2
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install pnpm
+        run: npm install -g pnpm
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build application
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      
+      - name: Create deployment package
+        run: |
+          tar -czf deployment.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='__tests__' \
+            --exclude='tests' \
+            --exclude='e2e' \
+            --exclude='coverage' \
+            --exclude='.next/cache' \
+            .
+      
+      - name: Copy deployment package to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USERNAME }}
+          key: ${{ env.EC2_PRIVATE_KEY }}
+          port: 22
+          source: deployment.tar.gz
+          target: /tmp/
+      
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USERNAME }}
+          key: ${{ env.EC2_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Stop the current application via PM2
+            pm2 stop ${{ env.APP_NAME }} || true
+            pm2 delete ${{ env.APP_NAME }} || true
+            
+            # Backup current deployment
+            sudo mv /opt/${{ env.APP_NAME }} /opt/${{ env.APP_NAME }}.backup.$(date +%Y%m%d_%H%M%S) || true
+            
+            # Create application directory
+            sudo mkdir -p /opt/${{ env.APP_NAME }}
+            sudo mkdir -p /opt/${{ env.APP_NAME }}/logs
+            
+            # Extract new deployment
+            cd /opt/${{ env.APP_NAME }}
+            sudo tar -xzf /tmp/deployment.tar.gz --strip-components=1
+            
+            # Set ownership
+            sudo chown -R ec2-user:ec2-user /opt/${{ env.APP_NAME }}
+            
+            # Install global dependencies if not already installed
+            npm install -g pnpm pm2 || true
+            
+            # Install application dependencies
+            cd /opt/${{ env.APP_NAME }}
+            pnpm install --frozen-lockfile --production
+            
+            # Set environment variables from AWS Secrets Manager
+            sudo aws secretsmanager get-secret-value \
+              --secret-id summit-advisory-saas-env \
+              --region us-east-1 \
+              --query SecretString --output text > .env.local
+            sudo chown ec2-user:ec2-user .env.local
+            sudo chmod 600 .env.local
+            
+            # Build the application
+            pnpm run build
+            
+            # Configure Nginx if not already done
+            if [ ! -f /etc/nginx/sites-enabled/summit-advisory-saas ]; then
+              sudo cp /opt/${{ env.APP_NAME }}/scripts/deployment/nginx-saas.conf /etc/nginx/sites-available/summit-advisory-saas
+              sudo ln -sf /etc/nginx/sites-available/summit-advisory-saas /etc/nginx/sites-enabled/
+              sudo nginx -t && sudo systemctl reload nginx
+            fi
+            
+            # Start application with PM2
+            pm2 start ecosystem.config.js --env production
+            
+            # Save PM2 process list and configure startup
+            pm2 save
+            pm2 startup systemd -u ec2-user --hp /home/ec2-user
+            
+            # Wait for application to start
+            sleep 15
+            
+            # Verify deployment
+            curl -f http://localhost:3000/api/health || exit 1
+            
+            # Test Nginx proxy
+            curl -f http://localhost/api/health || exit 1
+            
+            # Show PM2 status
+            pm2 status
+            
+            # Clean up old backups (keep last 3)
+            sudo find /opt/ -name "${{ env.APP_NAME }}.backup.*" -type d | sort -r | tail -n +4 | sudo xargs rm -rf || true
+            
+            # Clean up deployment package
+            rm -f /tmp/deployment.tar.gz
+            
+            echo "✅ PM2 + Nginx deployment completed successfully"
+            echo "📊 PM2 Status:"
+            pm2 status
+            echo "🌐 Application available at: https://app.summitadvisoryfirm.com"
+
+  notify:
+    needs: [test, deploy]
+    runs-on: ubuntu-latest
+    name: Notify Deployment Status
+    if: always()
+    
+    steps:
+      - name: Deployment Success
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "✅ SaaS Platform deployed successfully to EC2"
+          echo "🌐 Application available at: https://app.summitadvisoryfirm.com"
+      
+      - name: Deployment Failure
+        if: needs.deploy.result == 'failure' || needs.test.result == 'failure'
+        run: |
+          echo "❌ SaaS Platform deployment failed"
+          echo "🔍 Check logs for details"
+          exit 1

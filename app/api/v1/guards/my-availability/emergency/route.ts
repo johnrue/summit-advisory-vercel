@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return success with emergency details
-    return NextResponse.json<AvailabilityApiResponse>(
+    return NextResponse.json(
       {
         success: true,
         data: {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Emergency unavailability POST error:', error);
+    
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
       record => record.changeType === 'emergency_unavailable'
     ) || [];
 
-    return NextResponse.json<AvailabilityApiResponse>({
+    return NextResponse.json({
       success: true,
       data: {
         emergencyHistory
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Emergency unavailability GET error:', error);
+    
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

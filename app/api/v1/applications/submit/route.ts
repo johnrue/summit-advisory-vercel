@@ -82,8 +82,7 @@ export async function POST(request: NextRequest) {
         application_reference: applicationReference,
         submitted_at: submissionData.application_submitted_at,
         next_steps: 'Your application has been submitted successfully. You will be contacted within 2-3 business days regarding next steps.'
-      },
-      message: 'Application submitted successfully'
+      }
     }
 
     return NextResponse.json(response, { status: 201 })

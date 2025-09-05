@@ -73,7 +73,7 @@ async function checkManagerAccess(request: NextRequest): Promise<boolean> {
 
     return hasAccess
   } catch (error) {
-    console.error('Error checking manager access:', error)
+    
     return false
   }
 }
@@ -131,7 +131,7 @@ export async function PUT(
     const { status, notes } = validationResult.data
 
     // Update lead status via service layer
-    const result = await updateGuardLeadStatus(leadId, status, notes)
+    const result = await updateGuardLeadStatus(leadId, status as any, notes)
 
     if (!result.success) {
       return NextResponse.json(
@@ -151,7 +151,7 @@ export async function PUT(
     })
 
   } catch (error) {
-    console.error('Error updating lead status:', error)
+    
     
     return NextResponse.json(
       {

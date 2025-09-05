@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export default function QRRedirectPage() {
@@ -12,6 +12,25 @@ export default function QRRedirectPage() {
   // Get campaign parameter for tracking
   const campaign = searchParams.get('campaign') || 'qr-default'
   const source = searchParams.get('source') || 'qr-code'
+
+  const handleRedirect = useCallback(() => {
+    try {
+      // Track successful redirect
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'qr_redirect_success', {
+          campaign,
+          source,
+          destination: '/',
+        })
+      }
+      
+      // Use window.location for more reliable redirect
+      window.location.href = '/'
+    } catch (err) {
+      // Redirect failed - show error to user
+      setError(true)
+    }
+  }, [campaign, source])
 
   useEffect(() => {
     // Track QR code access (simplified)
@@ -36,26 +55,7 @@ export default function QRRedirectPage() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [campaign, source])
-
-  const handleRedirect = () => {
-    try {
-      // Track successful redirect
-      if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'qr_redirect_success', {
-          campaign,
-          source,
-          destination: '/',
-        })
-      }
-      
-      // Use window.location for more reliable redirect
-      window.location.href = '/'
-    } catch (err) {
-      // Redirect failed - show error to user
-      setError(true)
-    }
-  }
+  }, [campaign, source, handleRedirect])
 
   const handleManualRedirect = () => {
     // Track manual redirect click

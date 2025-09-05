@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
     const query = {
       date_from: dateFrom,
       date_to: dateTo,
-      processing_type: processingType?.filter(t => t !== 'all'),
-      status: status?.filter(s => s !== 'all'),
+      processing_type: processingType?.filter(t => t !== 'all')?.[0], // Take first item or undefined
+      status: status?.filter(s => s !== 'all')?.[0], // Take first item or undefined
       limit: 10000 // Large limit for export
     }
 

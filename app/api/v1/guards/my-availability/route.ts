@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Guard availability GET error:', error);
+    
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Guard availability POST error:', error);
+    
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -197,8 +197,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const results = [];
-    const errors = [];
+    const results: any[] = [];
+    const errors: any[] = [];
 
     for (const update of updates) {
       if (!update.id) {
@@ -243,7 +243,7 @@ export async function PUT(request: NextRequest) {
       { status: statusCode }
     );
   } catch (error) {
-    console.error('Guard availability PUT error:', error);
+    
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

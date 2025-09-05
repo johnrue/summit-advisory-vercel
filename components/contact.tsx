@@ -69,7 +69,10 @@ export default function Contact() {
 
       if (!result.success) {
         // Supabase submission failed - error details logged in consultation service
-        throw new Error(result.error || 'Failed to submit consultation request')
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : result.error?.message || 'Failed to submit consultation request'
+        throw new Error(errorMessage)
       }
 
       // Form submitted successfully - removed console.log for production

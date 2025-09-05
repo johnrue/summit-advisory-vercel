@@ -22,6 +22,9 @@ export async function GET(
 
     // Check if user has access to this project
     const project = result.data
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+    }
     const hasAccess = authResult.role === 'admin' || 
                      authResult.role === 'manager' ||
                      project.ownerId === authResult.userId ||
@@ -38,7 +41,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Error in GET /api/v1/projects/[id]:', error)
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -73,7 +76,7 @@ export async function PUT(
     })
 
   } catch (error) {
-    console.error('Error in PUT /api/v1/projects/[id]:', error)
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -105,7 +108,7 @@ export async function DELETE(
     })
 
   } catch (error) {
-    console.error('Error in DELETE /api/v1/projects/[id]:', error)
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
