@@ -55,7 +55,6 @@ async function checkManagerAccess(request: NextRequest): Promise<boolean> {
 
     return hasAccess
   } catch (error) {
-    console.error('Error checking manager access:', error)
     return false
   }
 }
@@ -111,7 +110,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error in leads API:', error)
     
     return NextResponse.json(
       {

@@ -320,7 +320,6 @@ export class GuardEligibilityService {
       };
 
     } catch (error) {
-      console.error('Error checking time conflicts:', error);
       return { hasConflicts: false, conflicts: [] };
     }
   }
@@ -374,7 +373,6 @@ export class GuardEligibilityService {
       };
 
     } catch (error) {
-      console.error('Error checking availability match:', error);
       return {
         requestedWindow: { start: new Date((shift.timeRange as any).start || shift.timeRange.startTime), end: new Date((shift.timeRange as any).end || shift.timeRange.endTime) },
         availabilityWindows: [],

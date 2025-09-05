@@ -56,7 +56,6 @@ class TimezoneService {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone
     } catch (error) {
-      console.warn('Timezone detection failed:', error)
       return 'UTC'
     }
   }
@@ -104,7 +103,6 @@ class TimezoneService {
       }
 
     } catch (error) {
-      console.error('Get timezone info error:', error)
       return {
         timezone: 'UTC',
         offset: '+00:00',
@@ -144,7 +142,6 @@ class TimezoneService {
       }
 
     } catch (error) {
-      console.error('Convert time error:', error)
       
       // Fallback to UTC
       return {
@@ -179,7 +176,6 @@ class TimezoneService {
       return new Intl.DateTimeFormat('en-US', options).format(date)
 
     } catch (error) {
-      console.error('Format time error:', error)
       return date.toISOString()
     }
   }
@@ -226,7 +222,6 @@ class TimezoneService {
       return transitions
 
     } catch (error) {
-      console.error('Get DST transitions error:', error)
       return []
     }
   }

@@ -87,7 +87,6 @@ export async function getManagerWorkloads(): Promise<ApiResponse<ManagerWorkload
         .in('status', ['prospect', 'contacted', 'qualified', 'proposal', 'negotiation'])
 
       if (activeLeadsError) {
-        console.error(`Error fetching active leads for manager ${managerId}:`, activeLeadsError)
         continue
       }
 
@@ -101,7 +100,6 @@ export async function getManagerWorkloads(): Promise<ApiResponse<ManagerWorkload
         .lte('last_contact_date', `${today}T23:59:59Z`)
 
       if (contactedError) {
-        console.error(`Error fetching today's contacts for manager ${managerId}:`, contactedError)
       }
 
       // Calculate response time (simplified - average time between assignment and contact)

@@ -91,7 +91,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     })
 
   } catch (error) {
-    console.error('Error running validation:', error)
     
     if (auditId) {
       await AIAuditService.logProcessingEnd(auditId, 'failure', {

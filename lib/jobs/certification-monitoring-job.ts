@@ -15,7 +15,6 @@ export class CertificationMonitoringJob {
    */
   static async execute(): Promise<void> {
     try {
-      console.log('Starting certification monitoring job...')
       const startTime = new Date()
 
       // Check for expiring certifications
@@ -39,7 +38,6 @@ export class CertificationMonitoringJob {
             escalationsSent++
           }
         } catch (error) {
-          console.error(`Error processing alert for certification ${check.certification.id}:`, error)
           errors++
         }
       }
@@ -48,7 +46,6 @@ export class CertificationMonitoringJob {
       try {
         await CertificationMonitoringService.processEscalations()
       } catch (error) {
-        console.error('Error processing escalations:', error)
         errors++
       }
 
@@ -72,15 +69,8 @@ export class CertificationMonitoringJob {
         user_id: 'system'
       })
 
-      console.log(`Certification monitoring job completed:`)
-      console.log(`- Certifications checked: ${expiryChecks.length}`)
-      console.log(`- Alerts sent: ${alertsSent}`)
-      console.log(`- Escalations sent: ${escalationsSent}`)
-      console.log(`- Errors: ${errors}`)
-      console.log(`- Execution time: ${executionTime}ms`)
 
     } catch (error) {
-      console.error('Error executing certification monitoring job:', error)
       
       // Log job failure
       await this.auditService.logAction({
@@ -104,7 +94,6 @@ export class CertificationMonitoringJob {
    */
   static async executeWeeklySummary(): Promise<void> {
     try {
-      console.log('Starting weekly compliance summary job...')
       
       const endDate = new Date()
       const startDate = new Date(endDate.getTime() - (7 * 24 * 60 * 60 * 1000)) // 7 days ago
@@ -136,10 +125,8 @@ export class CertificationMonitoringJob {
         user_id: 'system'
       })
 
-      console.log('Weekly compliance summary job completed successfully')
 
     } catch (error) {
-      console.error('Error executing weekly compliance summary job:', error)
       
       await this.auditService.logAction({
         action: 'weekly_summary_failed' as any,
@@ -162,7 +149,6 @@ export class CertificationMonitoringJob {
    */
   static async cleanupExpiredOverrides(): Promise<void> {
     try {
-      console.log('Starting emergency override cleanup job...')
       
       // In a real implementation, this would clean up expired overrides from the database
       // For now, we'll just log the action
@@ -178,10 +164,8 @@ export class CertificationMonitoringJob {
         user_id: 'system'
       })
 
-      console.log('Emergency override cleanup job completed')
 
     } catch (error) {
-      console.error('Error executing override cleanup job:', error)
       throw error
     }
   }
@@ -191,14 +175,11 @@ export class CertificationMonitoringJob {
    */
   static async test(): Promise<void> {
     try {
-      console.log('Running certification monitoring job test...')
       
       // Run a test execution
       await this.execute()
       
-      console.log('Test completed successfully')
     } catch (error) {
-      console.error('Test failed:', error)
       throw error
     }
   }

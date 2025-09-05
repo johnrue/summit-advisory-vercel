@@ -83,13 +83,6 @@ interface FormErrorBoundaryProps {
 
 export function FormErrorBoundary({ children }: FormErrorBoundaryProps) {
   const handleFormError = (error: Error, errorInfo: React.ErrorInfo) => {
-    console.error('Form Error:', {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString()
-    })
-
     // In production, you might want to send this to your error monitoring service
     // analytics.formError(error.message)
   }

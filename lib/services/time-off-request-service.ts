@@ -536,7 +536,6 @@ export class TimeOffRequestService {
 
   private static async sendEmergencyNotifications(guardId: string, requestId: string): Promise<void> {
     // Placeholder for notification service integration
-    console.log(`Emergency time-off notification sent for guard ${guardId}, request ${requestId}`);
   }
 
   private static async sendApprovalNotification(
@@ -545,7 +544,6 @@ export class TimeOffRequestService {
     decision: 'approved' | 'denied'
   ): Promise<void> {
     // Placeholder for notification service integration
-    console.log(`Time-off ${decision} notification sent to guard ${guardId} for request ${requestId}`);
   }
 
   // Analytics methods

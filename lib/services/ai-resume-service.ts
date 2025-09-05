@@ -24,7 +24,6 @@ export async function parseResumeWithAI(
   applicationId: string
 ): Promise<ApplicationServiceResult<AIParsedData>> {
   try {
-    console.log('Triggering AI resume parsing for:', documentPath)
 
     // Call the Supabase Edge Function
     const { data, error } = await supabase.functions.invoke(AI_RESUME_PARSER_FUNCTION, {
@@ -61,7 +60,6 @@ export async function parseResumeWithAI(
     }
 
   } catch (error) {
-    console.error('AI resume parsing error:', error)
     
     return {
       success: false,

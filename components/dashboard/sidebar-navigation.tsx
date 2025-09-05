@@ -124,7 +124,6 @@ export function SidebarNavigation({ collapsed = false, onToggleCollapse }: Sideb
     try {
       await signOut()
     } catch (error) {
-      console.error('Error signing out:', error)
     }
   }
 

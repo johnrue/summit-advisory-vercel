@@ -93,13 +93,6 @@ interface AuthErrorBoundaryProps {
 export function AuthErrorBoundary({ children }: AuthErrorBoundaryProps) {
   const handleAuthError = (error: Error, errorInfo: React.ErrorInfo) => {
     // Log auth errors for monitoring
-    console.error('Auth Error:', {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString()
-    })
-
     // In production, you might want to send this to your error monitoring service
     // analytics.authError(error.message)
   }

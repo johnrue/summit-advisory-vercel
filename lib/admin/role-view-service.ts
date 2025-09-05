@@ -133,7 +133,6 @@ export class AdminRoleViewService {
         return parsed
       }
     } catch (error) {
-      console.warn('Failed to load admin role view preferences:', error)
     }
 
     return {
@@ -150,7 +149,6 @@ export class AdminRoleViewService {
       const updated = { ...current, ...updates }
       localStorage.setItem(AdminRoleViewService.PREFERENCES_KEY, JSON.stringify(updated))
     } catch (error) {
-      console.warn('Failed to save admin role view preferences:', error)
     }
   }
 
@@ -177,7 +175,6 @@ export class AdminRoleViewService {
         viewSwitchHistory: updatedHistory
       })
     } catch (error) {
-      console.warn('Failed to add to role view history:', error)
     }
   }
 
@@ -187,7 +184,6 @@ export class AdminRoleViewService {
     try {
       localStorage.removeItem(AdminRoleViewService.PREFERENCES_KEY)
     } catch (error) {
-      console.warn('Failed to clear admin role view preferences:', error)
     }
   }
 

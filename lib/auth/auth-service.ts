@@ -56,7 +56,6 @@ export class AuthService {
           }
         } catch (jwtError) {
           // JWT decode failed, continue without role
-          console.warn('Failed to decode JWT token:', jwtError)
         }
       }
 
@@ -99,11 +98,9 @@ export class AuthService {
           const roleResult = await roleService.autoAssignRoleFromMetadata(data.user)
           
           if (!roleResult.success) {
-            console.warn('Failed to assign role to user:', roleResult.error)
             // Don't fail registration if role assignment fails - it can be assigned later
           }
         } catch (roleError) {
-          console.warn('Role assignment failed during registration:', roleError)
           // Continue with registration even if role assignment fails
         }
       }
@@ -174,7 +171,6 @@ export class AuthService {
           }
         } catch (jwtError) {
           // JWT decode failed, continue without role
-          console.warn('Failed to decode JWT token:', jwtError)
         }
       }
 
@@ -217,7 +213,6 @@ export class AuthService {
             }
           } catch (jwtError) {
             // JWT decode failed, continue without role
-            console.warn('Failed to decode JWT token:', jwtError)
           }
         }
 

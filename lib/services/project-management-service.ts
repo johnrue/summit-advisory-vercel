@@ -63,7 +63,6 @@ export class ProjectManagementService {
         data: projects
       }
     } catch (error) {
-      console.error('Error in getProjects:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to retrieve projects'
@@ -93,7 +92,6 @@ export class ProjectManagementService {
         data: project
       }
     } catch (error) {
-      console.error('Error in getProjectById:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to retrieve project'
@@ -158,7 +156,6 @@ export class ProjectManagementService {
         data: projectResult.data!
       }
     } catch (error) {
-      console.error('Error in createProject:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create project'
@@ -228,7 +225,6 @@ export class ProjectManagementService {
         data: projectResult.data!
       }
     } catch (error) {
-      console.error('Error in updateProject:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update project'
@@ -276,7 +272,6 @@ export class ProjectManagementService {
         data: projectResult.data!
       }
     } catch (error) {
-      console.error('Error in updateProjectStatus:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to update project status'
@@ -300,7 +295,6 @@ export class ProjectManagementService {
         data: undefined
       }
     } catch (error) {
-      console.error('Error in deleteProject:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete project'
@@ -333,7 +327,6 @@ export class ProjectManagementService {
         data: categories
       }
     } catch (error) {
-      console.error('Error in getProjectCategories:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to retrieve categories'

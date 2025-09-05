@@ -140,7 +140,6 @@ export async function createRenewalOpportunities(): Promise<ApiResponse<{ create
           .insert([renewalData])
 
         if (insertError) {
-          console.error(`Failed to create renewal for contract ${contract.id}:`, insertError)
           errors++
         } else {
           created++
@@ -149,7 +148,6 @@ export async function createRenewalOpportunities(): Promise<ApiResponse<{ create
           await scheduleRenewalAlerts(contract.id, originalEndDate)
         }
       } catch (error) {
-        console.error(`Error processing contract ${contract.id}:`, error)
         errors++
       }
     }
@@ -382,7 +380,6 @@ export async function processPendingRenewalAlerts(): Promise<ApiResponse<{ proce
           errors++
         }
       } catch (error) {
-        console.error(`Error processing alert ${alert.id}:`, error)
         errors++
       }
     }
@@ -415,7 +412,6 @@ async function sendRenewalNotification(alert: any): Promise<ApiResponse<void>> {
       'final': `Final notice: ${contract.client_name} contract expires in 7 days`
     }
 
-    console.log('Renewal notification:', alertTypeMessages[alert.alert_type as keyof typeof alertTypeMessages])
 
     return {
       success: true,
@@ -532,7 +528,6 @@ async function createRenewalContract(renewal: any) {
       .insert([newContractData])
 
     if (insertError) {
-      console.error('Failed to create renewal contract:', insertError)
     } else {
       // Update original contract status to 'renewed'
       await supabase
@@ -541,7 +536,6 @@ async function createRenewalContract(renewal: any) {
         .eq('id', renewal.original_contract_id)
     }
   } catch (error) {
-    console.error('Error creating renewal contract:', error)
   }
 }
 

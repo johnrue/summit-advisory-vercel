@@ -56,7 +56,6 @@ async function checkManagerAccess(request: NextRequest): Promise<boolean> {
 
     return hasAccess
   } catch (error) {
-    console.error('Error checking manager access:', error)
     return false
   }
 }
@@ -127,7 +126,6 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Error fetching lead:', error)
     
     return NextResponse.json(
       {
@@ -222,7 +220,6 @@ export async function PUT(
       )
     }
 
-    console.error('Error updating lead:', error)
     return NextResponse.json(
       {
         success: false,
@@ -285,7 +282,6 @@ export async function DELETE(
     })
 
   } catch (error) {
-    console.error('Error deleting lead:', error)
     
     return NextResponse.json(
       {

@@ -695,7 +695,6 @@ export class GuardProfileService {
           const decryptResult = piiEncryption.decrypt(data[field])
           if (!decryptResult.success) {
             // Log but don't fail the entire operation - show as [ENCRYPTED] instead
-            console.warn(`Failed to decrypt ${field}: ${decryptResult.error}`)
             decryptedData[field] = '[ENCRYPTED - DECRYPT FAILED]'
           } else {
             decryptedData[field] = decryptResult.data
@@ -810,7 +809,6 @@ export class GuardProfileService {
           compliance_status: 'compliant'
         }])
     } catch (error) {
-      console.error('Failed to log compliance access:', error)
     }
   }
 

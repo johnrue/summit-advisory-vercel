@@ -77,7 +77,6 @@ export class CertificationRenewalService {
       return this.mapDbRenewalRequest(renewalRequest)
 
     } catch (error) {
-      console.error('Error submitting renewal request:', error)
       throw new Error('Failed to submit certification renewal request')
     }
   }
@@ -148,7 +147,6 @@ export class CertificationRenewalService {
       return this.mapDbRenewalRequest(updatedRequest)
 
     } catch (error) {
-      console.error('Error reviewing renewal request:', error)
       throw new Error('Failed to review certification renewal request')
     }
   }
@@ -182,7 +180,6 @@ export class CertificationRenewalService {
       return (requests || []).map(this.mapDbRenewalRequest)
 
     } catch (error) {
-      console.error('Error fetching pending renewal requests:', error)
       return []
     }
   }
@@ -205,7 +202,6 @@ export class CertificationRenewalService {
       return (history || []).map(this.mapDbCertificationHistory)
 
     } catch (error) {
-      console.error('Error fetching certification history:', error)
       return []
     }
   }
@@ -228,7 +224,6 @@ export class CertificationRenewalService {
       return (certifications || []).map(this.mapDbCertification)
 
     } catch (error) {
-      console.error('Error fetching guard certifications:', error)
       return []
     }
   }
@@ -271,7 +266,6 @@ export class CertificationRenewalService {
         .maybeSingle()
 
       if (requestError) {
-        console.error('Error checking pending requests:', requestError)
       }
 
       return {
@@ -281,7 +275,6 @@ export class CertificationRenewalService {
       }
 
     } catch (error) {
-      console.error('Error checking renewal needed:', error)
       return {
         needsRenewal: false,
         daysUntilExpiry: 0,
@@ -302,7 +295,6 @@ export class CertificationRenewalService {
 
       return blob.url
     } catch (error) {
-      console.error('Error uploading renewal document:', error)
       throw new Error('Failed to upload renewal document')
     }
   }
@@ -332,7 +324,6 @@ export class CertificationRenewalService {
         .single()
 
       if (fetchError) {
-        console.error('Error fetching old certification data:', fetchError)
       }
 
       // Add to certification history
@@ -349,7 +340,6 @@ export class CertificationRenewalService {
         }])
 
     } catch (error) {
-      console.error('Error processing approved renewal:', error)
       throw error
     }
   }
@@ -381,7 +371,6 @@ export class CertificationRenewalService {
         }])
 
     } catch (error) {
-      console.error('Error processing rejected renewal:', error)
       throw error
     }
   }

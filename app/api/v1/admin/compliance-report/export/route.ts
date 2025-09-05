@@ -101,7 +101,6 @@ export async function GET(request: NextRequest) {
     }, { status: 400 })
 
   } catch (error) {
-    console.error('Error exporting compliance report:', error)
     return NextResponse.json({
       success: false,
       error: 'Failed to export compliance report',

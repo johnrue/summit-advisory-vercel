@@ -53,7 +53,6 @@ export class PDFGenerator {
       }
 
     } catch (error) {
-      console.error('Error generating PDF report:', error)
       throw new Error('Failed to generate PDF report')
     }
   }
@@ -84,7 +83,6 @@ export class PDFGenerator {
         return Buffer.from(pdfStream as unknown as ArrayBuffer)
       }
     } catch (error) {
-      console.error('Error generating PDF buffer:', error)
       throw new Error('Failed to generate PDF buffer')
     }
   }
@@ -176,7 +174,6 @@ export class CSVGenerator {
       }
 
     } catch (error) {
-      console.error('Error generating CSV report:', error)
       throw new Error('Failed to generate CSV report')
     }
   }

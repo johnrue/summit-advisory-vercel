@@ -153,7 +153,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error generating compliance report:', error)
     return NextResponse.json({
       success: false,
       error: 'Failed to generate compliance report',

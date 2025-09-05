@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Follow-up scheduling error:', error)
     return NextResponse.json(
       {
         success: false,
@@ -98,7 +97,6 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    console.error('Follow-up update error:', error)
     return NextResponse.json(
       {
         success: false,
@@ -133,7 +131,6 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('Follow-up processing error:', error)
     return NextResponse.json(
       {
         success: false,

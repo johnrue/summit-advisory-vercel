@@ -57,7 +57,6 @@ export function useAdminRoleView() {
             })
           })
         } catch (auditError) {
-          console.warn('Failed to log role view switch for audit:', auditError)
           // Don't fail the operation if audit logging fails
         }
       } else {
@@ -111,7 +110,6 @@ export function useAdminRoleView() {
             })
           })
         } catch (auditError) {
-          console.warn('Failed to log return to admin view for audit:', auditError)
           // Don't fail the operation if audit logging fails
         }
       }

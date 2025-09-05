@@ -117,7 +117,6 @@ class OAuthService {
       }
 
     } catch (error) {
-      console.error('OAuth initiation error:', error)
       return {
         success: false,
         error: 'Failed to initiate OAuth flow',
@@ -201,7 +200,6 @@ class OAuthService {
       return integration
 
     } catch (error) {
-      console.error('OAuth callback error:', error)
       return {
         success: false,
         error: 'Failed to process OAuth callback',
@@ -256,7 +254,6 @@ class OAuthService {
       return { success: true, data: token }
 
     } catch (error) {
-      console.error('Token exchange error:', error)
       return {
         success: false,
         error: 'Failed to exchange code for tokens',
@@ -314,7 +311,6 @@ class OAuthService {
       }
 
     } catch (error) {
-      console.error('User info error:', error)
       return {
         success: false,
         error: 'Failed to get user information',
@@ -410,7 +406,6 @@ class OAuthService {
       return { success: true, data: newToken }
 
     } catch (error) {
-      console.error('Token refresh error:', error)
       return {
         success: false,
         error: 'Failed to refresh access token',
@@ -443,7 +438,6 @@ class OAuthService {
       return { success: true }
 
     } catch (error) {
-      console.error('OAuth disconnect error:', error)
       return {
         success: false,
         error: 'Failed to disconnect OAuth integration',
@@ -508,7 +502,6 @@ class OAuthService {
       return { success: true, data: integration }
 
     } catch (error) {
-      console.error('Integration creation error:', error)
       return {
         success: false,
         error: 'Failed to create calendar integration',

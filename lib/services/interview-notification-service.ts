@@ -79,7 +79,6 @@ export class InterviewNotificationService {
 
       return result
     } catch (error) {
-      console.error('Interview invitation error:', error)
       return { success: false, error: 'Failed to send interview invitation' }
     }
   }
@@ -116,7 +115,6 @@ export class InterviewNotificationService {
 
       return result
     } catch (error) {
-      console.error('Interview reminder error:', error)
       return { success: false, error: 'Failed to send interview reminder' }
     }
   }
@@ -175,7 +173,6 @@ export class InterviewNotificationService {
 
       return result
     } catch (error) {
-      console.error('Reschedule notification error:', error)
       return { success: false, error: 'Failed to send reschedule notification' }
     }
   }
@@ -214,7 +211,6 @@ export class InterviewNotificationService {
 
       return result
     } catch (error) {
-      console.error('Outcome notification error:', error)
       return { success: false, error: 'Failed to send outcome notification' }
     }
   }
@@ -604,16 +600,12 @@ END:VCALENDAR`
     try {
       // In a real implementation, this would integrate with an email service like SendGrid, Resend, or AWS SES
       // For now, we'll simulate the email sending
-      console.log(`Sending email with attachment to: ${to}`)
-      console.log(`Subject: ${subject}`)
-      console.log(`Attachment: ${attachment.filename} (${attachment.contentType})`)
       
       // Simulate email sending delay
       await new Promise(resolve => setTimeout(resolve, 100))
       
       return { success: true, data: true }
     } catch (error) {
-      console.error('Email send error:', error)
       return { success: false, error: 'Failed to send email with attachment' }
     }
   }
@@ -627,15 +619,12 @@ END:VCALENDAR`
   ): Promise<ServiceResult<boolean>> {
     try {
       // In a real implementation, this would integrate with an email service
-      console.log(`Sending email to: ${to}`)
-      console.log(`Subject: ${subject}`)
       
       // Simulate email sending delay
       await new Promise(resolve => setTimeout(resolve, 100))
       
       return { success: true, data: true }
     } catch (error) {
-      console.error('Email send error:', error)
       return { success: false, error: 'Failed to send email' }
     }
   }
@@ -656,7 +645,6 @@ END:VCALENDAR`
           comment_type: 'system_notification'
         })
     } catch (error) {
-      console.error('Notification logging error:', error)
     }
   }
 }

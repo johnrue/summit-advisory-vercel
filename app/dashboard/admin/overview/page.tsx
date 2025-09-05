@@ -55,7 +55,6 @@ export default function AdminOverviewPage() {
           setLoading(false)
         }, 1000)
       } catch (error) {
-        console.error('Failed to fetch system stats:', error)
         setLoading(false)
       }
     }

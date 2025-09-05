@@ -533,7 +533,6 @@ export class GuardAvailabilityService {
           change_reason: reason
         });
     } catch (error) {
-      console.error('Failed to log availability change:', error);
     }
   }
 

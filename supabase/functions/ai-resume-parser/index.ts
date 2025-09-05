@@ -156,7 +156,6 @@ Deno.serve(async (req) => {
     const startTime = Date.now()
 
     // Download document from Supabase Storage
-    console.log('Downloading document:', document_path)
     const { data: fileData, error: downloadError } = await supabase.storage
       .from('guard-applications')
       .download(document_path)
@@ -184,10 +183,8 @@ Deno.serve(async (req) => {
       throw new Error('No text content extracted from document')
     }
 
-    console.log('Extracted text length:', documentText.length)
 
     // Process with OpenAI
-    console.log('Sending to OpenAI for processing...')
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
@@ -204,21 +201,18 @@ Deno.serve(async (req) => {
       throw new Error('No response from OpenAI')
     }
 
-    console.log('AI Response received, parsing JSON...')
 
     // Parse AI response as JSON
     let parsedData: ParsedResumeData
     try {
       parsedData = JSON.parse(aiResponse)
     } catch (parseError) {
-      console.error('Failed to parse AI response as JSON:', aiResponse)
       throw new Error('Invalid JSON response from AI parser')
     }
 
     const processingTime = Date.now() - startTime
 
     // Store parsed data in database
-    console.log('Storing parsed data in database...')
     const aiParsedData = {
       extraction_timestamp: new Date().toISOString(),
       processing_model: 'gpt-4',
@@ -239,11 +233,9 @@ Deno.serve(async (req) => {
       .eq('id', application_id)
 
     if (updateError) {
-      console.error('Database update error:', updateError)
       throw new Error(`Failed to store parsed data: ${updateError.message}`)
     }
 
-    console.log('Resume parsing completed successfully')
 
     // Return success response
     return new Response(
@@ -266,7 +258,6 @@ Deno.serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Resume parsing error:', error)
     
     return new Response(
       JSON.stringify({
@@ -289,7 +280,6 @@ Deno.serve(async (req) => {
 
 async function extractTextFromPDF(fileData: Blob): Promise<string> {
   try {
-    console.log('Starting PDF text extraction with pdf-parse')
     
     // Import pdf-parse via ESM for Deno
     const pdfParse = (await import('https://esm.sh/pdf-parse@1.1.1')).default
@@ -305,18 +295,15 @@ async function extractTextFromPDF(fileData: Blob): Promise<string> {
       throw new Error('No text content found in PDF')
     }
     
-    console.log(`PDF text extraction successful. Text length: ${pdfData.text.length}`)
     return pdfData.text
     
   } catch (error) {
-    console.error('PDF text extraction failed:', error)
     throw new Error(`PDF text extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
 async function extractTextFromDOCX(fileData: Blob): Promise<string> {
   try {
-    console.log('Starting DOCX text extraction with mammoth')
     
     // Import mammoth via ESM for Deno
     const mammoth = await import('https://esm.sh/mammoth@1.10.0')
@@ -328,18 +315,15 @@ async function extractTextFromDOCX(fileData: Blob): Promise<string> {
     const result = await mammoth.extractRawText({ arrayBuffer })
     
     if (result.messages && result.messages.length > 0) {
-      console.log('Mammoth processing messages:', result.messages)
     }
     
     if (!result.value || result.value.trim().length === 0) {
       throw new Error('No text content found in DOCX')
     }
     
-    console.log(`DOCX text extraction successful. Text length: ${result.value.length}`)
     return result.value
     
   } catch (error) {
-    console.error('DOCX text extraction failed:', error)
     throw new Error(`DOCX text extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

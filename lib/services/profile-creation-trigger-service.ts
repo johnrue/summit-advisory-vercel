@@ -376,7 +376,6 @@ export class ProfileCreationTriggerService {
       }
 
       // In production, this would send actual email notifications
-      console.log('Profile creation notification sent:', notificationData)
 
       return { success: true, data: true }
     } catch (error) {
@@ -471,7 +470,6 @@ export class ProfileCreationTriggerService {
     profile: Omit<GuardProfile, 'id'>
   ): Promise<void> {
     // In production, send completion confirmation email
-    console.log('Profile completion confirmation sent for token:', tokenId)
   }
 
   private mapDatabaseToProfileCreationToken(dbRecord: any): ProfileCreationToken {

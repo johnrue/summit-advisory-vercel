@@ -15,7 +15,6 @@ export class NotificationDigestJob {
    */
   static async executeDailyDigest(): Promise<void> {
     try {
-      console.log('Starting daily notification digest job...')
       const startTime = new Date()
 
       // Get users with daily digest enabled
@@ -51,11 +50,9 @@ export class NotificationDigestJob {
             await this.sendDigestEmail(result.data)
             digestsSent++
 
-            console.log(`Daily digest sent to user ${user.user_id}: ${result.data.notifications.length} notifications`)
           }
 
         } catch (error) {
-          console.error(`Error processing daily digest for user ${user.user_id}:`, error)
           errors++
         }
       }
@@ -79,14 +76,8 @@ export class NotificationDigestJob {
         user_id: 'system'
       })
 
-      console.log(`Daily digest job completed:`)
-      console.log(`- Users processed: ${users?.length || 0}`)
-      console.log(`- Digests sent: ${digestsSent}`)
-      console.log(`- Errors: ${errors}`)
-      console.log(`- Execution time: ${executionTime}ms`)
 
     } catch (error) {
-      console.error('Error executing daily digest job:', error)
       
       await this.auditService.logAction({
         action: 'daily_digest_failed' as any,
@@ -109,7 +100,6 @@ export class NotificationDigestJob {
    */
   static async executeWeeklyDigest(): Promise<void> {
     try {
-      console.log('Starting weekly notification digest job...')
       const startTime = new Date()
 
       // Get users with weekly digest enabled
@@ -145,11 +135,9 @@ export class NotificationDigestJob {
             await this.sendDigestEmail(result.data)
             digestsSent++
 
-            console.log(`Weekly digest sent to user ${user.user_id}: ${result.data.notifications.length} notifications`)
           }
 
         } catch (error) {
-          console.error(`Error processing weekly digest for user ${user.user_id}:`, error)
           errors++
         }
       }
@@ -173,14 +161,8 @@ export class NotificationDigestJob {
         user_id: 'system'
       })
 
-      console.log(`Weekly digest job completed:`)
-      console.log(`- Users processed: ${users?.length || 0}`)
-      console.log(`- Digests sent: ${digestsSent}`)
-      console.log(`- Errors: ${errors}`)
-      console.log(`- Execution time: ${executionTime}ms`)
 
     } catch (error) {
-      console.error('Error executing weekly digest job:', error)
       
       await this.auditService.logAction({
         action: 'weekly_digest_failed' as any,
@@ -203,7 +185,6 @@ export class NotificationDigestJob {
    */
   static async processEscalations(): Promise<void> {
     try {
-      console.log('Starting notification escalation processing...')
       const startTime = new Date()
 
       // Get critical notifications that are unacknowledged and older than 15 minutes
@@ -249,12 +230,10 @@ export class NotificationDigestJob {
 
             if (escalationResult.success) {
               escalationsCreated++
-              console.log(`Escalation created for notification ${notification.id}`)
             }
           }
 
         } catch (error) {
-          console.error(`Error processing escalation for notification ${notification.id}:`, error)
         }
       }
 
@@ -276,13 +255,8 @@ export class NotificationDigestJob {
         user_id: 'system'
       })
 
-      console.log(`Escalation processing completed:`)
-      console.log(`- Notifications checked: ${notifications?.length || 0}`)
-      console.log(`- Escalations created: ${escalationsCreated}`)
-      console.log(`- Execution time: ${executionTime}ms`)
 
     } catch (error) {
-      console.error('Error processing escalations:', error)
       throw error
     }
   }
@@ -301,7 +275,6 @@ export class NotificationDigestJob {
         .single()
 
       if (error || !profile?.email) {
-        console.error('Failed to get user profile for digest email:', error)
         return
       }
 
@@ -310,11 +283,6 @@ export class NotificationDigestJob {
 
       // Log the email that would be sent
       // In production, this would use an email service like Resend
-      console.log('Digest email to send:', {
-        to: profile.email,
-        subject: emailContent.subject,
-        html: emailContent.html
-      })
 
       // Mark digest as sent (in a full implementation)
       await this.auditService.logAction({
@@ -332,7 +300,6 @@ export class NotificationDigestJob {
       })
 
     } catch (error) {
-      console.error('Error sending digest email:', error)
       throw error
     }
   }
@@ -427,7 +394,6 @@ export class NotificationDigestJob {
    */
   static async test(): Promise<void> {
     try {
-      console.log('Running notification digest job test...')
       
       // Test daily digest
       await this.executeDailyDigest()
@@ -435,9 +401,7 @@ export class NotificationDigestJob {
       // Test escalation processing
       await this.processEscalations()
       
-      console.log('Test completed successfully')
     } catch (error) {
-      console.error('Test failed:', error)
       throw error
     }
   }

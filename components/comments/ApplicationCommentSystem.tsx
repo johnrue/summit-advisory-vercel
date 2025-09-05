@@ -68,7 +68,6 @@ export function ApplicationCommentSystem({
         setStats(statsResult.data)
       }
     } catch (error) {
-      console.error('Error loading comments:', error)
       setError('Failed to load comments')
     } finally {
       setIsLoading(false)
@@ -138,7 +137,6 @@ export function ApplicationCommentSystem({
         setError(result.error || 'Failed to add comment')
       }
     } catch (error) {
-      console.error('Error adding comment:', error)
       setError('Failed to add comment')
     } finally {
       setIsSubmitting(false)
@@ -175,7 +173,6 @@ export function ApplicationCommentSystem({
         setError(result.error || 'Failed to update comment')
       }
     } catch (error) {
-      console.error('Error updating comment:', error)
       setError('Failed to update comment')
     }
   }
@@ -200,7 +197,6 @@ export function ApplicationCommentSystem({
         setError(result.error || 'Failed to delete comment')
       }
     } catch (error) {
-      console.error('Error deleting comment:', error)
       setError('Failed to delete comment')
     }
   }

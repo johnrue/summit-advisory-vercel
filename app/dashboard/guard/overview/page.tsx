@@ -116,7 +116,6 @@ export default function GuardOverviewPage() {
           setLoading(false)
         }, 1000)
       } catch (error) {
-        console.error('Failed to fetch guard stats:', error)
         setLoading(false)
       }
     }

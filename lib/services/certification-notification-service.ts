@@ -62,7 +62,6 @@ export class CertificationNotificationService {
       }
 
       // In a real implementation, this would use an email service like Resend
-      console.log('Sending certification expiry alert:', emailData)
       
       // Log notification in audit trail
       await this.auditService.logAction({
@@ -80,7 +79,6 @@ export class CertificationNotificationService {
       })
 
     } catch (error) {
-      console.error('Error sending expiry alert:', error)
       throw new Error('Failed to send certification expiry alert')
     }
   }
@@ -129,7 +127,6 @@ export class CertificationNotificationService {
       }
 
       // In a real implementation, this would use an email service
-      console.log('Sending escalation alert to managers:', emailData)
 
       // Log escalation in audit trail
       await this.auditService.logAction({
@@ -147,7 +144,6 @@ export class CertificationNotificationService {
       })
 
     } catch (error) {
-      console.error('Error sending escalation alert:', error)
       throw new Error('Failed to send escalation alert to managers')
     }
   }
@@ -192,7 +188,6 @@ export class CertificationNotificationService {
       }
 
       // In a real implementation, this would use an email service
-      console.log('Sending renewal request notification:', emailData)
 
       // Log notification in audit trail
       await this.auditService.logAction({
@@ -208,7 +203,6 @@ export class CertificationNotificationService {
       })
 
     } catch (error) {
-      console.error('Error sending renewal request notification:', error)
       throw new Error('Failed to send renewal request notification')
     }
   }
@@ -251,7 +245,6 @@ export class CertificationNotificationService {
       }
 
       // In a real implementation, this would use an email service
-      console.log('Sending renewal decision notification:', emailData)
 
       // Log notification in audit trail
       await this.auditService.logAction({
@@ -268,7 +261,6 @@ export class CertificationNotificationService {
       })
 
     } catch (error) {
-      console.error('Error sending renewal decision notification:', error)
       throw new Error('Failed to send renewal decision notification')
     }
   }
@@ -311,7 +303,6 @@ export class CertificationNotificationService {
       }
 
       // In a real implementation, this would use an email service
-      console.log('Sending compliance summary:', emailData)
 
       // Log summary in audit trail
       await this.auditService.logAction({
@@ -329,7 +320,6 @@ export class CertificationNotificationService {
       })
 
     } catch (error) {
-      console.error('Error sending compliance summary:', error)
       throw new Error('Failed to send compliance summary')
     }
   }

@@ -51,7 +51,6 @@ export async function PUT(
     })
 
   } catch (error) {
-    console.error('Error in PUT /api/v1/projects/[id]/status:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

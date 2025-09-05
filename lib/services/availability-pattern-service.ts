@@ -582,7 +582,6 @@ export class AvailabilityPatternService {
         await GuardAvailabilityService.createAvailability(availability);
       }
     } catch (error) {
-      console.error('Failed to generate availability from pattern:', error);
     }
   }
 
@@ -599,7 +598,6 @@ export class AvailabilityPatternService {
       // Regenerate availability
       await this.generateAvailabilityFromPattern(pattern);
     } catch (error) {
-      console.error('Failed to regenerate availability from pattern:', error);
     }
   }
 
@@ -651,7 +649,6 @@ export class AvailabilityPatternService {
         }
       }
     } catch (error) {
-      console.error('Failed to update availability for override:', error);
     }
   }
 
@@ -703,7 +700,6 @@ export class AvailabilityPatternService {
         }
       }
     } catch (error) {
-      console.error('Failed to restore availability from pattern:', error);
     }
   }
 

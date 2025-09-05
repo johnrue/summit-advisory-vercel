@@ -218,7 +218,6 @@ async function notifyManagersOfNewLead(consultation: ConsultationRequest): Promi
       .eq('status', 'active')
 
     if (error || !managers) {
-      console.error('Failed to get managers for notification:', error)
       return
     }
 
@@ -246,9 +245,7 @@ async function notifyManagersOfNewLead(consultation: ConsultationRequest): Promi
       .insert(notifications)
 
     if (notificationError) {
-      console.error('Failed to create lead notifications:', notificationError)
     }
   } catch (error) {
-    console.error('Error notifying managers of new lead:', error)
   }
 }

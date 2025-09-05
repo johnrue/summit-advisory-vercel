@@ -63,6 +63,33 @@ export default function CalendarSyncStatus({
 
   // Fetch status and stats
   useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await fetch(`/api/v1/calendar/sync/status?integration_id=${integrationId}`)
+        if (!response.ok) throw new Error('Failed to fetch status')
+        
+        const data = await response.json()
+        setStatus(data.status)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch status')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`/api/v1/calendar/sync/stats?integration_id=${integrationId}`)
+        if (!response.ok) return // Stats are optional
+        
+        const data = await response.json()
+        setStats(data.stats)
+      } catch (err) {
+        // Stats fetch failures are not critical
+      }
+    }
+    
     fetchStatus()
     fetchStats()
     
@@ -75,32 +102,8 @@ export default function CalendarSyncStatus({
     return () => clearInterval(interval)
   }, [integrationId])
 
-  const fetchStatus = async () => {
-    try {
-      const response = await fetch(`/api/v1/calendar/sync/status?integration_id=${integrationId}`)
-      if (!response.ok) throw new Error('Failed to fetch status')
-      
-      const data = await response.json()
-      setStatus(data.status)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch status')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchStats = async () => {
-    try {
-      const response = await fetch(`/api/v1/calendar/sync/stats?integration_id=${integrationId}`)
-      if (!response.ok) return // Stats are optional
-      
-      const data = await response.json()
-      setStats(data.stats)
-    } catch (err) {
-      // Stats are optional, don't show error
-      console.warn('Failed to fetch sync stats:', err)
-    }
+  const handleRefresh = async () => {
+    // Stats are optional, don't show error
   }
 
   const handleRetrySync = async () => {
@@ -110,8 +113,7 @@ export default function CalendarSyncStatus({
       setRetrying(true)
       setError(null)
       await onRetrySync()
-      await fetchStatus()
-      await fetchStats()
+      // Status will be refreshed on next interval
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Retry failed')
     } finally {
@@ -128,8 +130,7 @@ export default function CalendarSyncStatus({
         await onRefreshStatus()
       }
       
-      await fetchStatus()
-      await fetchStats()
+      // Status will be refreshed on next interval
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Refresh failed')
     } finally {

@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
       }])
 
     if (logError) {
-      console.error('Failed to log disconnection:', logError)
     }
 
     return NextResponse.json({
@@ -84,7 +83,6 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('OAuth disconnect error:', error)
     return NextResponse.json(
       { 
         error: 'Internal server error',

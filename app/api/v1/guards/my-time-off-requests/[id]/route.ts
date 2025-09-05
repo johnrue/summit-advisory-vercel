@@ -71,7 +71,6 @@ export async function PUT(
       }
     });
   } catch (error) {
-    console.error('Time-off request update error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -125,7 +124,6 @@ export async function DELETE(
       data: {}
     });
   } catch (error) {
-    console.error('Time-off request cancellation error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

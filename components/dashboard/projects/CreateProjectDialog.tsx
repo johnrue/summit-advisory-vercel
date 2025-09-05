@@ -122,7 +122,6 @@ export function CreateProjectDialog({
         setTeamMembers(data.members || [])
       }
     } catch (error) {
-      console.error('Error loading form data:', error)
     }
   }
 
@@ -157,7 +156,6 @@ export function CreateProjectDialog({
       setSelectedMembers([])
       onOpenChange(false)
     } catch (error) {
-      console.error('Error creating project:', error)
       toast({
         title: 'Error',
         description: 'Failed to create project. Please try again.',
@@ -184,7 +182,6 @@ export function CreateProjectDialog({
         form.setValue('description', template.description)
       }
     } catch (error) {
-      console.error('Error loading template:', error)
     }
   }
 

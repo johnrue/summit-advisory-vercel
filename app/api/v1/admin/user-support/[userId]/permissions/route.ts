@@ -31,7 +31,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const payload = jwtDecode<any>(session.access_token)
       userRole = payload.role || payload.user_metadata?.role || 'guard'
     } catch (jwtError) {
-      console.warn('Failed to decode JWT token:', jwtError)
     }
 
     // Verify admin permissions
@@ -65,7 +64,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     })
 
   } catch (error) {
-    console.error('Error in user permission comparison API:', error)
     
     return NextResponse.json(
       {

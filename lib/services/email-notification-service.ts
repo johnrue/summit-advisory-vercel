@@ -401,9 +401,6 @@ export class EmailNotificationService {
   private async sendViaSendGrid(request: EmailNotificationRequest): Promise<ServiceResult<EmailDeliveryResult>> {
     try {
       // TODO: Implement SendGrid integration
-      console.log('SendGrid email sending not yet implemented')
-      console.log('Email would be sent to:', request.to)
-      console.log('Subject:', request.subject)
       
       return {
         success: true,
@@ -427,9 +424,6 @@ export class EmailNotificationService {
   private async sendViaAWSSES(request: EmailNotificationRequest): Promise<ServiceResult<EmailDeliveryResult>> {
     try {
       // TODO: Implement AWS SES integration
-      console.log('AWS SES email sending not yet implemented')
-      console.log('Email would be sent to:', request.to)
-      console.log('Subject:', request.subject)
       
       return {
         success: true,
@@ -452,17 +446,8 @@ export class EmailNotificationService {
    */
   private async sendViaConsole(request: EmailNotificationRequest): Promise<ServiceResult<EmailDeliveryResult>> {
     try {
-      console.log('\n📧 EMAIL NOTIFICATION (Development Mode)')
-      console.log('=====================================')
-      console.log(`To: ${request.to}`)
-      console.log(`Subject: ${request.subject}`)
-      console.log(`Priority: ${request.priority}`)
       if (request.notification_id) {
-        console.log(`Notification ID: ${request.notification_id}`)
       }
-      console.log('\nText Content:')
-      console.log(request.text)
-      console.log('\n=====================================\n')
       
       return {
         success: true,

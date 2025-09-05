@@ -94,7 +94,6 @@ Deno.serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.error('Scheduled reports function error:', error)
     
     return new Response(JSON.stringify({
       success: false,
@@ -134,7 +133,6 @@ async function executeDueReports(): Promise<{ success: boolean; executedReports:
       } catch (error) {
         const errorMsg = `Report ${report.id} failed: ${error instanceof Error ? error.message : 'Unknown error'}`
         errors.push(errorMsg)
-        console.error(errorMsg)
       }
     }
 
@@ -349,7 +347,6 @@ async function sendReportEmail(report: ScheduledReport, reportData: any, fileNam
     }
 
   } catch (error) {
-    console.error('Email send error:', error)
     throw new Error(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -366,7 +363,6 @@ async function updateScheduledReport(
       .insert(execution)
 
     if (insertError) {
-      console.error('Failed to record execution:', insertError)
     }
 
     // Update the scheduled report
@@ -392,11 +388,9 @@ async function updateScheduledReport(
       .eq('id', reportId)
 
     if (updateError) {
-      console.error('Failed to update scheduled report:', updateError)
     }
 
   } catch (error) {
-    console.error('Update scheduled report failed:', error)
   }
 }
 

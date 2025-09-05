@@ -66,7 +66,6 @@ export class ApplicationCommentService {
         data: threaded
       }
     } catch (error) {
-      console.error('Error fetching comments:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -118,7 +117,6 @@ export class ApplicationCommentService {
         data: comment
       }
     } catch (error) {
-      console.error('Error adding comment:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -189,7 +187,6 @@ export class ApplicationCommentService {
         data: comment
       }
     } catch (error) {
-      console.error('Error updating comment:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -235,7 +232,6 @@ export class ApplicationCommentService {
 
       return { success: true }
     } catch (error) {
-      console.error('Error deleting comment:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -265,7 +261,6 @@ export class ApplicationCommentService {
       // For now, return empty array
       return []
     } catch (error) {
-      console.error('Error parsing mentions:', error)
       return []
     }
   }
@@ -332,7 +327,6 @@ export class ApplicationCommentService {
         data: stats
       }
     } catch (error) {
-      console.error('Error fetching comment stats:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'

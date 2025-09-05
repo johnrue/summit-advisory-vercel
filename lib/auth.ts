@@ -74,7 +74,6 @@ export async function validateRequestAuth(
 
     if (roleError || !userRole) {
       // If no role found, default to 'guard' role
-      console.warn(`No role found for user ${user.id}, defaulting to 'guard'`)
       const defaultRole = 'guard'
       
       // Check if user has required role
@@ -113,7 +112,6 @@ export async function validateRequestAuth(
     }
 
   } catch (error) {
-    console.error('Error validating auth:', error)
     return {
       success: false,
       error: 'Internal authentication error',
@@ -166,7 +164,6 @@ export async function extractUserFromToken(token: string): Promise<AuthResult> {
       user
     }
   } catch (error) {
-    console.error('Error extracting user from token:', error)
     return {
       success: false,
       error: 'Invalid token',
@@ -240,7 +237,6 @@ export async function getCurrentUser(): Promise<AuthResult> {
       user: session.user
     }
   } catch (error) {
-    console.error('Error getting current user:', error)
     return {
       success: false,
       error: 'Failed to get current user',

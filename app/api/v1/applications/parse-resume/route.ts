@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Resume parsing API error:', error)
     
     return NextResponse.json(
       {

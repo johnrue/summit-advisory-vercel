@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
       .eq('id', applicationId)
 
     if (updateError) {
-      console.error('Application submission error:', updateError)
       return NextResponse.json({
         success: false,
         error: 'Failed to submit application. Please try again.'
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
     try {
       await sendApplicationConfirmationEmail(leadData.email, applicationReference, application_data)
     } catch (emailError) {
-      console.warn('Failed to send confirmation email:', emailError)
       // Don't fail the submission if email fails
     }
 
@@ -88,7 +86,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response, { status: 201 })
 
   } catch (error) {
-    console.error('Application submission error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -118,7 +115,6 @@ async function sendApplicationConfirmationEmail(
 ): Promise<void> {
   // Placeholder implementation
   // In production, integrate with email service
-  console.log(`Sending confirmation email to ${email} for application ${applicationReference}`)
   
   // Email template would include:
   // - Application reference number

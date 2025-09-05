@@ -31,7 +31,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const payload = jwtDecode<any>(session.access_token)
       userRole = payload.role || payload.user_metadata?.role || 'guard'
     } catch (jwtError) {
-      console.warn('Failed to decode JWT token:', jwtError)
     }
 
     // Verify admin permissions
@@ -90,11 +89,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         .insert(auditEntry)
 
       if (auditError) {
-        console.warn('Failed to log user support access audit event:', auditError)
         // Don't fail the request if audit logging fails
       }
     } catch (auditError) {
-      console.warn('Error during audit logging:', auditError)
     }
 
     return NextResponse.json({
@@ -104,7 +101,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     })
 
   } catch (error) {
-    console.error('Error in user support API:', error)
     
     return NextResponse.json(
       {

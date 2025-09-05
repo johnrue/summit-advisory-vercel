@@ -156,7 +156,6 @@ export class ShiftKanbanService {
         data: boardData
       };
     } catch (error) {
-      console.error('Error getting Kanban board data:', error);
       return {
         success: false,
         error: {
@@ -216,7 +215,6 @@ export class ShiftKanbanService {
         data: transitionResult.data
       };
     } catch (error) {
-      console.error('Error moving shift:', error);
       return {
         success: false,
         error: {
@@ -347,7 +345,6 @@ export class ShiftKanbanService {
         data: operation
       };
     } catch (error) {
-      console.error('Error executing bulk action:', error);
       return {
         success: false,
         error: {
@@ -409,7 +406,6 @@ export class ShiftKanbanService {
         data: metrics
       };
     } catch (error) {
-      console.error('Error calculating Kanban metrics:', error);
       return {
         success: false,
         error: {
@@ -474,7 +470,6 @@ export class ShiftKanbanService {
         data: activities
       };
     } catch (error) {
-      console.error('Error getting recent Kanban activity:', error);
       return {
         success: false,
         error: {
@@ -498,20 +493,11 @@ export class ShiftKanbanService {
     try {
       // This would integrate with a real-time activity tracking system
       // For now, we'll use the workflow history as activity source
-      
-      console.log('Kanban activity recorded:', {
-        type: activity.activityType,
-        manager: activity.managerId,
-        timestamp: new Date().toISOString(),
-        details: activity.details,
-        shifts: activity.affectedShifts
-      });
 
       // Could also trigger real-time notifications to other managers
       // using Supabase real-time subscriptions
       
     } catch (error) {
-      console.error('Error recording Kanban activity:', error);
       // Don't throw error as this is non-critical
     }
   }
@@ -570,7 +556,6 @@ export class ShiftKanbanService {
         );
       }
     } catch (error) {
-      console.error('Error checking and resolving alerts:', error);
       // Don't throw error as this is non-critical
     }
   }

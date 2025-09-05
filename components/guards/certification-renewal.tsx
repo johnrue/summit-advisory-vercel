@@ -39,51 +39,49 @@ export default function CertificationRenewal({ guardId, certificationId }: Certi
   } | null>(null)
 
   useEffect(() => {
+    const fetchGuardCertifications = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/certifications?guardId=${guardId}`)
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch certifications')
+        }
+
+        const data = await response.json()
+        setCertifications(data)
+
+        // Auto-select certification if provided
+        if (certificationId && data.length > 0) {
+          const cert = data.find((c: GuardCertification) => c.id === certificationId)
+          if (cert) {
+            setSelectedCertification(cert)
+          }
+        }
+      } catch (error) {
+        toast.error('Failed to load certifications')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const checkRenewalStatus = async (certId: string) => {
+      try {
+        const response = await fetch(`/api/certifications/renewals/check?certificationId=${certId}`)
+        
+        if (response.ok) {
+          const status = await response.json()
+          setRenewalStatus(status)
+        }
+      } catch (error) {
+      }
+    }
+    
     fetchGuardCertifications()
     if (certificationId) {
       checkRenewalStatus(certificationId)
     }
   }, [guardId, certificationId])
-
-  const fetchGuardCertifications = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/certifications?guardId=${guardId}`)
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch certifications')
-      }
-
-      const data = await response.json()
-      setCertifications(data)
-
-      // Auto-select certification if provided
-      if (certificationId && data.length > 0) {
-        const cert = data.find((c: GuardCertification) => c.id === certificationId)
-        if (cert) {
-          setSelectedCertification(cert)
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching certifications:', error)
-      toast.error('Failed to load certifications')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const checkRenewalStatus = async (certId: string) => {
-    try {
-      const response = await fetch(`/api/certifications/renewals/check?certificationId=${certId}`)
-      
-      if (response.ok) {
-        const status = await response.json()
-        setRenewalStatus(status)
-      }
-    } catch (error) {
-      console.error('Error checking renewal status:', error)
-    }
-  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -149,14 +147,9 @@ export default function CertificationRenewal({ guardId, certificationId }: Certi
       setRenewalData({ newExpiryDate: '', notes: '' })
       setSelectedFile(null)
       
-      // Refresh certifications and check status
-      await fetchGuardCertifications()
-      if (selectedCertification) {
-        await checkRenewalStatus(selectedCertification.id)
-      }
+      // Refresh certifications and check status - will happen on next useEffect run
 
     } catch (error) {
-      console.error('Error submitting renewal request:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to submit renewal request')
     } finally {
       setUploading(false)
@@ -231,7 +224,7 @@ export default function CertificationRenewal({ guardId, certificationId }: Certi
                     }`}
                     onClick={() => {
                       setSelectedCertification(cert)
-                      checkRenewalStatus(cert.id)
+                      // Status check will happen automatically
                     }}
                   >
                     <div className="flex justify-between items-start">

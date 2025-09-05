@@ -67,7 +67,6 @@ export function useUserSupport() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to view user context'
       setError(errorMessage)
-      console.error('Error viewing user context:', err)
     } finally {
       setIsLoading(false)
     }

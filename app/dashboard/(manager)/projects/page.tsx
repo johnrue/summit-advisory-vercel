@@ -36,7 +36,6 @@ export default function ProjectsPage() {
       const data = await response.json()
       setProjects(data.projects || [])
     } catch (error) {
-      console.error('Error loading projects:', error)
     } finally {
       setIsLoading(false)
     }

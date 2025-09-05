@@ -71,7 +71,6 @@ export class CertificationSchedulingService {
       }
 
     } catch (error) {
-      console.error('Error checking guard scheduling eligibility:', error)
       return {
         canSchedule: false,
         reasons: ['Error checking certification status'],
@@ -133,7 +132,6 @@ export class CertificationSchedulingService {
       return override.id
 
     } catch (error) {
-      console.error('Error creating emergency override:', error)
       throw new Error('Failed to create emergency scheduling override')
     }
   }
@@ -165,7 +163,6 @@ export class CertificationSchedulingService {
           .maybeSingle()
 
         if (overrideError) {
-          console.error('Error checking for override:', overrideError)
         }
 
         if (override) {
@@ -208,7 +205,6 @@ export class CertificationSchedulingService {
       }
 
     } catch (error) {
-      console.error('Error validating shift assignment:', error)
       return {
         isValid: false,
         warnings: [],
@@ -302,7 +298,6 @@ export class CertificationSchedulingService {
       return availableGuards
 
     } catch (error) {
-      console.error('Error fetching available guards:', error)
       return []
     }
   }
@@ -352,7 +347,6 @@ export class CertificationSchedulingService {
       }
 
     } catch (error) {
-      console.error('Error generating scheduling restrictions report:', error)
       return {
         totalGuards: 0,
         availableGuards: 0,

@@ -104,7 +104,6 @@ export class PortalNavigator {
 
       return true
     } catch (error) {
-      console.error('Portal navigation failed:', error)
       this.handleNavigationError(error, options)
       return false
     }
@@ -222,7 +221,6 @@ export class PortalNavigator {
    * Handle navigation errors
    */
   private handleNavigationError(error: any, options: PortalNavigationOptions): void {
-    console.error('Portal navigation error:', error)
     
     // Track error
     this.trackPortalError(error, options)
@@ -359,7 +357,6 @@ export class CrossDomainMessenger {
     try {
       targetWindow.postMessage(message, targetDomain)
     } catch (error) {
-      console.error('Failed to send cross-domain message:', error)
     }
   }
 
@@ -403,7 +400,6 @@ export class CrossDomainMessenger {
         listeners.forEach(callback => callback(message))
       }
     } catch (error) {
-      console.error('Failed to handle cross-domain message:', error)
     }
   }
 

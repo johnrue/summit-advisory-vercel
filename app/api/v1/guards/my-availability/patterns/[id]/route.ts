@@ -77,7 +77,6 @@ export async function PUT(
       }
     });
   } catch (error) {
-    console.error('Pattern update error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -131,7 +130,6 @@ export async function DELETE(
       data: {}
     });
   } catch (error) {
-    console.error('Pattern deletion error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

@@ -57,7 +57,6 @@ export async function PUT(
       }
     });
   } catch (error) {
-    console.error('Availability update error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -111,7 +110,6 @@ export async function DELETE(
       data: {}
     });
   } catch (error) {
-    console.error('Availability deletion error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

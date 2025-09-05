@@ -258,7 +258,6 @@ export class ShiftTemplateService {
         .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) // Last 30 days
 
       if (shiftsError) {
-        console.warn('Failed to get shift stats for template:', shiftsError)
       }
 
       const monthlyUsage = shifts?.length || 0
@@ -310,12 +309,10 @@ export class ShiftTemplateService {
 
       if (error) {
         // Don't fail the main operation if usage tracking fails
-        console.warn('Failed to increment template usage:', error)
       }
 
       return { success: true }
     } catch (error) {
-      console.warn('Error incrementing template usage:', error)
       return { success: true } // Don't fail the main operation
     }
   }

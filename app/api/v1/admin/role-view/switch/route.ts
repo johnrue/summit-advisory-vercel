@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
       const payload = jwtDecode<any>(session.access_token)
       userRole = payload.role || payload.user_metadata?.role || 'guard'
     } catch (jwtError) {
-      console.warn('Failed to decode JWT token:', jwtError)
     }
 
     // Verify admin permissions
@@ -100,11 +99,9 @@ export async function POST(request: NextRequest) {
         .insert(auditEntry)
 
       if (auditError) {
-        console.warn('Failed to log role view switch audit event:', auditError)
         // Don't fail the request if audit logging fails
       }
     } catch (auditError) {
-      console.warn('Error during audit logging:', auditError)
       // Continue with the role switch operation
     }
 
@@ -119,7 +116,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error('Error in role view switch API:', error)
     
     return NextResponse.json(
       {
@@ -154,7 +150,6 @@ export async function GET(request: NextRequest) {
       const payload = jwtDecode<any>(session.access_token)
       userRole = payload.role || payload.user_metadata?.role || 'guard'
     } catch (jwtError) {
-      console.warn('Failed to decode JWT token:', jwtError)
     }
 
     // Return current role information
@@ -168,7 +163,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error('Error in role view status API:', error)
     
     return NextResponse.json(
       { success: false, message: 'Internal server error' },

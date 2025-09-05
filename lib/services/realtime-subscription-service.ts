@@ -65,7 +65,6 @@ export class RealtimeSubscriptionService {
         )
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
-            console.log(`Realtime subscription ${subscriptionId} established`)
           } else if (status === 'CHANNEL_ERROR') {
             config.onError?.(new Error(`Subscription ${subscriptionId} failed`))
           }
@@ -157,7 +156,6 @@ export class RealtimeSubscriptionService {
         try {
           handler(event)
         } catch (error) {
-          console.error('Error in realtime event handler:', error)
         }
       })
     }
@@ -239,7 +237,6 @@ export class RealtimeSubscriptionService {
         this.triggerAnalyticsUpdate(config.userId)
       }
     } catch (error) {
-      console.error('Error handling client lead change:', error)
       config.onError?.(error instanceof Error ? error : new Error('Unknown error'))
     }
   }
@@ -284,7 +281,6 @@ export class RealtimeSubscriptionService {
         this.triggerAnalyticsUpdate(config.userId)
       }
     } catch (error) {
-      console.error('Error handling guard lead change:', error)
       config.onError?.(error instanceof Error ? error : new Error('Unknown error'))
     }
   }
@@ -315,7 +311,6 @@ export class RealtimeSubscriptionService {
         newRecord?.assigned_manager_id || oldRecord?.assigned_manager_id
       )
     } catch (error) {
-      console.error('Error handling assignment change:', error)
       config.onError?.(error instanceof Error ? error : new Error('Unknown error'))
     }
   }
@@ -335,7 +330,6 @@ export class RealtimeSubscriptionService {
         onUpdate(analytics)
       }
     } catch (error) {
-      console.error('Error handling analytics update:', error)
     }
   }
 

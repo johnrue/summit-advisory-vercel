@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Document upload error:', error)
     
     return NextResponse.json(
       {

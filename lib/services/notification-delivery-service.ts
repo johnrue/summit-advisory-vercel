@@ -188,7 +188,6 @@ export class NotificationDeliveryService {
       //   .single()
       // return data?.email || null
     } catch (error) {
-      console.error('Error fetching recipient email:', error)
       return null
     }
   }
@@ -199,7 +198,6 @@ export class NotificationDeliveryService {
   private async deliverSMS(notification: Notification): Promise<ServiceResult<boolean>> {
     // TODO: Implement SMS delivery service integration
     // This will be a future enhancement
-    console.log('SMS delivery not yet implemented for notification:', notification.id)
     return { success: false, error: 'SMS delivery not implemented'}
   }
 

@@ -63,14 +63,12 @@ export class EmailService {
       })
 
       if (error) {
-        console.error('Error sending compliance report email:', error)
         return { success: false, error: error.message }
       }
 
       return { success: true, messageId: data?.id }
 
     } catch (error) {
-      console.error('Unexpected error sending email:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -118,14 +116,12 @@ export class EmailService {
       })
 
       if (emailError) {
-        console.error('Error sending failure notification:', emailError)
         return { success: false, error: emailError.message }
       }
 
       return { success: true, messageId: data?.id }
 
     } catch (error) {
-      console.error('Unexpected error sending failure notification:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -168,14 +164,12 @@ export class EmailService {
       })
 
       if (emailError) {
-        console.error('Error sending reminder:', emailError)
         return { success: false, error: emailError.message }
       }
 
       return { success: true, messageId: data?.id }
 
     } catch (error) {
-      console.error('Unexpected error sending reminder:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -250,14 +244,12 @@ export class EmailService {
       })
 
       if (emailError) {
-        console.error('Error sending consultation confirmation:', emailError)
         return { success: false, error: emailError.message }
       }
 
       return { success: true, messageId: data?.id }
 
     } catch (error) {
-      console.error('Unexpected error sending consultation confirmation:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -335,14 +327,12 @@ export class EmailService {
       })
 
       if (emailError) {
-        console.error('Error sending lead assignment notification:', emailError)
         return { success: false, error: emailError.message }
       }
 
       return { success: true, messageId: data?.id }
 
     } catch (error) {
-      console.error('Unexpected error sending lead assignment notification:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 

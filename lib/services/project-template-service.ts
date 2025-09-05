@@ -48,7 +48,6 @@ export class ProjectTemplateService {
         data: templates
       }
     } catch (error) {
-      console.error('Error in getProjectTemplates:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to retrieve templates'
@@ -102,7 +101,6 @@ export class ProjectTemplateService {
         data: template
       }
     } catch (error) {
-      console.error('Error in getTemplateById:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to retrieve template'
@@ -143,7 +141,6 @@ export class ProjectTemplateService {
         data: templateResult.data!
       }
     } catch (error) {
-      console.error('Error in createProjectTemplate:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create template'
@@ -170,7 +167,6 @@ export class ProjectTemplateService {
         data: undefined
       }
     } catch (error) {
-      console.error('Error in incrementTemplateUsage:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to increment template usage'

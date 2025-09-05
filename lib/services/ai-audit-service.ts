@@ -79,13 +79,11 @@ export class AIAuditService {
         .single()
 
       if (error) {
-        console.error('Failed to log processing start:', error)
         return null
       }
 
       return data.id
     } catch (error) {
-      console.error('Error logging processing start:', error)
       return null
     }
   }
@@ -115,13 +113,11 @@ export class AIAuditService {
         .eq('id', auditId)
 
       if (error) {
-        console.error('Failed to log processing end:', error)
         return false
       }
 
       return true
     } catch (error) {
-      console.error('Error logging processing end:', error)
       return false
     }
   }
@@ -164,13 +160,11 @@ export class AIAuditService {
         .insert(auditEntry)
 
       if (error) {
-        console.error('Failed to log manager review:', error)
         return false
       }
 
       return true
     } catch (error) {
-      console.error('Error logging manager review:', error)
       return false
     }
   }
@@ -187,13 +181,11 @@ export class AIAuditService {
         .order('processing_start_time', { ascending: false })
 
       if (error) {
-        console.error('Failed to get audit history:', error)
         return []
       }
 
       return data || []
     } catch (error) {
-      console.error('Error getting audit history:', error)
       return []
     }
   }
@@ -241,7 +233,6 @@ export class AIAuditService {
         .range(offset, offset + limit - 1)
 
       if (error) {
-        console.error('Failed to query audit logs:', error)
         return { logs: [], total: 0, page, pages: 0 }
       }
 
@@ -254,7 +245,6 @@ export class AIAuditService {
         pages: totalPages
       }
     } catch (error) {
-      console.error('Error querying audit logs:', error)
       return { logs: [], total: 0, page: 1, pages: 0 }
     }
   }
@@ -278,7 +268,6 @@ export class AIAuditService {
       const { data, error } = await query
 
       if (error) {
-        console.error('Failed to get audit summary:', error)
         return {
           total_operations: 0,
           success_rate: 0,
@@ -328,7 +317,6 @@ export class AIAuditService {
         by_model: byModel
       }
     } catch (error) {
-      console.error('Error getting audit summary:', error)
       return {
         total_operations: 0,
         success_rate: 0,
@@ -353,13 +341,11 @@ export class AIAuditService {
         .order('processing_start_time', { ascending: false })
 
       if (error) {
-        console.error('Failed to get compliance report:', error)
         return []
       }
 
       return data || []
     } catch (error) {
-      console.error('Error getting compliance report:', error)
       return []
     }
   }
@@ -379,13 +365,11 @@ export class AIAuditService {
         .select('id')
 
       if (error) {
-        console.error('Failed to cleanup old logs:', error)
         return 0
       }
 
       return data?.length || 0
     } catch (error) {
-      console.error('Error cleaning up old logs:', error)
       return 0
     }
   }
@@ -416,7 +400,6 @@ export class AIAuditService {
 
       return JSON.stringify(logs, null, 2)
     } catch (error) {
-      console.error('Error exporting audit logs:', error)
       return null
     }
   }

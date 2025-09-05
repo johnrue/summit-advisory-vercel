@@ -46,7 +46,6 @@ export function ProjectAttachments({ project, onUpdate }: ProjectAttachmentsProp
       const updatedProject = await response.json()
       onUpdate(updatedProject.project)
     } catch (error) {
-      console.error('Error uploading files:', error)
     } finally {
       setIsUploading(false)
     }

@@ -31,7 +31,6 @@ export function useUserPreferences() {
         setPreferences({ ...DEFAULT_PREFERENCES, ...parsed })
       }
     } catch (error) {
-      console.error('Failed to load user preferences:', error)
     } finally {
       setLoading(false)
     }
@@ -44,7 +43,6 @@ export function useUserPreferences() {
       setPreferences(updated)
       localStorage.setItem(PREFERENCES_KEY, JSON.stringify(updated))
     } catch (error) {
-      console.error('Failed to save user preferences:', error)
     }
   }
 
@@ -71,7 +69,6 @@ export function useUserPreferences() {
       setPreferences(DEFAULT_PREFERENCES)
       localStorage.removeItem(PREFERENCES_KEY)
     } catch (error) {
-      console.error('Failed to reset user preferences:', error)
     }
   }
 

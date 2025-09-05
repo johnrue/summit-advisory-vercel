@@ -89,7 +89,6 @@ export default function ManagerOverviewPage() {
           setLoading(false)
         }, 1000)
       } catch (error) {
-        console.error('Failed to fetch manager stats:', error)
         setLoading(false)
       }
     }

@@ -89,29 +89,29 @@ export default function CalendarPreferences({
 
   // Load existing preferences
   useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/v1/calendar/sync/preferences?integration_id=${integrationId}`)
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.preferences) {
+            setPreferences(data.preferences)
+          }
+        }
+        
+        setError(null)
+      } catch (err) {
+        setError('Failed to load preferences')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
     loadPreferences()
   }, [integrationId])
 
-  const loadPreferences = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`/api/v1/calendar/sync/preferences?integration_id=${integrationId}`)
-      
-      if (response.ok) {
-        const data = await response.json()
-        if (data.preferences) {
-          setPreferences(data.preferences)
-        }
-      }
-      
-      setError(null)
-    } catch (err) {
-      setError('Failed to load preferences')
-      console.error('Load preferences error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const savePreferences = async () => {
     try {

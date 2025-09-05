@@ -156,7 +156,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .single()
 
     if (updateError) {
-      console.error('Error updating application:', updateError)
       return NextResponse.json({
         success: false,
         error: 'Failed to update application',
@@ -172,7 +171,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .insert(auditLogEntry)
 
     if (auditError) {
-      console.error('Error logging audit entry:', auditError)
       // Don't fail the request for audit logging errors
     }
 
@@ -183,7 +181,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     })
 
   } catch (error) {
-    console.error('Error in AI review API:', error)
     return NextResponse.json({
       success: false,
       error: 'Internal server error',

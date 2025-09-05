@@ -461,14 +461,12 @@ export async function processDueFollowUps(): Promise<ApiResponse<{ processed: nu
           .eq('id', lead.id)
 
         if (updateError) {
-          console.error(`Failed to update lead ${lead.id}:`, updateError)
           result.failed++
         } else {
           result.successful++
         }
 
       } catch (error) {
-        console.error(`Failed to process follow-up for lead ${lead.id}:`, error)
         result.failed++
       }
     }
@@ -537,7 +535,6 @@ export async function checkForEscalations(): Promise<ApiResponse<{ escalated: nu
       .eq('status', 'active')
 
     if (managersError || !salesManagers || salesManagers.length === 0) {
-      console.error('No sales managers found for escalation:', managersError)
       return {
         success: true,
         data: result,
@@ -549,7 +546,6 @@ export async function checkForEscalations(): Promise<ApiResponse<{ escalated: nu
     for (const lead of staleLead) {
       // In a real implementation, send escalation emails to managers
       // For now, just log the escalation
-      console.log(`Escalating lead ${lead.id} - ${lead.first_name} ${lead.last_name}`)
       result.notified += salesManagers.length
     }
 

@@ -829,7 +829,6 @@ export class ShiftManagementService {
           })
       }
     } catch (error) {
-      console.error('Failed to track shift modification:', error)
       // Don't throw - this shouldn't break the main update operation
     }
   }

@@ -41,7 +41,6 @@ export function ProjectComments({ project, onUpdate }: ProjectCommentsProps) {
       onUpdate(updatedProject.project)
       setNewComment('')
     } catch (error) {
-      console.error('Error adding comment:', error)
     } finally {
       setIsSubmitting(false)
     }

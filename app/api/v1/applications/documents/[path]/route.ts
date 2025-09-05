@@ -56,7 +56,6 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Document access error:', error)
     
     return NextResponse.json(
       {

@@ -79,7 +79,6 @@ export class CertificationMonitoringService {
       return expiryChecks
 
     } catch (error) {
-      console.error('Error checking certification expirations:', error)
       throw new Error('Failed to check certification expirations')
     }
   }
@@ -137,7 +136,6 @@ export class CertificationMonitoringService {
       return dashboard
 
     } catch (error) {
-      console.error('Error generating certification dashboard:', error)
       throw new Error('Failed to generate certification dashboard')
     }
   }
@@ -170,7 +168,6 @@ export class CertificationMonitoringService {
       return !hasExpiredCertifications
 
     } catch (error) {
-      console.error('Error checking guard scheduling eligibility:', error)
       return false
     }
   }
@@ -189,7 +186,6 @@ export class CertificationMonitoringService {
       )
 
     } catch (error) {
-      console.error('Error getting guards for escalation:', error)
       return []
     }
   }
@@ -226,7 +222,6 @@ export class CertificationMonitoringService {
       })
 
     } catch (error) {
-      console.error('Error processing escalations:', error)
       throw new Error('Failed to process certification escalations')
     }
   }
@@ -295,7 +290,6 @@ export class CertificationMonitoringService {
       .maybeSingle()
 
     if (error) {
-      console.error('Error checking existing alerts:', error)
       return false
     }
 
@@ -335,7 +329,6 @@ export class CertificationMonitoringService {
       })
 
     } catch (error) {
-      console.error('Error sending expiry alert:', error)
     }
   }
 
@@ -372,7 +365,6 @@ export class CertificationMonitoringService {
       })
 
     } catch (error) {
-      console.error('Error sending escalation alert:', error)
     }
   }
 

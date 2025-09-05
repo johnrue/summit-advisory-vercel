@@ -41,7 +41,6 @@ export class ReportAuditTracking {
         }])
 
       if (error) {
-        console.error('Error storing report access history:', error)
       }
 
       // Log in audit system
@@ -59,7 +58,6 @@ export class ReportAuditTracking {
       )
 
     } catch (error) {
-      console.error('Error tracking report access:', error)
     }
   }
 
@@ -104,11 +102,9 @@ export class ReportAuditTracking {
         .eq('id', reportId)
 
       if (error) {
-        console.error('Error updating report email status:', error)
       }
 
     } catch (error) {
-      console.error('Error tracking report email:', error)
     }
   }
 
@@ -161,11 +157,9 @@ export class ReportAuditTracking {
         }])
 
       if (error) {
-        console.error('Error storing execution history:', error)
       }
 
     } catch (error) {
-      console.error('Error tracking scheduled execution:', error)
     }
   }
 
@@ -190,7 +184,6 @@ export class ReportAuditTracking {
       )
 
     } catch (error) {
-      console.error('Error tracking schedule change:', error)
     }
   }
 
@@ -218,7 +211,6 @@ export class ReportAuditTracking {
         .order('accessed_at', { ascending: false })
 
       if (accessError) {
-        console.error('Error fetching access history:', accessError)
       }
 
       const auditLogs = auditResult.success ? auditResult.data?.logs || [] : []
@@ -231,7 +223,6 @@ export class ReportAuditTracking {
       }
 
     } catch (error) {
-      console.error('Error getting report audit trail:', error)
       return { generation: [], access: [], emails: [], total: 0 }
     }
   }
@@ -282,7 +273,6 @@ export class ReportAuditTracking {
       }
 
     } catch (error) {
-      console.error('Error getting compliance audit summary:', error)
       return {
         reportsGenerated: 0,
         reportsAccessed: 0,
@@ -320,11 +310,9 @@ export class ReportAuditTracking {
         .select('id')
 
       if (accessError) {
-        console.error('Error cleaning up access records:', accessError)
       }
 
       if (executionError) {
-        console.error('Error cleaning up execution records:', executionError)
       }
 
       return {
@@ -333,7 +321,6 @@ export class ReportAuditTracking {
       }
 
     } catch (error) {
-      console.error('Error cleaning up old audit records:', error)
       return { deletedAccessRecords: 0, deletedExecutionRecords: 0 }
     }
   }

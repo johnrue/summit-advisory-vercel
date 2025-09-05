@@ -75,7 +75,6 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Time-off requests GET error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -184,7 +183,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Time-off request POST error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

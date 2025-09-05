@@ -64,7 +64,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(successUrl)
 
   } catch (error) {
-    console.error('OAuth callback error:', error)
     
     const errorUrl = new URL('/dashboard/calendar', request.url)
     errorUrl.searchParams.set('error', 'internal_error')

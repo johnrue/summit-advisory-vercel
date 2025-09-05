@@ -140,7 +140,6 @@ export class ShiftArchiveService {
         data: archive
       };
     } catch (error) {
-      console.error('Error archiving shift:', error);
       return {
         success: false,
         error: {
@@ -308,7 +307,6 @@ export class ShiftArchiveService {
         }
       };
     } catch (error) {
-      console.error('Error searching archived shifts:', error);
       return {
         success: false,
         error: {
@@ -414,7 +412,6 @@ export class ShiftArchiveService {
         data: metrics
       };
     } catch (error) {
-      console.error('Error getting archive metrics:', error);
       return {
         success: false,
         error: {
@@ -470,7 +467,6 @@ export class ShiftArchiveService {
         data: archive
       };
     } catch (error) {
-      console.error('Error getting archived shift:', error);
       return {
         success: false,
         error: {
@@ -587,7 +583,6 @@ export class ShiftArchiveService {
         data: results
       };
     } catch (error) {
-      console.error('Error in auto-archive process:', error);
       return {
         success: false,
         error: {

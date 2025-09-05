@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
     const { role, error: roleError } = await serverRoleService.getUserRole(user.id)
     
     if (roleError) {
-      console.warn('Failed to fetch user role:', roleError)
     }
 
     // Return user information with role
@@ -35,7 +34,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(userResponse)
   } catch (error) {
-    console.error('Error fetching user:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -99,7 +97,6 @@ export async function PATCH(request: NextRequest) {
       role
     })
   } catch (error) {
-    console.error('Error updating user role:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

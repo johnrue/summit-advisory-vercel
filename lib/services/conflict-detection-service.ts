@@ -169,7 +169,6 @@ export class ConflictDetectionService {
       });
 
     } catch (error) {
-      console.error('Error detecting time conflicts:', error);
       return [];
     }
   }
@@ -228,7 +227,6 @@ export class ConflictDetectionService {
       return conflicts;
 
     } catch (error) {
-      console.error('Error detecting availability conflicts:', error);
       return [];
     }
   }
@@ -337,7 +335,6 @@ export class ConflictDetectionService {
       return conflicts;
 
     } catch (error) {
-      console.error('Error detecting certification conflicts:', error);
       return [];
     }
   }
@@ -402,7 +399,6 @@ export class ConflictDetectionService {
       return conflicts;
 
     } catch (error) {
-      console.error('Error detecting location conflicts:', error);
       return [];
     }
   }
@@ -519,7 +515,6 @@ export class ConflictDetectionService {
       return conflicts;
 
     } catch (error) {
-      console.error('Error detecting workload conflicts:', error);
       return [];
     }
   }
@@ -623,7 +618,6 @@ export class ConflictDetectionService {
       return conflicts;
 
     } catch (error) {
-      console.error('Error checking consecutive shift travel:', error);
       return [];
     }
   }

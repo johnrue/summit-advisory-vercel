@@ -311,7 +311,6 @@ export async function sendForSignature(
     // 3. Get the signing URL
     // 4. Send email notification to signer
 
-    console.log(`Mock signature request sent to ${signerEmail} for document ${documentId}`)
 
     return {
       success: true,
@@ -528,7 +527,6 @@ export async function deleteContractDocument(
       .remove([filePath])
 
     if (storageError) {
-      console.warn('Failed to delete file from storage:', storageError)
       // Continue with database deletion even if file deletion fails
     }
 

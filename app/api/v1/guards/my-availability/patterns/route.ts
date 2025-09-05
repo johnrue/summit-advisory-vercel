@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Availability patterns GET error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,
@@ -180,7 +179,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Availability pattern POST error:', error);
     return NextResponse.json<AvailabilityApiResponse>(
       {
         success: false,

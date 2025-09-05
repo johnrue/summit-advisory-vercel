@@ -66,7 +66,6 @@ export function PortalLink({
       clearTimeout(timeoutId)
       return true // If we get any response, assume it's available
     } catch (error) {
-      console.warn('SaaS platform health check failed:', error)
       return false
     } finally {
       setIsChecking(false)
@@ -133,7 +132,7 @@ export function PortalLink({
     if (checkAvailability) {
       checkSaaSAvailability().then(setIsAvailable)
     }
-  }, [checkAvailability])
+  }, [checkAvailability, checkSaaSAvailability])
 
   // Base styles for different variants
   const getVariantStyles = () => {

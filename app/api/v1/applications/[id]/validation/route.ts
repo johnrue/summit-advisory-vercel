@@ -57,7 +57,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     })
 
   } catch (error) {
-    console.error('Error fetching validation report:', error)
     return NextResponse.json({
       success: false,
       error: 'Internal server error'

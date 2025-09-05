@@ -51,22 +51,22 @@ export function ProfileCompletionAssistant({
 
   // Load initial compliance data
   useEffect(() => {
-    loadComplianceData()
-  }, [profileId])
-
-  const loadComplianceData = async () => {
-    setIsLoading(true)
-    try {
-      const result = await guardProfileService.validateProfileCompleteness(profileId)
-      if (result.success && result.data) {
-        setCompliance(result.data)
+    const loadComplianceData = async () => {
+      setIsLoading(true)
+      try {
+        const result = await guardProfileService.validateProfileCompleteness(profileId)
+        if (result.success && result.data) {
+          setCompliance(result.data)
+        }
+      } catch (error) {
+        toast.error('Failed to load compliance data')
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      toast.error('Failed to load compliance data')
-    } finally {
-      setIsLoading(false)
     }
-  }
+    
+    loadComplianceData()
+  }, [profileId, guardProfileService])
 
   const generateSuggestions = async (fieldName: string, partialValue: string = '') => {
     setIsGeneratingSuggestions(true)
@@ -368,7 +368,19 @@ export function ProfileCompletionAssistant({
             <Button 
               variant="outline" 
               size="sm"
-              onClick={loadComplianceData}
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  const result = await guardProfileService.validateProfileCompleteness(profileId)
+                  if (result.success && result.data) {
+                    setCompliance(result.data)
+                  }
+                } catch (error) {
+                  toast.error('Failed to load compliance data')
+                } finally {
+                  setIsLoading(false)
+                }
+              }}
               disabled={isLoading}
             >
               {isLoading ? (

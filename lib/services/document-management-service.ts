@@ -228,7 +228,6 @@ export class DocumentManagementService {
         .remove([filePath])
 
       if (deleteError) {
-        console.error('Storage deletion failed:', deleteError)
         // Continue with database cleanup even if storage deletion fails
       }
 
@@ -709,13 +708,11 @@ export class DocumentManagementService {
           }])
       }
     } catch (error) {
-      console.error('Failed to log document access:', error)
     }
   }
 
   private async sendNotification(doc: ExpiringDocument): Promise<void> {
     // Mock notification sending - in production, integrate with email/SMS service
-    console.log(`Sending expiry reminder for ${doc.documentName} to ${doc.guardName}`)
     
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 100))

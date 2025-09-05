@@ -44,6 +44,20 @@ export function ProjectActivity({ project }: ProjectActivityProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    const loadActivities = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch(`/api/v1/projects/${project.id}/activities`)
+        if (response.ok) {
+          const data = await response.json()
+          setActivities(data.activities || [])
+        }
+      } catch (error) {
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
     loadActivities()
   }, [project.id])
 
@@ -56,7 +70,6 @@ export function ProjectActivity({ project }: ProjectActivityProps) {
         setActivities(data.activities || [])
       }
     } catch (error) {
-      console.error('Error loading project activities:', error)
     } finally {
       setIsLoading(false)
     }

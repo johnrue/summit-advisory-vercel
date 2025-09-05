@@ -72,7 +72,6 @@ export function useDragAndDrop(options: UseDragAndDropOptions) {
       // Handle conflict resolution if specified
       if (options.conflictResolution === 'prompt') {
         // This would show a modal or prompt to the user
-        console.warn('Drag and drop conflict detected:', errorMessage)
       }
     }
   }, [state.draggedItem, options])

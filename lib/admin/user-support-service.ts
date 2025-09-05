@@ -116,7 +116,6 @@ export class UserSupportService {
         canView: true
       }
     } catch (error) {
-      console.error('Error fetching user support information:', error)
       return {
         user: null,
         canView: false,
@@ -148,7 +147,6 @@ export class UserSupportService {
         userOnlyPermissions
       }
     } catch (error) {
-      console.error('Error comparing permissions:', error)
       return null
     }
   }
@@ -239,14 +237,12 @@ export class UserSupportService {
             })
           }
         } catch (userError) {
-          console.warn(`Failed to fetch user ${userRole.user_id}:`, userError)
           // Continue with other users
         }
       }
 
       return users
     } catch (error) {
-      console.error('Error listing users:', error)
       return []
     }
   }

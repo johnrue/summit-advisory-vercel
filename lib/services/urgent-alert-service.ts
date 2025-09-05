@@ -202,7 +202,6 @@ export class UrgentAlertService {
         data: generatedAlerts
       };
     } catch (error) {
-      console.error('Error monitoring shifts for alerts:', error);
       return {
         success: false,
         error: {
@@ -270,7 +269,6 @@ export class UrgentAlertService {
         data: alert
       };
     } catch (error) {
-      console.error('Error creating urgent alert:', error);
       return {
         success: false,
         error: {
@@ -327,7 +325,6 @@ export class UrgentAlertService {
         }
       };
     } catch (error) {
-      console.error('Error acknowledging alert:', error);
       return {
         success: false,
         error: {
@@ -383,7 +380,6 @@ export class UrgentAlertService {
         }
       };
     } catch (error) {
-      console.error('Error resolving alert:', error);
       return {
         success: false,
         error: {
@@ -465,7 +461,6 @@ export class UrgentAlertService {
         data: alerts
       };
     } catch (error) {
-      console.error('Error getting active alerts:', error);
       return {
         success: false,
         error: {
@@ -561,7 +556,6 @@ export class UrgentAlertService {
         data: metrics
       };
     } catch (error) {
-      console.error('Error getting alert metrics:', error);
       return {
         success: false,
         error: {
@@ -617,12 +611,5 @@ export class UrgentAlertService {
     // - SMS alerts for critical issues
     // - Dashboard real-time updates
     // - Webhook integrations
-    
-    console.log('Alert notification triggered:', {
-      alertId: alert.id,
-      type: alert.alertType,
-      priority: alert.alertPriority,
-      reason
-    });
   }
 }

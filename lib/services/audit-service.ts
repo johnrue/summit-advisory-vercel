@@ -45,13 +45,11 @@ export class AuditService {
         .single()
 
       if (error) {
-        console.error('Error creating audit log:', error)
         return { success: false, error: error.message }
       }
 
       return { success: true, data }
     } catch (error) {
-      console.error('Error in logAction:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -251,7 +249,6 @@ export class AuditService {
       const { data, error, count } = await query
 
       if (error) {
-        console.error('Error fetching audit logs:', error)
         return { success: false, error: error.message }
       }
 
@@ -264,7 +261,6 @@ export class AuditService {
         }
       }
     } catch (error) {
-      console.error('Error in getAuditLogs:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -295,7 +291,6 @@ export class AuditService {
 
       return { success: true, data: isValid }
     } catch (error) {
-      console.error('Error verifying log integrity:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
@@ -333,7 +328,6 @@ export class AuditService {
       const { data, error } = await query
 
       if (error) {
-        console.error('Error fetching audit summary:', error)
         return { success: false, error: error.message }
       }
 
@@ -344,7 +338,6 @@ export class AuditService {
 
       return { success: true, data: summary }
     } catch (error) {
-      console.error('Error in getAuditSummary:', error)
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error occurred' 

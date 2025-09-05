@@ -88,7 +88,6 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('Error fetching applications:', error)
       return NextResponse.json({
         success: false,
         error: 'Failed to fetch applications',
@@ -133,7 +132,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error in applications API:', error)
     return NextResponse.json({
       success: false,
       error: 'Internal server error',

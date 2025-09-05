@@ -138,7 +138,6 @@ export function ProjectKanbanBoard({
         description: `"${activeProject.title}" moved to ${validColumn.title}`
       })
     } catch (error) {
-      console.error('Error updating project status:', error)
       toast({
         title: 'Update Failed',
         description: 'Failed to update project status. Please try again.',

@@ -346,12 +346,6 @@ export class EmailService {
     try {
       // In development/demo mode, log email to console
       if (process.env.NODE_ENV === 'development') {
-        console.log('📧 Email sent (development mode):')
-        console.log(`To: ${email.to}`)
-        console.log(`Subject: ${email.subject}`)
-        console.log(`Priority: ${email.priority}`)
-        console.log(`Text: ${email.text}`)
-        console.log('---')
 
         return {
           success: true,

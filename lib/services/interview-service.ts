@@ -42,7 +42,6 @@ export class InterviewService {
         .single()
       
       if (error) {
-        console.error('Interview scheduling error:', error)
         return { success: false, error: { code: 'SCHEDULE_ERROR' , message: 'Failed to schedule interview' }}
       }
       
@@ -59,7 +58,6 @@ export class InterviewService {
       
       return { success: true, data: interview }
     } catch (error) {
-      console.error('Interview service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
@@ -86,7 +84,6 @@ export class InterviewService {
         .order('scheduled_at', { ascending: false })
       
       if (error) {
-        console.error('Interview history error:', error)
         return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch interview history' }}
       }
       
@@ -94,7 +91,6 @@ export class InterviewService {
       
       return { success: true, data: interviews }
     } catch (error) {
-      console.error('Interview service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
@@ -125,7 +121,6 @@ export class InterviewService {
         .single()
       
       if (error) {
-        console.error('Interview update error:', error)
         return { success: false, error: { code: 'UPDATE_ERROR' , message: 'Failed to update interview' }}
       }
       
@@ -133,7 +128,6 @@ export class InterviewService {
       
       return { success: true, data: interview }
     } catch (error) {
-      console.error('Interview service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
@@ -164,7 +158,6 @@ export class InterviewService {
       
       return updateResult
     } catch (error) {
-      console.error('Interview reschedule error:', error)
       return { success: false, error: { code: 'RESCHEDULE_ERROR' , message: 'Failed to reschedule interview' }}
     }
   }
@@ -192,7 +185,6 @@ export class InterviewService {
         .single()
       
       if (feedbackError) {
-        console.error('Feedback submission error:', feedbackError)
         return { success: false, error: { code: 'FEEDBACK_ERROR' , message: 'Failed to submit feedback' }}
       }
       
@@ -230,7 +222,6 @@ export class InterviewService {
       
       return { success: true, data: interviewFeedback }
     } catch (error) {
-      console.error('Feedback service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
@@ -264,7 +255,6 @@ export class InterviewService {
       const { data, error } = await query.order('scheduled_at', { ascending: true })
       
       if (error) {
-        console.error('Filtered interviews error:', error)
         return { success: false, error: { code: 'FETCH_ERROR' , message: 'Failed to fetch interviews' }}
       }
       
@@ -272,7 +262,6 @@ export class InterviewService {
       
       return { success: true, data: interviews }
     } catch (error) {
-      console.error('Interview service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
@@ -290,7 +279,6 @@ export class InterviewService {
         .in('status', ['scheduled', 'confirmed', 'in_progress'])
       
       if (error) {
-        console.error('Availability check error:', error)
         return { success: false, error: { code: 'AVAILABILITY_ERROR' , message: 'Failed to check availability' }}
       }
       
@@ -332,7 +320,6 @@ export class InterviewService {
       
       return { success: true, data: timeSlots }
     } catch (error) {
-      console.error('Availability service error:', error)
       return { success: false, error: { code: 'INTERNAL_ERROR' , message: 'Internal server error' }}
     }
   }
