@@ -11,7 +11,7 @@ module.exports = {
       cwd: '/opt/summit-advisory-saas',
       
       // Cluster mode configuration
-      instances: 'max', // Use all available CPU cores
+      instances: 1, // Use 1 instance for smaller EC2 (t3.micro/t3.small)
       exec_mode: 'cluster',
       
       // Environment configuration
@@ -33,7 +33,7 @@ module.exports = {
       restart_delay: 4000,
       
       // Memory management
-      max_memory_restart: '1G',
+      max_memory_restart: '800M', // Reduced for smaller instance
       
       // Logging configuration
       log_file: '/opt/summit-advisory-saas/logs/combined.log',
