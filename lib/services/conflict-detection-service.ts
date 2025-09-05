@@ -356,15 +356,19 @@ export class ConflictDetectionService {
         .eq('id', guardId)
         .single();
 
-      if (!guard?.location_data?.coordinates || !shift.locationData?.coordinates) {
+      if (!guard?.location_data || !shift.locationData) {
         return conflicts; // Skip if location data is missing
       }
 
       // Calculate distance (simplified calculation)
-      const guardLat = guard.location_data.coordinates.lat;
-      const guardLng = guard.location_data.coordinates.lng;
-      const shiftLat = shift.locationData.coordinates.lat;
-      const shiftLng = shift.locationData.coordinates.lng;
+      const guardLat = (guard.location_data as any).coordinates?.lat;
+      const guardLng = (guard.location_data as any).coordinates?.lng;
+      const shiftLat = (shift.locationData as any).coordinates?.lat;
+      const shiftLng = (shift.locationData as any).coordinates?.lng;
+      
+      if (!guardLat || !guardLng || !shiftLat || !shiftLng) {
+        return conflicts; // Skip if coordinates are missing
+      }
 
       const distance = Math.sqrt(
         Math.pow(shiftLat - guardLat, 2) + Math.pow(shiftLng - guardLng, 2)
@@ -433,9 +437,9 @@ export class ConflictDetectionService {
 
       let dailyHours = shiftHours;
       for (const assignment of dailyAssignments || []) {
-        if (assignment.shifts && assignment.shifts.time_range) {
-          const assignmentStart = new Date(assignment.shifts.time_range.split(',')[0].substring(1));
-          const assignmentEnd = new Date(assignment.shifts.time_range.split(',')[1].slice(0, -1));
+        if (assignment.shifts && Array.isArray(assignment.shifts) && assignment.shifts[0]?.time_range) {
+          const assignmentStart = new Date(assignment.shifts[0].time_range.split(',')[0].substring(1));
+          const assignmentEnd = new Date(assignment.shifts[0].time_range.split(',')[1].slice(0, -1));
           const assignmentHours = (assignmentEnd.getTime() - assignmentStart.getTime()) / (1000 * 60 * 60);
           dailyHours += assignmentHours;
         }
@@ -484,9 +488,9 @@ export class ConflictDetectionService {
 
       let weeklyHours = shiftHours;
       for (const assignment of weeklyAssignments || []) {
-        if (assignment.shifts && assignment.shifts.time_range) {
-          const assignmentStart = new Date(assignment.shifts.time_range.split(',')[0].substring(1));
-          const assignmentEnd = new Date(assignment.shifts.time_range.split(',')[1].slice(0, -1));
+        if (assignment.shifts && Array.isArray(assignment.shifts) && assignment.shifts[0]?.time_range) {
+          const assignmentStart = new Date(assignment.shifts[0].time_range.split(',')[0].substring(1));
+          const assignmentEnd = new Date(assignment.shifts[0].time_range.split(',')[1].slice(0, -1));
           const assignmentHours = (assignmentEnd.getTime() - assignmentStart.getTime()) / (1000 * 60 * 60);
           weeklyHours += assignmentHours;
         }
@@ -564,23 +568,23 @@ export class ConflictDetectionService {
 
       // Analyze previous shifts
       for (const prevShift of previousShifts || []) {
-        if (prevShift.shifts?.location_data && shift.locationData) {
+        if (prevShift.shifts && Array.isArray(prevShift.shifts) && prevShift.shifts[0]?.location_data && shift.locationData) {
           const travelTime = this.calculateTravelTime(
-            prevShift.shifts.location_data,
+            prevShift.shifts[0].location_data,
             shift.locationData
           );
 
-          const prevShiftEnd = new Date(prevShift.shifts.time_range.split(',')[1].slice(0, -1));
+          const prevShiftEnd = new Date(prevShift.shifts[0].time_range.split(',')[1].slice(0, -1));
           const actualBuffer = new Date(shift.timeRange.startTime).getTime() - prevShiftEnd.getTime();
 
           if (travelTime > actualBuffer) {
             conflicts.push({
               conflictType: 'location_conflict',
               severity: 'warning',
-              message: `Insufficient travel time from previous shift "${prevShift.shifts.title}"`,
+              message: `Insufficient travel time from previous shift "${prevShift.shifts[0].title}"`,
               details: {
                 shiftId: prevShift.shift_id,
-                shiftTitle: prevShift.shifts.title
+                shiftTitle: prevShift.shifts[0].title
               },
               canOverride: true,
               overrideRequired: false
@@ -591,23 +595,23 @@ export class ConflictDetectionService {
 
       // Analyze next shifts
       for (const nextShift of nextShifts || []) {
-        if (nextShift.shifts?.location_data && shift.locationData) {
+        if (nextShift.shifts && Array.isArray(nextShift.shifts) && nextShift.shifts[0]?.location_data && shift.locationData) {
           const travelTime = this.calculateTravelTime(
             shift.locationData,
-            nextShift.shifts.location_data
+            nextShift.shifts[0].location_data
           );
 
-          const nextShiftStart = new Date(nextShift.shifts.time_range.split(',')[0].substring(1));
+          const nextShiftStart = new Date(nextShift.shifts[0].time_range.split(',')[0].substring(1));
           const actualBuffer = nextShiftStart.getTime() - new Date(shift.timeRange.endTime).getTime();
 
           if (travelTime > actualBuffer) {
             conflicts.push({
               conflictType: 'location_conflict',
               severity: 'warning',
-              message: `Insufficient travel time to next shift "${nextShift.shifts.title}"`,
+              message: `Insufficient travel time to next shift "${nextShift.shifts[0].title}"`,
               details: {
                 shiftId: nextShift.shift_id,
-                shiftTitle: nextShift.shifts.title
+                shiftTitle: nextShift.shifts[0].title
               },
               canOverride: true,
               overrideRequired: false

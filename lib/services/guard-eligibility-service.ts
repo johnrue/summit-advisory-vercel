@@ -290,7 +290,7 @@ export class GuardEligibilityService {
       const { data: conflictData } = await supabase
         .rpc('detect_assignment_conflicts', {
           p_guard_id: guardId,
-          p_time_range: `[${shift.timeRange.start.toISOString()}, ${shift.timeRange.end.toISOString()})`
+          p_time_range: `[${(shift.timeRange as any).start?.toISOString() || shift.timeRange.startTime}, ${(shift.timeRange as any).end?.toISOString() || shift.timeRange.endTime})`
         });
 
       if (!conflictData || !conflictData.has_conflicts) {
@@ -335,9 +335,11 @@ export class GuardEligibilityService {
         .select('*')
         .eq('guard_id', guardId)
         .eq('status', 'active')
-        .overlaps('availability_window', `[${shift.timeRange.start.toISOString()}, ${shift.timeRange.end.toISOString()})`);
+        .overlaps('availability_window', `[${(shift.timeRange as any).start?.toISOString() || shift.timeRange.startTime}, ${(shift.timeRange as any).end?.toISOString() || shift.timeRange.endTime})`);
 
-      const shiftDuration = shift.timeRange.end.getTime() - shift.timeRange.start.getTime();
+      const shiftStart = new Date((shift.timeRange as any).start || shift.timeRange.startTime);
+      const shiftEnd = new Date((shift.timeRange as any).end || shift.timeRange.endTime);
+      const shiftDuration = shiftEnd.getTime() - shiftStart.getTime();
       let overlapDuration = 0;
       let hasPreferredMatch = false;
       let isEmergencyOnly = false;
@@ -346,8 +348,8 @@ export class GuardEligibilityService {
         const windowStart = new Date(window.availability_window.split(',')[0].substring(1));
         const windowEnd = new Date(window.availability_window.split(',')[1].slice(0, -1));
         
-        const overlapStart = new Date(Math.max(shift.timeRange.start.getTime(), windowStart.getTime()));
-        const overlapEnd = new Date(Math.min(shift.timeRange.end.getTime(), windowEnd.getTime()));
+        const overlapStart = new Date(Math.max(shiftStart.getTime(), windowStart.getTime()));
+        const overlapEnd = new Date(Math.min(shiftEnd.getTime(), windowEnd.getTime()));
         
         if (overlapStart < overlapEnd) {
           overlapDuration += overlapEnd.getTime() - overlapStart.getTime();
@@ -364,7 +366,7 @@ export class GuardEligibilityService {
       const overlapPercentage = shiftDuration > 0 ? overlapDuration / shiftDuration : 0;
 
       return {
-        requestedWindow: shift.timeRange,
+        requestedWindow: { start: shiftStart, end: shiftEnd },
         availabilityWindows: availabilityWindows || [],
         overlapPercentage,
         preferredMatch: hasPreferredMatch,
@@ -374,7 +376,7 @@ export class GuardEligibilityService {
     } catch (error) {
       console.error('Error checking availability match:', error);
       return {
-        requestedWindow: shift.timeRange,
+        requestedWindow: { start: new Date((shift.timeRange as any).start || shift.timeRange.startTime), end: new Date((shift.timeRange as any).end || shift.timeRange.endTime) },
         availabilityWindows: [],
         overlapPercentage: 0,
         preferredMatch: false,

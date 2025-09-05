@@ -42,8 +42,7 @@ export class GuardProfileService {
       if (!encryptionValidation.valid) {
         return {
           success: false,
-          error: `Encryption configuration error: ${encryptionValidation.errors.join(', ')}`,
-          code: GuardProfileErrorCode.VALIDATION_FAILED
+          error: `Encryption configuration error: ${encryptionValidation.errors.join(', ')}`
         }
       }
       // Verify application is approved
@@ -65,7 +64,6 @@ export class GuardProfileService {
         return {
           success: false,
           error: 'Application not found or not approved',
-          code: GuardProfileErrorCode.APPLICATION_NOT_APPROVED
         }
       }
 
@@ -78,7 +76,6 @@ export class GuardProfileService {
         return {
           success: false,
           error: encryptionResult.error!,
-          code: GuardProfileErrorCode.VALIDATION_FAILED
         }
       }
       const encryptedData = encryptionResult.data
@@ -118,8 +115,7 @@ export class GuardProfileService {
       if (profileError) {
         return {
           success: false,
-          error: `Failed to create profile: ${profileError.message}`,
-          code: GuardProfileErrorCode.VALIDATION_FAILED
+          error: `Failed to create profile: ${profileError.message}`
         }
       }
 
@@ -184,7 +180,6 @@ export class GuardProfileService {
         return {
           success: false,
           error: 'Profile not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
         }
       }
 
@@ -207,8 +202,7 @@ export class GuardProfileService {
       if (updateError) {
         return {
           success: false,
-          error: `Failed to update profile: ${updateError.message}`,
-          code: GuardProfileErrorCode.VALIDATION_FAILED
+          error: `Failed to update profile: ${updateError.message}`
         }
       }
 
@@ -237,7 +231,7 @@ export class GuardProfileService {
 
       return {
         success: true,
-        data: this.transformDatabaseProfile(updatedProfile)
+        data: await this.transformDatabaseProfile(updatedProfile)
       }
     } catch (error) {
       return {
@@ -271,7 +265,6 @@ export class GuardProfileService {
         return {
           success: false,
           error: 'Profile not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
         }
       }
 
@@ -307,10 +300,13 @@ export class GuardProfileService {
       // Get profile context for AI assistance
       const profileResult = await this.getProfile(profileId)
       if (!profileResult.success) {
-        return profileResult
+        return {
+          success: false,
+          error: profileResult.error
+        }
       }
 
-      const profile = profileResult.data
+      const profile = profileResult.data!
       
       // Use OpenAI for intelligent suggestions (mock implementation)
       // In production, this would integrate with OpenAI API
@@ -349,8 +345,7 @@ export class GuardProfileService {
     } catch (error) {
       return {
         success: false,
-        error: `AI assistance error: ${error instanceof Error ? error.message : 'AI service unavailable'}`,
-        code: GuardProfileErrorCode.AI_SERVICE_UNAVAILABLE
+        error: `AI assistance error: ${error instanceof Error ? error.message : 'AI service unavailable'}`
       }
     }
   }
@@ -364,10 +359,13 @@ export class GuardProfileService {
     try {
       const profileResult = await this.getProfile(profileId)
       if (!profileResult.success) {
-        return profileResult
+        return {
+          success: false,
+          error: profileResult.error
+        }
       }
 
-      const profile = profileResult.data
+      const profile = profileResult.data!
       
       const missingFields: string[] = []
       const expiringDocuments: DocumentReference[] = []
@@ -427,8 +425,7 @@ export class GuardProfileService {
     } catch (error) {
       return {
         success: false,
-        error: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: GuardProfileErrorCode.COMPLIANCE_CHECK_FAILED
+        error: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
       }
     }
   }
@@ -452,8 +449,7 @@ export class GuardProfileService {
       if (uploadError) {
         return {
           success: false,
-          error: `Upload failed: ${uploadError.message}`,
-          code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
+          error: `Upload failed: ${uploadError.message}`
         }
       }
 
@@ -518,8 +514,7 @@ export class GuardProfileService {
     } catch (error) {
       return {
         success: false,
-        error: `Document upload error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
+        error: `Document upload error: ${error instanceof Error ? error.message : 'Unknown error'}`
       }
     }
   }
@@ -533,16 +528,22 @@ export class GuardProfileService {
     try {
       const validationResult = await this.validateProfileCompleteness(profileId)
       if (!validationResult.success) {
-        return validationResult
+        return {
+          success: false,
+          error: validationResult.error
+        }
       }
 
-      const validation = validationResult.data
+      const validation = validationResult.data!
       const profileResult = await this.getProfile(profileId)
       if (!profileResult.success) {
-        return profileResult
+        return {
+          success: false,
+          error: profileResult.error
+        }
       }
 
-      const profile = profileResult.data
+      const profile = profileResult.data!
 
       // Calculate breakdown scores
       const basicInfoScore = this.calculateBasicInfoScore(profile)
@@ -586,14 +587,16 @@ export class GuardProfileService {
       // Validate compliance before approval
       const complianceResult = await this.validateProfileCompleteness(profileId)
       if (!complianceResult.success) {
-        return complianceResult
+        return {
+          success: false,
+          error: complianceResult.error
+        }
       }
 
-      if (!complianceResult.data.isCompliant) {
+      if (!complianceResult.data!.isCompliant) {
         return {
           success: false,
           error: 'Profile does not meet compliance requirements for approval',
-          code: GuardProfileErrorCode.COMPLIANCE_CHECK_FAILED
         }
       }
 
@@ -624,7 +627,7 @@ export class GuardProfileService {
         'approved',
         undefined, // No previous values needed for approval
         approvedProfile,
-        `Guard profile approved by manager - compliance score: ${complianceResult.data.score}`,
+        `Guard profile approved by manager - compliance score: ${complianceResult.data!.score}`,
         approverId
       )
 
@@ -636,13 +639,13 @@ export class GuardProfileService {
         {
           action: 'approve_profile',
           approver: approverId,
-          complianceScore: complianceResult.data.score
+          complianceScore: complianceResult.data!.score
         }
       )
 
       return {
         success: true,
-        data: this.transformDatabaseProfile(approvedProfile)
+        data: await this.transformDatabaseProfile(approvedProfile)
       }
     } catch (error) {
       return {

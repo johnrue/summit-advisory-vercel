@@ -154,7 +154,7 @@ export class PIIEncryptionService {
           if (!encryptResult.success) {
             return { success: false, error: `Failed to encrypt field ${String(field)}: ${encryptResult.error}` }
           }
-          result[field] = encryptResult.data
+          (result as any)[field] = encryptResult.data
         }
       }
 
@@ -184,7 +184,7 @@ export class PIIEncryptionService {
           if (!decryptResult.success) {
             return { success: false, error: `Failed to decrypt field ${String(field)}: ${decryptResult.error}` }
           }
-          result[field] = decryptResult.data
+          (result as any)[field] = decryptResult.data
         }
       }
 

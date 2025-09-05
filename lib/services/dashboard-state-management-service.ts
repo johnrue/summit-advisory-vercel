@@ -545,7 +545,7 @@ export class DashboardStateManagementService {
       throw new Error('Failed to create default view')
     }
 
-    return result.data
+    return result.data!
   }
 
   private static async getViewPreference(userId: string, viewId: string): Promise<DashboardViewPreference> {

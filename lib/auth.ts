@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { createServerComponentClient } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { User } from '@supabase/supabase-js'
 
@@ -41,8 +41,18 @@ export async function validateRequestAuth(
     }
 
     // Create Supabase client with server-side configuration
-    const cookieStore = cookies()
-    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    )
 
     // Verify the JWT token with Supabase
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
@@ -115,8 +125,18 @@ export async function validateRequestAuth(
 export async function extractUserFromToken(token: string): Promise<AuthResult> {
   try {
     // Create Supabase client
-    const cookieStore = cookies()
-    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    )
 
     // Verify the JWT token
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
@@ -157,8 +177,18 @@ export async function extractUserFromToken(token: string): Promise<AuthResult> {
 
 // Helper function to create authenticated Supabase client
 export async function createAuthenticatedClient(token: string) {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+      },
+    }
+  )
   
   // Set the auth token
   await supabase.auth.setSession({
@@ -172,8 +202,18 @@ export async function createAuthenticatedClient(token: string) {
 // Helper function to get current user session
 export async function getCurrentUser(): Promise<AuthResult> {
   try {
-    const cookieStore = cookies()
-    const supabase = createServerComponentClient({ cookies: () => cookieStore })
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    )
     
     const { data: { session }, error } = await supabase.auth.getSession()
     

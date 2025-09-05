@@ -173,7 +173,7 @@ export function getFollowUpTemplates(): FollowUpTemplate[] {
           <p><strong>Your inquiry details:</strong></p>
           <ul>
             <li>Service Type: {{serviceType}}</li>
-            <li>Estimated Value: ${{estimatedValue}}</li>
+            <li>Estimated Value: ${"{"}estimatedValue{"}"}</li>
             <li>Inquiry Date: {{inquiryDate}}</li>
           </ul>
           <p>I'd like to schedule a brief consultation to discuss your specific security needs. Please reply to this email or call me directly at <a href="tel:8302010414">(830) 201-0414</a>.</p>
@@ -256,7 +256,7 @@ export function getFollowUpTemplates(): FollowUpTemplate[] {
             <strong>Email:</strong> {{email}}<br>
             <strong>Phone:</strong> {{phone}}<br>
             <strong>Service:</strong> {{serviceType}}<br>
-            <strong>Value:</strong> ${{estimatedValue}}<br>
+            <strong>Value:</strong> ${"{"}estimatedValue{"}"}<br>
             <strong>Source:</strong> {{sourceType}}<br>
             <strong>Assigned to:</strong> {{assignedManagerName}}</p>
           </div>
@@ -277,7 +277,7 @@ export function getFollowUpTemplates(): FollowUpTemplate[] {
           <p><a href="https://summitadvisoryfirm.com/dashboard/leads?id={{leadId}}">View Lead Details</a></p>
         </div>
       `,
-      bodyText: `Lead escalation: {{firstName}} {{lastName}} ({{serviceType}}, ${{estimatedValue}}) assigned to {{assignedManagerName}} needs manager attention. {{followUpCount}} follow-ups sent, {{daysSinceContact}} days since contact.`,
+      bodyText: `Lead escalation: {{firstName}} {{lastName}} ({{serviceType}}, ${"{"}estimatedValue{"}"}) assigned to {{assignedManagerName}} needs manager attention. {{followUpCount}} follow-ups sent, {{daysSinceContact}} days since contact.`,
       variables: ['firstName', 'lastName', 'email', 'phone', 'serviceType', 'estimatedValue', 'sourceType', 'assignedManagerName', 'inquiryDate', 'assignmentDate', 'followUpCount', 'daysSinceContact', 'leadId'],
       isActive: true,
       templateType: 'escalation'

@@ -29,14 +29,16 @@ export function useUnifiedLeads(filters?: FilterCriteria) {
           setAnalytics(leadsResult.data.analytics)
         }
       } else {
-        setError(leadsResult.error || 'Failed to fetch leads')
+        const errorMessage = typeof leadsResult.error === 'string' ? leadsResult.error : 'Failed to fetch leads'
+        setError(errorMessage)
       }
 
       if (analyticsResult.success && analyticsResult.data) {
         setAnalytics(analyticsResult.data)
       } else if (!leadsResult.data?.analytics) {
         // Only set analytics error if we didn't get analytics from leads response
-        setError(analyticsResult.error || 'Failed to fetch analytics')
+        const errorMsg = typeof analyticsResult.error === 'string' ? analyticsResult.error : 'Failed to fetch analytics'
+        setError(errorMsg)
       }
     } catch (err) {
       setError('An unexpected error occurred')

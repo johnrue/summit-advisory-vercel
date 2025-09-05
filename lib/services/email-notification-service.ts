@@ -69,23 +69,21 @@ export class EmailNotificationService {
       if (!result.success) {
         return {
           success: false,
-          error: result.error || 'Email delivery failed',
-          code: 'EMAIL_DELIVERY_FAILED'
+          error: result.error || 'Email delivery failed'
         }
       }
 
       return {
         success: true,
         data: {
-          ...result.data,
+          ...result.data!,
           delivery_time_ms: Date.now() - startTime
-        }
+        } as EmailDeliveryResult
       }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'EMAIL_SERVICE_ERROR'
       }
     }
   }
@@ -419,7 +417,6 @@ export class EmailNotificationService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'SendGrid delivery failed',
-        code: 'SENDGRID_ERROR'
       }
     }
   }
@@ -446,7 +443,6 @@ export class EmailNotificationService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'AWS SES delivery failed',
-        code: 'AWS_SES_ERROR'
       }
     }
   }
@@ -480,7 +476,6 @@ export class EmailNotificationService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Console logging failed',
-        code: 'CONSOLE_ERROR'
       }
     }
   }
@@ -541,7 +536,6 @@ export class EmailNotificationService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Digest creation failed',
-        code: 'DIGEST_ERROR'
       }
     }
   }

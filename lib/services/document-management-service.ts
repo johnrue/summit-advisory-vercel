@@ -61,8 +61,7 @@ export class DocumentManagementService {
       if (!validation.isValid) {
         return {
           success: false,
-          error: validation.error,
-          code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
+          error: validation.error
         }
       }
 
@@ -76,8 +75,7 @@ export class DocumentManagementService {
       if (profileError || !profile) {
         return {
           success: false,
-          error: 'Guard profile not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
+          error: 'Guard profile not found'
         }
       }
 
@@ -103,8 +101,7 @@ export class DocumentManagementService {
       if (uploadError) {
         return {
           success: false,
-          error: `Upload failed: ${uploadError.message}`,
-          code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
+          error: `Upload failed: ${uploadError.message}`
         }
       }
 
@@ -124,7 +121,6 @@ export class DocumentManagementService {
         return {
           success: false,
           error: 'File failed security scan',
-          code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
         }
       }
 
@@ -153,7 +149,6 @@ export class DocumentManagementService {
         return {
           success: false,
           error: 'Failed to update profile',
-          code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
         }
       }
 
@@ -191,7 +186,6 @@ export class DocumentManagementService {
       return {
         success: false,
         error: `Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        code: GuardProfileErrorCode.DOCUMENT_UPLOAD_FAILED
       }
     }
   }
@@ -211,7 +205,6 @@ export class DocumentManagementService {
         return {
           success: false,
           error: 'Document not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
         }
       }
 
@@ -288,7 +281,6 @@ export class DocumentManagementService {
         return {
           success: false,
           error: 'Document not found',
-          code: GuardProfileErrorCode.PROFILE_NOT_FOUND
         }
       }
 
@@ -389,7 +381,7 @@ export class DocumentManagementService {
       await supabase
         .from('tops_compliance_audit')
         .insert([{
-          guard_profile_id: docResult.data.metadata.guardProfileId,
+          guard_profile_id: docResult.data?.metadata.guardProfileId,
           audit_type: 'document_verification',
           accessed_by: signerId,
           access_details: {
@@ -577,7 +569,10 @@ export class DocumentManagementService {
     try {
       const expiringResult = await this.checkExpiringDocuments()
       if (!expiringResult.success) {
-        return expiringResult
+        return {
+          success: false,
+          error: expiringResult.error
+        }
       }
 
       const expiringDocs = expiringResult.data
@@ -585,7 +580,7 @@ export class DocumentManagementService {
       let remindersSent = 0
       const errors: Array<{ guardProfileId: string; error: string }> = []
 
-      for (const doc of expiringDocs) {
+      for (const doc of expiringDocs || []) {
         totalProcessed++
 
         try {
@@ -607,10 +602,7 @@ export class DocumentManagementService {
           await supabase
             .from('guard_document_expiry')
             .update({
-              renewal_reminder_sent_at: supabase.sql`
-                COALESCE(renewal_reminder_sent_at, '[]'::jsonb) || 
-                jsonb_build_array(${new Date().toISOString()})
-              `
+              renewal_reminder_sent_at: new Date().toISOString() as any
             })
             .eq('id', doc.documentId)
 

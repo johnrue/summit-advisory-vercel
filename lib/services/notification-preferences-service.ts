@@ -53,7 +53,7 @@ export class NotificationPreferencesService {
           // No preferences found, create default
           return this.createDefaultPreferences(userId)
         }
-        return { success: false, error: { code: 'GET_PREFERENCES_FAILED' , message: error.message }}
+        return { success: false, error: error.message}
       }
 
       return { success: true, data }
@@ -61,7 +61,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'GET_PREFERENCES_ERROR' 
       }
     }
   }
@@ -90,7 +89,7 @@ export class NotificationPreferencesService {
         .single()
 
       if (error) {
-        return { success: false, error: { code: 'UPDATE_PREFERENCES_FAILED' , message: error.message }}
+        return { success: false, error: error.message}
       }
 
       return { success: true, data }
@@ -98,7 +97,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'UPDATE_PREFERENCES_ERROR' 
       }
     }
   }
@@ -133,7 +131,7 @@ export class NotificationPreferencesService {
         .single()
 
       if (error) {
-        return { success: false, error: { code: 'CREATE_DEFAULT_PREFERENCES_FAILED' , message: error.message }}
+        return { success: false, error: error.message}
       }
 
       return { success: true, data }
@@ -141,7 +139,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'CREATE_DEFAULT_PREFERENCES_ERROR' 
       }
     }
   }
@@ -164,6 +161,9 @@ export class NotificationPreferencesService {
       }
 
       const prefs = preferencesResult.data
+      if (!prefs) {
+        return { success: true, data: true } // Default to allow if no preferences
+      }
 
       // Always allow emergency notifications
       if (priority === 'emergency' || category === 'emergency') {
@@ -222,7 +222,7 @@ export class NotificationPreferencesService {
         
         if (this.isInQuietHours(currentTime, prefs.quiet_hours_start, prefs.quiet_hours_end)) {
           // Only allow emergency and urgent during quiet hours
-          if (priority !== 'emergency' && priority !== 'urgent') {
+          if ((priority as NotificationPriority) !== 'urgent' && (priority as NotificationPriority) !== 'emergency') {
             return { success: true, data: false }
           }
         }
@@ -234,7 +234,7 @@ export class NotificationPreferencesService {
         const dayOfWeek = now.getDay()
         if (dayOfWeek === 0 || dayOfWeek === 6) { // Sunday or Saturday
           // Only allow emergency and urgent on weekends if weekend notifications are disabled
-          if (priority !== 'emergency' && priority !== 'urgent') {
+          if ((priority as NotificationPriority) !== 'urgent' && (priority as NotificationPriority) !== 'emergency') {
             return { success: true, data: false }
           }
         }
@@ -243,7 +243,7 @@ export class NotificationPreferencesService {
       // Check notification frequency
       if (prefs.notification_frequency === 'disabled') {
         // Only emergency notifications when disabled
-        if (priority !== 'emergency') {
+        if ((priority as NotificationPriority) !== 'emergency') {
           return { success: true, data: false }
         }
       }
@@ -253,7 +253,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'NOTIFICATION_CHECK_ERROR' 
       }
     }
   }
@@ -339,7 +338,7 @@ export class NotificationPreferencesService {
       const { data, error } = await query
 
       if (error) {
-        return { success: false, error: { code: 'GET_USERS_FAILED' , message: error.message }}
+        return { success: false, error: error.message}
       }
 
       const userIds = data?.map(item => item.user_id) || []
@@ -348,7 +347,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'GET_USERS_ERROR' 
       }
     }
   }
@@ -363,14 +361,14 @@ export class NotificationPreferencesService {
     try {
       // Create a test notification
       const testNotification = {
-        recipient_id: userId,
-        notification_type: 'system_alert' as any,
-        priority: 'normal' as NotificationPriority,
+        recipientId: userId,
+        type: 'system_alert' as any,
+        priority: 'normal' as any,
         category: 'system' as any,
         title: 'Test Notification',
         message: 'This is a test notification to verify your notification settings.',
-        delivery_channels: [deliveryChannel],
-        action_data: {
+        channels: [deliveryChannel],
+        actionData: {
           actions: [
             {
               id: 'dismiss',
@@ -393,7 +391,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'TEST_NOTIFICATION_ERROR' 
       }
     }
   }
@@ -415,7 +412,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'RESET_PREFERENCES_ERROR' 
       }
     }
   }
@@ -446,7 +442,6 @@ export class NotificationPreferencesService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'IMPORT_PREFERENCES_ERROR' 
       }
     }
   }

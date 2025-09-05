@@ -31,10 +31,13 @@ export function useDashboardState() {
       const userId = 'current-user-id'
       const result = await DashboardStateManagementService.initializeDashboardState(userId)
       
-      if (result.success) {
+      if (result.success && result.data) {
         setState(result.data)
       } else {
-        setError(result.error || 'Failed to initialize dashboard')
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : 'Failed to initialize dashboard'
+        setError(errorMessage)
       }
     } catch (err) {
       setError('Failed to initialize dashboard')
@@ -46,7 +49,8 @@ export function useDashboardState() {
   const updateFilters = async (userId: string, filters: FilterCriteria) => {
     const result = await DashboardStateManagementService.updateFilters(userId, filters)
     if (!result.success) {
-      setError(result.error || 'Failed to update filters')
+      const errorMessage = typeof result.error === 'string' ? result.error : 'Failed to update filters'
+      setError(errorMessage)
     }
     return result
   }
@@ -54,7 +58,8 @@ export function useDashboardState() {
   const switchView = async (userId: string, viewId: string) => {
     const result = await DashboardStateManagementService.switchView(userId, viewId)
     if (!result.success) {
-      setError(result.error || 'Failed to switch view')
+      const errorMessage = typeof result.error === 'string' ? result.error : 'Failed to switch view'
+      setError(errorMessage)
     }
     return result
   }

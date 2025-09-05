@@ -46,7 +46,7 @@ export class NotificationDigestJob {
             'daily'
           )
 
-          if (result.success && result.data.notifications.length > 0) {
+          if (result.success && result.data && result.data.notifications.length > 0) {
             // In a full implementation, this would send the digest via email
             await this.sendDigestEmail(result.data)
             digestsSent++
@@ -65,8 +65,8 @@ export class NotificationDigestJob {
 
       // Log job execution
       await this.auditService.logAction({
-        action: 'daily_digest_executed',
-        entity_type: 'notification_digest_job',
+        action: 'daily_digest_executed' as any,
+        entity_type: 'notification_digest_job' as any,
         entity_id: 'daily_digest',
         details: {
           executionTime,
@@ -89,8 +89,8 @@ export class NotificationDigestJob {
       console.error('Error executing daily digest job:', error)
       
       await this.auditService.logAction({
-        action: 'daily_digest_failed',
-        entity_type: 'notification_digest_job',
+        action: 'daily_digest_failed' as any,
+        entity_type: 'notification_digest_job' as any,
         entity_id: 'daily_digest',
         details: {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -140,7 +140,7 @@ export class NotificationDigestJob {
             'weekly'
           )
 
-          if (result.success && result.data.notifications.length > 0) {
+          if (result.success && result.data && result.data.notifications.length > 0) {
             // In a full implementation, this would send the digest via email
             await this.sendDigestEmail(result.data)
             digestsSent++
@@ -159,8 +159,8 @@ export class NotificationDigestJob {
 
       // Log job execution
       await this.auditService.logAction({
-        action: 'weekly_digest_executed',
-        entity_type: 'notification_digest_job',
+        action: 'weekly_digest_executed' as any,
+        entity_type: 'notification_digest_job' as any,
         entity_id: 'weekly_digest',
         details: {
           executionTime,
@@ -183,8 +183,8 @@ export class NotificationDigestJob {
       console.error('Error executing weekly digest job:', error)
       
       await this.auditService.logAction({
-        action: 'weekly_digest_failed',
-        entity_type: 'notification_digest_job',
+        action: 'weekly_digest_failed' as any,
+        entity_type: 'notification_digest_job' as any,
         entity_id: 'weekly_digest',
         details: {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -263,8 +263,8 @@ export class NotificationDigestJob {
 
       // Log escalation processing
       await this.auditService.logAction({
-        action: 'escalations_processed',
-        entity_type: 'notification_digest_job',
+        action: 'escalations_processed' as any,
+        entity_type: 'notification_digest_job' as any,
         entity_id: 'escalation_processing',
         details: {
           executionTime,
@@ -318,8 +318,8 @@ export class NotificationDigestJob {
 
       // Mark digest as sent (in a full implementation)
       await this.auditService.logAction({
-        action: 'digest_email_sent',
-        entity_type: 'notification_digest',
+        action: 'digest_email_sent' as any,
+        entity_type: 'notification_digest' as any,
         entity_id: digest.id,
         details: {
           recipientId: digest.recipientId,

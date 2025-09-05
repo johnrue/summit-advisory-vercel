@@ -173,7 +173,7 @@ export function DocumentUploadManager({
         )
 
         // Add to documents list
-        const newDocuments = [...documents, result.data]
+        const newDocuments = [...documents, result.data].filter((doc): doc is DocumentReference => doc !== undefined)
         setDocuments(newDocuments)
         onDocumentsChange?.(newDocuments)
 
@@ -184,14 +184,18 @@ export function DocumentUploadManager({
           setUploadingFiles(prev => prev.filter(f => f.file !== uploadingFile.file))
         }, 2000)
       } else {
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : result.error?.message || 'Upload failed'
+        
         setUploadingFiles(prev => 
           prev.map(f => 
             f.file === uploadingFile.file 
-              ? { ...f, status: 'error', error: result.error }
+              ? { ...f, status: 'error' as const, error: errorMessage }
               : f
           )
         )
-        toast.error(`Upload failed: ${result.error}`)
+        toast.error(`Upload failed: ${errorMessage}`)
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Upload failed'

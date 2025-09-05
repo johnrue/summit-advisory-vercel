@@ -11,9 +11,9 @@ import type {
   SubmitFeedbackRequest,
   CalendarFilters,
   TimeSlot,
-  AvailabilityRequest,
-  ServiceResult
+  AvailabilityRequest
 } from '@/lib/types/interview-types'
+import type { ServiceResult } from '@/lib/types'
 import { generateRandomString } from '@/lib/utils'
 
 export class InterviewService {
@@ -152,7 +152,7 @@ export class InterviewService {
       }
       
       // Add a comment about the rescheduling
-      if (reason) {
+      if (reason && updateResult.data) {
         await supabase
           .from('application_comments')
           .insert({

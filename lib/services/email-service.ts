@@ -391,9 +391,8 @@ export const sendApplicationReceivedEmail = async (
     data: {
       applicantName,
       applicationId,
-      applicationDate: new Date().toLocaleDateString(),
       portalUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
-    }
+    } as any
   })
 }
 
@@ -415,7 +414,7 @@ export const sendInterviewScheduledEmail = async (
       interviewerName,
       calendarLink: `${process.env.NEXT_PUBLIC_APP_URL}/api/calendar/interview/${applicantEmail}`,
       rescheduleUrl: `${process.env.NEXT_PUBLIC_APP_URL}/reschedule`
-    }
+    } as any
   })
 }
 
@@ -433,7 +432,7 @@ export const sendApplicationApprovedEmail = async (
       profileCreationUrl: `${process.env.NEXT_PUBLIC_APP_URL}/profile/create/${profileCreationToken}`,
       companyName: 'Summit Advisory',
       hrContactEmail: 'hr@summitadvisoryfirm.com'
-    }
+    } as any
   })
 }
 
@@ -451,7 +450,7 @@ export const sendApplicationRejectedEmail = async (
       rejectionReason: rejectionReason || 'Application did not meet our current requirements',
       reapplyUrl: `${process.env.NEXT_PUBLIC_APP_URL}/apply`,
       contactEmail: 'hr@summitadvisoryfirm.com'
-    }
+    } as any
   })
 }
 
@@ -471,6 +470,6 @@ export const sendManagerAssignmentEmail = async (
       assignmentDate: new Date().toLocaleDateString(),
       applicationUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/hiring/${applicationId}`,
       dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
-    }
+    } as any
   })
 }

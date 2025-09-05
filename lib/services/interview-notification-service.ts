@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase'
 import type {
   Interview,
   InterviewNotificationData,
-  ServiceResult,
   InterviewStatus
 } from '@/lib/types/interview-types'
+import type { ServiceResult } from '@/lib/types'
 
 interface EmailTemplate {
   subject: string

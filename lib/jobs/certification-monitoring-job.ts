@@ -57,8 +57,8 @@ export class CertificationMonitoringJob {
 
       // Log job execution
       await this.auditService.logAction({
-        action: 'job_executed',
-        entity_type: 'certification_monitoring_job',
+        action: 'job_executed' as any,
+        entity_type: 'certification_monitoring_job' as any,
         entity_id: 'daily_check',
         details: {
           executionTime,
@@ -84,8 +84,8 @@ export class CertificationMonitoringJob {
       
       // Log job failure
       await this.auditService.logAction({
-        action: 'job_failed',
-        entity_type: 'certification_monitoring_job',
+        action: 'job_failed' as any,
+        entity_type: 'certification_monitoring_job' as any,
         entity_id: 'daily_check',
         details: {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -129,8 +129,8 @@ export class CertificationMonitoringJob {
 
       // Log weekly summary execution
       await this.auditService.logAction({
-        action: 'weekly_summary_sent',
-        entity_type: 'certification_monitoring_job',
+        action: 'weekly_summary_sent' as any,
+        entity_type: 'certification_monitoring_job' as any,
         entity_id: 'weekly_summary',
         details: summaryData,
         user_id: 'system'
@@ -142,8 +142,8 @@ export class CertificationMonitoringJob {
       console.error('Error executing weekly compliance summary job:', error)
       
       await this.auditService.logAction({
-        action: 'weekly_summary_failed',
-        entity_type: 'certification_monitoring_job',
+        action: 'weekly_summary_failed' as any,
+        entity_type: 'certification_monitoring_job' as any,
         entity_id: 'weekly_summary',
         details: {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -168,12 +168,12 @@ export class CertificationMonitoringJob {
       // For now, we'll just log the action
       
       await this.auditService.logAction({
-        action: 'cleanup_executed',
-        entity_type: 'certification_monitoring_job',
+        action: 'cleanup_executed' as any,
+        entity_type: 'certification_monitoring_job' as any,
         entity_id: 'override_cleanup',
         details: {
           timestamp: new Date().toISOString(),
-          action: 'Cleaned up expired emergency overrides'
+          action: 'Cleaned up expired emergency overrides' as any
         },
         user_id: 'system'
       })

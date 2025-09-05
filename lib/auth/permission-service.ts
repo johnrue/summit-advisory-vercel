@@ -226,8 +226,8 @@ export class PermissionService {
     
     for (const [category, categoryUpdates] of Object.entries(updates)) {
       if (categoryUpdates && category in result) {
-        result[category as keyof PermissionMatrix] = {
-          ...result[category as keyof PermissionMatrix],
+        (result as any)[category] = {
+          ...(result as any)[category],
           ...categoryUpdates
         }
       }

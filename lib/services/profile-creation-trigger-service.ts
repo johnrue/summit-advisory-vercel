@@ -109,8 +109,8 @@ export class ProfileCreationTriggerService {
         .eq('id', decisionId)
         .single()
 
-      if (decisionError) {
-        return { success: false, error: { code: 'DECISION_NOT_FOUND' , message: decisionError.message }}
+      if (decisionError || !decision) {
+        return { success: false, error: decisionError?.message || 'Decision not found' }
       }
 
       // Only trigger for approved decisions
@@ -118,7 +118,6 @@ export class ProfileCreationTriggerService {
         return { 
           success: false, 
           error: 'Profile creation only available for approved applicants', 
-          code: 'INVALID_DECISION_TYPE' 
         }
       }
 
@@ -143,7 +142,7 @@ export class ProfileCreationTriggerService {
         })
 
       if (tokenError) {
-        return { success: false, error: { code: 'TOKEN_GENERATION_ERROR' , message: tokenError.message }}
+        return { success: false, error: tokenError.message }
       }
 
       // Get the created token record
@@ -153,8 +152,8 @@ export class ProfileCreationTriggerService {
         .eq('secure_token', tokenData)
         .single()
 
-      if (tokenSelectError) {
-        return { success: false, error: { code: 'TOKEN_RETRIEVAL_ERROR' , message: tokenSelectError.message }}
+      if (tokenSelectError || !token) {
+        return { success: false, error: tokenSelectError?.message || 'Token not found' }
       }
 
       // Send profile creation notification if enabled
@@ -167,7 +166,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'PROFILE_CREATION_ERROR' 
       }
     }
   }
@@ -184,8 +182,8 @@ export class ProfileCreationTriggerService {
         .eq('is_active', true)
         .single()
 
-      if (error) {
-        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
+      if (error || !token) {
+        return { success: false, error: error?.message || 'Token not found' }
       }
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://summitadvisoryfirm.com'
@@ -196,7 +194,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'LINK_GENERATION_ERROR' 
       }
     }
   }
@@ -217,8 +214,8 @@ export class ProfileCreationTriggerService {
         .eq('is_active', true)
         .single()
 
-      if (error) {
-        return { success: false, error: { code: 'INVALID_TOKEN' , message: 'Invalid or expired token' }}
+      if (error || !data) {
+        return { success: false, error: error?.message || 'Token not found' }
       }
 
       // Check if token has expired
@@ -229,12 +226,10 @@ export class ProfileCreationTriggerService {
           .update({ is_active: false })
           .eq('id', data.id)
 
-        return { success: false, error: { code: 'TOKEN_EXPIRED' , message: 'Token has expired' }}
       }
 
       // Check if token has already been used
       if (data.used_at) {
-        return { success: false, error: { code: 'TOKEN_USED' , message: 'Token has already been used' }}
       }
 
       return { success: true, data: this.mapDatabaseToProfileCreationToken(data) }
@@ -242,7 +237,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'TOKEN_VALIDATION_ERROR' 
       }
     }
   }
@@ -262,8 +256,8 @@ export class ProfileCreationTriggerService {
         .eq('is_active', true)
         .single()
 
-      if (tokenError) {
-        return { success: false, error: { code: 'INVALID_TOKEN' , message: 'Invalid token' }}
+      if (tokenError || !token) {
+        return { success: false, error: tokenError?.message || 'Token not found' }
       }
 
       // Check if token is still valid
@@ -272,8 +266,8 @@ export class ProfileCreationTriggerService {
         return { 
           success: false, 
           error: typeof tokenValidation.error === 'string' 
-            ? { code: 'VALIDATION_FAILED', message: tokenValidation.error }
-            : tokenValidation.error || { code: 'VALIDATION_FAILED', message: 'Token validation failed' }
+            ? tokenValidation.error 
+            : 'Token validation failed'
         }
       }
 
@@ -317,7 +311,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'PROFILE_COMPLETION_ERROR' 
       }
     }
   }
@@ -337,8 +330,8 @@ export class ProfileCreationTriggerService {
         .eq('id', tokenId)
         .single()
 
-      if (error) {
-        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
+      if (error || !token) {
+        return { success: false, error: error?.message || 'Token not found' }
       }
 
       const linkResult = await this.generateSecureCreationLink(tokenId)
@@ -346,8 +339,8 @@ export class ProfileCreationTriggerService {
         return { 
           success: false, 
           error: typeof linkResult.error === 'string' 
-            ? { code: 'LINK_GENERATION_FAILED', message: linkResult.error }
-            : linkResult.error || { code: 'LINK_GENERATION_FAILED', message: 'Failed to generate secure link' }
+            ? linkResult.error 
+            : 'Failed to generate profile creation link'
         }
       }
 
@@ -390,7 +383,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'NOTIFICATION_ERROR' 
       }
     }
   }
@@ -406,8 +398,8 @@ export class ProfileCreationTriggerService {
         .eq('id', tokenId)
         .single()
 
-      if (error) {
-        return { success: false, error: { code: 'TOKEN_NOT_FOUND' , message: error.message }}
+      if (error || !token) {
+        return { success: false, error: error?.message || 'Token not found' }
       }
 
       let status: ProfileCreationProgress['status']
@@ -435,7 +427,6 @@ export class ProfileCreationTriggerService {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error',
-        code: 'PROGRESS_TRACKING_ERROR' 
       }
     }
   }

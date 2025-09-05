@@ -141,9 +141,9 @@ export async function getManagerWorkloads(): Promise<ApiResponse<ManagerWorkload
 
       workloads.push({
         managerId,
-        firstName: manager.users.first_name,
-        lastName: manager.users.last_name,
-        email: manager.users.email,
+        firstName: (manager.users as any).first_name,
+        lastName: (manager.users as any).last_name,
+        email: (manager.users as any).email,
         activeLeads: activeLeads || 0,
         contactedToday: contactedToday || 0,
         responseTime: Math.round(responseTime),
@@ -571,16 +571,16 @@ export async function manualAssignLead(
         id: leadData.id
       },
       {
-        firstName: managerData.users.first_name,
-        lastName: managerData.users.last_name,
-        email: managerData.users.email
+        firstName: (managerData.users as any).first_name,
+        lastName: (managerData.users as any).last_name,
+        email: (managerData.users as any).email
       }
     )
 
     const result: AssignmentResult = {
       assignedTo: managerId,
-      managerName: `${managerData.users.first_name} ${managerData.users.last_name}`,
-      managerEmail: managerData.users.email,
+      managerName: `${(managerData.users as any).first_name} ${(managerData.users as any).last_name}`,
+      managerEmail: (managerData.users as any).email,
       assignmentReason: reason || 'Manual assignment',
       assignmentMethod: 'manual'
     }
@@ -671,16 +671,16 @@ export async function reassignLead(
         id: leadData.id
       },
       {
-        firstName: managerData.users.first_name,
-        lastName: managerData.users.last_name,
-        email: managerData.users.email
+        firstName: (managerData.users as any).first_name,
+        lastName: (managerData.users as any).last_name,
+        email: (managerData.users as any).email
       }
     )
 
     const result: AssignmentResult = {
       assignedTo: newManagerId,
-      managerName: `${managerData.users.first_name} ${managerData.users.last_name}`,
-      managerEmail: managerData.users.email,
+      managerName: `${(managerData.users as any).first_name} ${(managerData.users as any).last_name}`,
+      managerEmail: (managerData.users as any).email,
       assignmentReason: `Reassignment: ${reason}`,
       assignmentMethod: 'reassignment'
     }

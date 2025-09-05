@@ -58,7 +58,7 @@ export function ProfileCompletionAssistant({
     setIsLoading(true)
     try {
       const result = await guardProfileService.validateProfileCompleteness(profileId)
-      if (result.success) {
+      if (result.success && result.data) {
         setCompliance(result.data)
       }
     } catch (error) {
@@ -77,7 +77,7 @@ export function ProfileCompletionAssistant({
         partialValue
       )
 
-      if (result.success) {
+      if (result.success && result.data) {
         const newSuggestions = result.data.map(suggestion => ({
           ...suggestion,
           isApplied: false
